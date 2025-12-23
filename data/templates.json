@@ -1,0 +1,322 @@
+[
+  {
+    "id": "t1_1",
+    "unit_id": "u1",
+    "difficulty": "L1",
+    "stem": "$${a} + ${b}$",
+    "answer": "$${ans}$",
+    "constraints": {}
+  },
+  {
+    "id": "t1_2",
+    "unit_id": "u1",
+    "difficulty": "L1",
+    "stem": "$${a} - ${b}$",
+    "answer": "$${ans}$",
+    "constraints": {}
+  },
+  {
+    "id": "t1_3",
+    "unit_id": "u1",
+    "difficulty": "L2",
+    "stem": "$${a} \\times ${b}$",
+    "answer": "$${ans}$",
+    "constraints": {}
+  },
+  {
+    "id": "t1_4",
+    "unit_id": "u1",
+    "difficulty": "L2",
+    "stem": "$${a} \\div ${b}$",
+    "answer": "$${ans}$",
+    "constraints": {}
+  },
+  {
+    "id": "t1_5",
+    "unit_id": "u1",
+    "difficulty": "L3",
+    "stem": "$${a} - (${b} - ${c})$",
+    "answer": "$${ans}$",
+    "constraints": {}
+  },
+  {
+    "id": "t2_1",
+    "unit_id": "u2",
+    "difficulty": "L1",
+    "stem": "次の式を計算せよ: $${a}x + ${b}x$",
+    "answer": "$${ans}x$",
+    "constraints": {}
+  },
+  {
+    "id": "t2_2",
+    "unit_id": "u2",
+    "difficulty": "L1",
+    "stem": "$${a}x - ${b}x$",
+    "answer": "$${ans}x$",
+    "constraints": {}
+  },
+  {
+    "id": "t2_3",
+    "unit_id": "u2",
+    "difficulty": "L2",
+    "stem": "$${a}(x + ${b})$",
+    "answer": "$${a}x + ${ab}$",
+    "constraints": {}
+  },
+  {
+    "id": "t2_4",
+    "unit_id": "u2",
+    "difficulty": "L2",
+    "stem": "$${a}(x - ${b})$",
+    "answer": "$${a}x - ${ab}$",
+    "constraints": {}
+  },
+  {
+    "id": "t2_5",
+    "unit_id": "u2",
+    "difficulty": "L3",
+    "stem": "$${a}x + ${b}y - ${c}x$",
+    "answer": "$${ans_x}x + ${b}y$",
+    "constraints": {}
+  },
+  {
+    "id": "t3_1",
+    "unit_id": "u3",
+    "difficulty": "L1",
+    "stem": "$a^{${n}} \\times a^{${m}}$",
+    "answer": "$a^{${nm}}$",
+    "constraints": {}
+  },
+  {
+    "id": "t3_2",
+    "unit_id": "u3",
+    "difficulty": "L1",
+    "stem": "$(a^{${n}})^{${m}}$",
+    "answer": "$a^{${nm_mul}}$",
+    "constraints": {}
+  },
+  {
+    "id": "t3_3",
+    "unit_id": "u3",
+    "difficulty": "L2",
+    "stem": "$a^{${n}} \\div a^{${m}}$",
+    "answer": "$a^{${n_m}}$",
+    "constraints": {}
+  },
+  {
+    "id": "t3_4",
+    "unit_id": "u3",
+    "difficulty": "L2",
+    "stem": "$a^{${n}} \\times a^{${m}} \\times a^{${k}}$",
+    "answer": "$a^{${nmk}}$",
+    "constraints": {}
+  },
+  {
+    "id": "t3_5",
+    "unit_id": "u3",
+    "difficulty": "L3",
+    "stem": "$(ab)^{${n}} \\times (a^{${m}})$",
+    "answer": "$a^{${n_m}}b^{${n}}$",
+    "constraints": {}
+  },
+  {
+    "id": "t4_1",
+    "unit_id": "u4",
+    "difficulty": "L1",
+    "stem": "$\\sqrt{${sq}}$",
+    "answer": "$${ans}$",
+    "constraints": {}
+  },
+  {
+    "id": "t4_2",
+    "unit_id": "u4",
+    "difficulty": "L1",
+    "stem": "$-\\sqrt{${sq}}$",
+    "answer": "$-${ans}$",
+    "constraints": {}
+  },
+  {
+    "id": "t4_3",
+    "unit_id": "u4",
+    "difficulty": "L2",
+    "stem": "$\\sqrt{${a}} \\times \\sqrt{${b}}$",
+    "answer": "$\\sqrt{${ab}}$",
+    "constraints": {}
+  },
+  {
+    "id": "t4_4",
+    "unit_id": "u4",
+    "difficulty": "L2",
+    "stem": "$\\sqrt{${ab}} \\div \\sqrt{${b}}$",
+    "answer": "$\\sqrt{${a}}$",
+    "constraints": {}
+  },
+  {
+    "id": "t4_5",
+    "unit_id": "u4",
+    "difficulty": "L3",
+    "stem": "$\\sqrt{${a}}^2 + \\sqrt{${b}}^2$",
+    "answer": "$${a_b}$",
+    "constraints": {}
+  },
+  {
+    "id": "t5_1",
+    "unit_id": "u5",
+    "difficulty": "L1",
+    "stem": "$(x + ${a})(x + ${b})$",
+    "answer": "$x^2 + ${sum}x + ${prod}$",
+    "constraints": {}
+  },
+  {
+    "id": "t5_2",
+    "unit_id": "u5",
+    "difficulty": "L1",
+    "stem": "$(x - ${a})(x - ${b})$",
+    "answer": "$x^2 - ${sum}x + ${prod}$",
+    "constraints": {}
+  },
+  {
+    "id": "t5_3",
+    "unit_id": "u5",
+    "difficulty": "L2",
+    "stem": "$(x + ${a})^2$",
+    "answer": "$x^2 + ${2a}x + ${sq}$",
+    "constraints": {}
+  },
+  {
+    "id": "t5_4",
+    "unit_id": "u5",
+    "difficulty": "L2",
+    "stem": "$(x - ${a})^2$",
+    "answer": "$x^2 - ${2a}x + ${sq}$",
+    "constraints": {}
+  },
+  {
+    "id": "t5_5",
+    "unit_id": "u5",
+    "difficulty": "L3",
+    "stem": "$(x + ${a})(x - ${a})$",
+    "answer": "$x^2 - ${sq}$",
+    "constraints": {}
+  },
+  {
+    "id": "t6_1",
+    "unit_id": "u6",
+    "difficulty": "L1",
+    "stem": "$x^2 + ${sum}x + ${prod}$",
+    "answer": "$(x + ${a})(x + ${b})$",
+    "constraints": {}
+  },
+  {
+    "id": "t6_2",
+    "unit_id": "u6",
+    "difficulty": "L1",
+    "stem": "$x^2 - ${sum}x + ${prod}$",
+    "answer": "$(x - ${a})(x - ${b})$",
+    "constraints": {}
+  },
+  {
+    "id": "t6_3",
+    "unit_id": "u6",
+    "difficulty": "L2",
+    "stem": "$x^2 + ${2a}x + ${sq}$",
+    "answer": "$(x + ${a})^2$",
+    "constraints": {}
+  },
+  {
+    "id": "t6_4",
+    "unit_id": "u6",
+    "difficulty": "L2",
+    "stem": "$x^2 - ${2a}x + ${sq}$",
+    "answer": "$(x - ${a})^2$",
+    "constraints": {}
+  },
+  {
+    "id": "t6_5",
+    "unit_id": "u6",
+    "difficulty": "L3",
+    "stem": "$x^2 - ${sq}$",
+    "answer": "$(x + ${a})(x - ${a})$",
+    "constraints": {}
+  },
+  {
+    "id": "t7_1",
+    "unit_id": "u7",
+    "difficulty": "L1",
+    "stem": "$x + ${a} = ${b}$",
+    "answer": "$x = ${b_a}$",
+    "constraints": {}
+  },
+  {
+    "id": "t7_2",
+    "unit_id": "u7",
+    "difficulty": "L1",
+    "stem": "$x - ${a} = ${b}$",
+    "answer": "$x = ${b_plus_a}$",
+    "constraints": {}
+  },
+  {
+    "id": "t7_3",
+    "unit_id": "u7",
+    "difficulty": "L2",
+    "stem": "$${a}x = ${b}$",
+    "answer": "$x = ${b_div_a}$",
+    "constraints": {}
+  },
+  {
+    "id": "t7_4",
+    "unit_id": "u7",
+    "difficulty": "L2",
+    "stem": "$${a}x + ${b} = ${c}$",
+    "answer": "$x = ${ans}$",
+    "constraints": {}
+  },
+  {
+    "id": "t7_5",
+    "unit_id": "u7",
+    "difficulty": "L3",
+    "stem": "$${a}x + ${b} = ${c}x + ${d}$",
+    "answer": "$x = ${ans}$",
+    "constraints": {}
+  },
+  {
+    "id": "t8_1",
+    "unit_id": "u8",
+    "difficulty": "L1",
+    "stem": "$x^2 = ${sq}$",
+    "answer": "$x = \\pm ${a}$",
+    "constraints": {}
+  },
+  {
+    "id": "t8_2",
+    "unit_id": "u8",
+    "difficulty": "L1",
+    "stem": "$x^2 - ${sq} = 0$",
+    "answer": "$x = \\pm ${a}$",
+    "constraints": {}
+  },
+  {
+    "id": "t8_3",
+    "unit_id": "u8",
+    "difficulty": "L2",
+    "stem": "$(x - ${a})^2 = ${b}$",
+    "answer": "$x = ${a} \\pm \\sqrt{${b}}$",
+    "constraints": {}
+  },
+  {
+    "id": "t8_4",
+    "unit_id": "u8",
+    "difficulty": "L2",
+    "stem": "$x^2 + ${sum}x + ${prod} = 0$",
+    "answer": "$x = -${a}, -${b}$",
+    "constraints": {}
+  },
+  {
+    "id": "t8_5",
+    "unit_id": "u8",
+    "difficulty": "L3",
+    "stem": "$x^2 + ${odd}x + ${c} = 0$",
+    "answer": "$\\frac{-${odd} \\pm \\sqrt{D}}{2}$",
+    "constraints": {}
+  }
+]

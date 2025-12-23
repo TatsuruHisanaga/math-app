@@ -1,0 +1,175 @@
+
+\documentclass[a4paper,10pt,twocolumn]{article}
+\usepackage{luatexja}
+\usepackage[top=10mm,bottom=10mm,left=10mm,right=10mm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{multicol}
+\usepackage{needspace}
+
+% Clean box layout matching the reference image style
+% Single frame, question number and text inside, empty space below.
+\newsavebox{\myqbox}
+\newenvironment{qbox}{%
+  \begin{lrbox}{\myqbox}%
+  % Subtract framesep and rule to fit exactly in column
+  \begin{minipage}{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}
+  \setlength{\parskip}{5pt}
+}{%
+  \end{minipage}%
+  \end{lrbox}%
+  \par\noindent
+  \fbox{\usebox{\myqbox}}%
+  \par\vspace{1em} % Space between questions
+}
+
+% Answer Box is just vertical space now, no border
+\newcommand{\answerbox}[1]{
+  \vspace{#1}
+}
+
+\begin{document}
+
+
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（1）} $(x + 3)^2$
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（2）} $x^2 - 6x + 8$
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（3）} $x^2 - 9$
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（4）} $x^2 - 4$
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（5）} $(x + 2)(x + 4)$
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（6）} $\sqrt{16} \div \sqrt{4}$
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（7）} $\sqrt{4}$
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（8）} $x^2 - 11x + 24$
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（9）} $(x - 4)(x - 4)$
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（10）} $x^2 - ${2a}x + 49$
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（11）} $x^2 + 12x + 27$
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（12）} $-\sqrt{49}$
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（13）} $(x - 4)^2$
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（14）} $(x + 4)(x - 4)$
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（15）} $(x + 5)(x + 8)$
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（16）} $x^2 + 8x + 15$
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（17）} $x^2 + ${2a}x + 9$
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（18）} $x^2 - 81$
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（19）} $(x + 5)^2$
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（20）} $x^2 - ${2a}x + 9$
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+
+\end{document}
+     

@@ -1,0 +1,63 @@
+{
+  "units": {
+    "u1": {
+      "id": "u1",
+      "title_ja": "正負・分数の計算",
+      "prerequisites": [],
+      "symbol_packs": [],
+      "templates": { "L1": ["t1_1", "t1_2"], "L2": ["t1_3", "t1_4"], "L3": ["t1_5"] }
+    },
+    "u2": {
+      "id": "u2",
+      "title_ja": "文字式の計算",
+      "prerequisites": ["u1"],
+      "symbol_packs": [],
+      "templates": { "L1": ["t2_1", "t2_2"], "L2": ["t2_3", "t2_4"], "L3": ["t2_5"] }
+    },
+    "u3": {
+      "id": "u3",
+      "title_ja": "指数法則",
+      "prerequisites": ["u2"],
+      "symbol_packs": [],
+      "templates": { "L1": ["t3_1", "t3_2"], "L2": ["t3_3", "t3_4"], "L3": ["t3_5"] }
+    },
+    "u4": {
+      "id": "u4",
+      "title_ja": "平方根",
+      "prerequisites": ["u1", "u3"],
+      "symbol_packs": [],
+      "templates": { "L1": ["t4_1", "t4_2"], "L2": ["t4_3", "t4_4"], "L3": ["t4_5"] }
+    },
+    "u5": {
+      "id": "u5",
+      "title_ja": "整式の計算（展開）",
+      "prerequisites": ["u2"],
+      "symbol_packs": [],
+      "templates": { "L1": ["t5_1", "t5_2"], "L2": ["t5_3", "t5_4"], "L3": ["t5_5"] }
+    },
+    "u6": {
+      "id": "u6",
+      "title_ja": "因数分解",
+      "prerequisites": ["u5"],
+      "symbol_packs": [],
+      "templates": { "L1": ["t6_1", "t6_2"], "L2": ["t6_3", "t6_4"], "L3": ["t6_5"] }
+    },
+    "u7": {
+      "id": "u7",
+      "title_ja": "一次方程式",
+      "prerequisites": ["u2"],
+      "symbol_packs": [],
+      "templates": { "L1": ["t7_1", "t7_2"], "L2": ["t7_3", "t7_4"], "L3": ["t7_5"] }
+    },
+    "u8": {
+      "id": "u8",
+      "title_ja": "二次方程式",
+      "prerequisites": ["u6", "u4"],
+      "symbol_packs": [],
+      "templates": { "L1": ["t8_1", "t8_2"], "L2": ["t8_3", "t8_4"], "L3": ["t8_5"] }
+    }
+  },
+  "symbol_packs": {
+    "geom": { "title": "図形公式", "items": ["S = \\pi r^2"] }
+  }
+}

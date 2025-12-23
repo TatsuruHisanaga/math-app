@@ -1,36 +1,50 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Math PDF Generator MVP
 
-## Getting Started
+A Next.js application to generate Math Exercise PDFs using LuaLaTeX.
 
-First, run the development server:
+## Prerequisites
 
+### 1. Node.js
+Ensure Node.js (v18+) is installed.
+
+### 2. LaTeX Environment (Crucial)
+This app requires a local LaTeX installation with LuaLaTeX and Japanese support.
+
+**macOS (using BasicTeX):**
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+brew install --cask basictex
+
+# Update package manager
+sudo tlmgr update --self
+
+# Install required packages
+# haranoaji is REQUIRED for Japanese fonts
+sudo tlmgr install luatexja needspace geometry multicol haranoaji
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Setup & Run
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+2. Start the development server:
+   ```bash
+   npm run dev
+   ```
 
-## Learn More
+3. Open [http://localhost:3000](http://localhost:3000)
 
-To learn more about Next.js, take a look at the following resources:
+## System Details
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **PDF Generation**: Occurs locally using `spawn` to call `lualatex`.
+- **First Run**: The first time you generate a PDF, it may take **several minutes** to build the LuaTeX font cache. Please be patient.
+- **Templates**: Located in `data/templates.json`.
+- **Layout**: Defined in `src/lib/latex.ts`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Troubleshooting
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **"Generation Failed"**: Check the error log in the UI modal.
+- **"Font not found"**: Ensure `sudo tlmgr install haranoaji` was run.
+- **"lualatex not found"**: The app looks for lualatex at `/Library/TeX/texbin/lualatex`. If your path is different, update `src/lib/latex.ts`.

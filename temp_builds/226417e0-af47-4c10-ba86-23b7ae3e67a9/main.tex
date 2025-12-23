@@ -1,0 +1,98 @@
+
+\documentclass[a4paper,10pt,twocolumn]{article}
+\usepackage{luatexja}
+\usepackage[top=10mm,bottom=10mm,left=10mm,right=10mm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{multicol}
+\usepackage{tcolorbox}
+\usepackage{needspace}
+\usepackage{enumitem}
+
+\pagestyle{empty}
+
+% Question Box Style
+\newtcolorbox{qbox}{colback=white,colframe=black,arc=0mm,boxrule=0.5pt,top=2mm,bottom=2mm}
+
+% Answer Box (optional visual guide)
+\newcommand{\answerbox}[1]{
+  \vspace{0.5em}
+  \begin{tcolorbox}[colback=white,colframe=gray!50,boxrule=0.2pt,height=#1]
+  \end{tcolorbox}
+}
+
+\begin{document}
+
+
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（1）} (x - 3)^2 = 8
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（2）} (x - 7)^2 = 5
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（3）} x^2 = 36
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（4）} x^2 - 25 = 0
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（5）} x^2 - 36 = 0
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（6）} x^2 = 36
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（7）} x^2 - 36 = 0
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（8）} (a^3)^3
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（9）} calculated: 4 + 7
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（10）} (x + 3)(x + 8)
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+
+\end{document}
+     

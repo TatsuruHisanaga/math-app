@@ -1,0 +1,65 @@
+
+\documentclass[a4paper,10pt,twocolumn]{article}
+\usepackage{luatexja}
+\usepackage[top=10mm,bottom=10mm,left=10mm,right=10mm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{multicol}
+\usepackage{needspace}
+
+% Clean box layout matching the reference image style
+% Single frame, question number and text inside, empty space below.
+\newsavebox{\myqbox}
+\newenvironment{qbox}{%
+  \begin{lrbox}{\myqbox}%
+  % Subtract framesep and rule to fit exactly in column
+  \begin{minipage}{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}
+  \setlength{\parskip}{5pt}
+}{%
+  \end{minipage}%
+  \end{lrbox}%
+  \par\noindent
+  \fbox{\usebox{\myqbox}}%
+  \par\vspace{1em} % Space between questions
+}
+
+% Answer Box is just vertical space now, no border
+\newcommand{\answerbox}[1]{
+  \vspace{#1}
+}
+
+\begin{document}
+
+\begin{itemize}
+\item[（1）] \textbf{[一次方程式]} \quad $$x = ${b_plus_a}$$
+        
+\item[（2）] \textbf{[一次方程式]} \quad $$x = ${b_plus_a}$$
+        
+\item[（3）] \textbf{[一次方程式]} \quad $$x = ${b_a}$$
+        
+\item[（4）] \textbf{[一次方程式]} \quad $$x = ${b_a}$$
+        
+\item[（5）] \textbf{[一次方程式]} \quad $$x = ${b_a}$$
+        
+\item[（6）] \textbf{[一次方程式]} \quad $$x = ${b_plus_a}$$
+        
+\item[（7）] \textbf{[一次方程式]} \quad $$x = ${b_plus_a}$$
+        
+\item[（8）] \textbf{[一次方程式]} \quad $$x = ${b_plus_a}$$
+        
+\item[（9）] \textbf{[一次方程式]} \quad $$x = ${b_a}$$
+        
+\item[（10）] \textbf{[一次方程式]} \quad $$x = ${b_plus_a}$$
+        
+\item[（11）] \textbf{[一次方程式]} \quad $$x = ${b_plus_a}$$
+        
+\item[（12）] \textbf{[一次方程式]} \quad $$x = ${b_plus_a}$$
+        
+\item[（13）] \textbf{[一次方程式]} \quad $$x = ${b_a}$$
+        
+\item[（14）] \textbf{[一次方程式]} \quad $$x = ${b_plus_a}$$
+        
+\item[（15）] \textbf{[一次方程式]} \quad $$x = ${b_a}$$
+        \end{itemize}
+
+\end{document}
+     

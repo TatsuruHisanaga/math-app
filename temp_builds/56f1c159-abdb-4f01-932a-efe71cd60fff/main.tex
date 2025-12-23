@@ -1,0 +1,66 @@
+
+\documentclass[a4paper,10pt,twocolumn]{article}
+\usepackage{luatexja}
+\usepackage[top=10mm,bottom=10mm,left=10mm,right=10mm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{multicol}
+\usepackage{needspace}
+
+\pagestyle{empty}
+
+% Simple framed box using standard LaTeX
+\newenvironment{qbox}{%
+  \par\noindent
+  \fbox{\begin{minipage}{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}}
+}{%
+  \end{minipage}}
+  \vspace{0.5em}
+}
+
+% Answer Box (visual guide)
+\newcommand{\answerbox}[1]{
+  \vspace{0.5em}
+  \framebox[\linewidth]{\rule{0pt}{#1}}
+}
+
+\begin{document}
+
+
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（1）} 2x + 8 = 5
+\answerbox{6cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（2）} 8x + 7 = 6
+\answerbox{6cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（3）} 5x = 7
+\answerbox{6cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（4）} calculated: 5 + 8
+\answerbox{6cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（5）} 2x - 9x
+\answerbox{6cm}
+\end{qbox}
+\end{needspace}
+        
+
+\end{document}
+     

@@ -1,0 +1,104 @@
+
+\documentclass[a4paper,10pt,twocolumn]{article}
+\usepackage{luatexja}
+\usepackage[top=10mm,bottom=10mm,left=10mm,right=10mm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{multicol}
+\usepackage{needspace}
+
+\pagestyle{empty}
+
+% Simple framed box using standard LaTeX
+\newsavebox{\myqbox}
+\newenvironment{qbox}{%
+  \begin{lrbox}{\myqbox}%
+  \begin{minipage}{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}
+}{%
+  \end{minipage}%
+  \end{lrbox}%
+  \par\noindent\fbox{\usebox{\myqbox}}%
+  \vspace{0.5em}
+}
+
+% Answer Box (visual guide)
+\newcommand{\answerbox}[1]{
+  \vspace{0.5em}
+  \framebox[\linewidth]{\rule{0pt}{#1}}
+}
+
+\begin{document}
+
+
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（1）} (a^4)^5
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（2）} a^4 \times a^4
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（3）} (a^3)^5
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（4）} a^2 \times a^3
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（5）} (a^5)^3
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（6）} (a^2)^4
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（7）} (a^5)^2
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（8）} (a^2)^2
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（9）} (a^4)^4
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（10）} a^2 \times a^3
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+
+\end{document}
+     

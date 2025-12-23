@@ -1,0 +1,104 @@
+
+\documentclass[a4paper,10pt,twocolumn]{article}
+\usepackage{luatexja}
+\usepackage[top=10mm,bottom=10mm,left=10mm,right=10mm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{multicol}
+\usepackage{needspace}
+
+\pagestyle{empty}
+
+% Simple framed box using standard LaTeX
+\newsavebox{\myqbox}
+\newenvironment{qbox}{%
+  \begin{lrbox}{\myqbox}%
+  \begin{minipage}{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}
+}{%
+  \end{minipage}%
+  \end{lrbox}%
+  \par\noindent\fbox{\usebox{\myqbox}}%
+  \vspace{0.5em}
+}
+
+% Answer Box (visual guide)
+\newcommand{\answerbox}[1]{
+  \vspace{0.5em}
+  \framebox[\linewidth]{\rule{0pt}{#1}}
+}
+
+\begin{document}
+
+
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（1）} x^2 - 81 = 0
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（2）} x^2 = 36
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（3）} x^2 = 16
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（4）} x^2 = 81
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（5）} x^2 - 81 = 0
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（6）} x^2 - 64 = 0
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（7）} x^2 = 16
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（8）} (x + 2)(x + 7)
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（9）} (x + 2)(x + 7)
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（10）} -\sqrt{64}
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+
+\end{document}
+     
