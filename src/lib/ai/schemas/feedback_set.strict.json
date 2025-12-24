@@ -1,0 +1,36 @@
+{
+  "type": "object",
+  "properties": {
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "question_id": {
+            "type": "string"
+          },
+          "explanation_latex": {
+            "type": "string"
+          },
+          "hint_latex": {
+            "type": "string"
+          },
+          "common_mistake_latex": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "question_id",
+          "explanation_latex",
+          "hint_latex",
+          "common_mistake_latex"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "items"
+  ],
+  "additionalProperties": false
+}

@@ -46,13 +46,18 @@ export default async function handler(
 
     const gen = getGenerator();
     
-    // 1. Generate Questions
-    const questions = gen.generateBatch({
-        unitIds: units,
-        difficulty: difficulties,
-        count: parseInt(count),
-        usePrereqs: options.stumblingBlock || false
-    });
+    // 1. Generate Questions (or use provided)
+    let questions: any[];
+    if (req.body.providedQuestions && Array.isArray(req.body.providedQuestions) && req.body.providedQuestions.length > 0) {
+        questions = req.body.providedQuestions;
+    } else {
+        questions = gen.generateBatch({
+            unitIds: units,
+            difficulty: difficulties,
+            count: parseInt(count),
+            usePrereqs: options.stumblingBlock || false
+        });
+    }
 
     // 2. Build LaTeX Content
     // Problem PDF
@@ -94,6 +99,14 @@ export default async function handler(
         answerBody += `
 \\item[${qNum}] ${tag} \\quad $${q.answer_latex}$
         `;
+        
+        if (q.explanation_latex || q.hint_latex || q.common_mistake_latex) {
+            answerBody += '\\begin{itemize}';
+            if (q.explanation_latex) answerBody += `\\item[\\textbf{解説}] ${q.explanation_latex}`;
+            if (q.hint_latex) answerBody += `\\item[\\textbf{ヒント}] ${q.hint_latex}`;
+            if (q.common_mistake_latex) answerBody += `\\item[\\textbf{注意}] ${q.common_mistake_latex}`;
+            answerBody += '\\end{itemize}\\vspace{0.5em}';
+        }
     });
     answerBody += '\\end{itemize}';
 

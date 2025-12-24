@@ -1,0 +1,41 @@
+{
+  "type": "object",
+  "properties": {
+    "problems": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "stem_latex": {
+            "type": "string"
+          },
+          "answer_latex": {
+            "type": "string"
+          },
+          "unit_id": {
+            "type": "string"
+          },
+          "difficulty": {
+            "type": "string",
+            "enum": [
+              "L1",
+              "L2",
+              "L3"
+            ]
+          }
+        },
+        "required": [
+          "stem_latex",
+          "answer_latex",
+          "unit_id",
+          "difficulty"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "problems"
+  ],
+  "additionalProperties": false
+}

@@ -37,6 +37,10 @@ export default function Home() {
     { id: 'u8', title: '二次方程式' },
   ];
 
+  const [mode, setMode] = useState<'TEMPLATE' | 'AI'>('TEMPLATE');
+  const [candidates, setCandidates] = useState<any[]>([]);
+  const [selectedCandidates, setSelectedCandidates] = useState<number[]>([]);
+
   const handleGenerate = async () => {
     if (selectedUnits.length === 0) {
       setError('単元を選択してください');
@@ -44,17 +48,46 @@ export default function Home() {
     }
     setLoading(true);
     setError('');
-
+    
     try {
-      const res = await fetch('/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+      let body: any = {
+
           units: selectedUnits,
           difficulties: difficulty,
           count,
           options
-        }),
+      };
+
+      if (mode === 'AI') {
+          // Map candidates back to Question format
+          if (selectedCandidates.length === 0) {
+              setError('候補を選択してください');
+              setLoading(false);
+              return;
+          }
+          const questions = selectedCandidates.map(idx => {
+              const c = candidates[idx];
+              // Find unit title
+              const uTitle = UNIT_LIST.find(u => u.id === c.unit_id)?.title || c.unit_id;
+              return {
+                  id: `ai_${idx}`,
+                  template_id: 'ai_generated',
+                  unit_id: c.unit_id,
+                  unit_title: uTitle,
+                  stem_latex: c.stem_latex,
+                  answer_latex: c.answer_latex
+              };
+          });
+          body = {
+              ...body,
+              providedQuestions: questions
+          };
+      }
+
+      const res = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
       });
 
       if (!res.ok) {
@@ -110,6 +143,31 @@ export default function Home() {
 
       <main className={styles.main}>
         <h1 className={styles.title}>数学演習テスト生成 (MVP)</h1>
+
+        <div style={{display: 'flex', gap: '1rem', marginBottom: '2rem', justifyContent: 'center'}}>
+            <button 
+                onClick={() => setMode('TEMPLATE')}
+                style={{
+                    padding: '0.5rem 1rem', 
+                    background: mode === 'TEMPLATE' ? '#0070f3' : '#eee',
+                    color: mode === 'TEMPLATE' ? '#fff' : '#000',
+                    border: 'none', borderRadius: '4px'
+                }}
+            >
+                テンプレート生成
+            </button>
+            <button 
+                onClick={() => setMode('AI')}
+                style={{
+                    padding: '0.5rem 1rem', 
+                    background: mode === 'AI' ? '#0070f3' : '#eee',
+                    color: mode === 'AI' ? '#fff' : '#000',
+                    border: 'none', borderRadius: '4px'
+                }}
+            >
+                 AI生成 (β)
+            </button>
+        </div>
 
         <section className={styles.section}>
           <h2>1. 単元選択</h2>
@@ -173,13 +231,144 @@ export default function Home() {
 
         <div className={styles.actions}>
              {error && <p className={styles.error}>{error}</p>}
-             <button 
-                className={styles.generateButton} 
-                onClick={handleGenerate} 
-                disabled={loading || selectedUnits.length === 0}
-            >
-                PDFを作成する
-             </button>
+             
+             {mode === 'TEMPLATE' && (
+                <button 
+                    className={styles.generateButton} 
+                    onClick={handleGenerate} 
+                    disabled={loading || selectedUnits.length === 0}
+                >
+                    PDFを作成する
+                </button>
+             )}
+
+             {mode === 'AI' && (
+                 <div style={{width: '100%'}}>
+                     <button
+                        className={styles.generateButton}
+                        style={{background: '#28a745', marginBottom: '2rem'}}
+                        onClick={async () => {
+                             if (selectedUnits.length === 0) {
+                                setError('単元を選択してください');
+                                return;
+                             }
+                             setLoading(true);
+                             setError('');
+                             try {
+                                 const res = await fetch('/api/generate_ai', {
+                                     method: 'POST',
+                                     headers: { 'Content-Type': 'application/json' },
+                                     body: JSON.stringify({
+                                         units: selectedUnits,
+                                         difficulty: difficulty[0] || 'L1', // AI only supports single diff for now
+                                         count
+                                     })
+                                 });
+                                 if (!res.ok) throw new Error('AI Generation failed');
+                                 const data = await res.json();
+                                 setCandidates(data.problems);
+                                 setSelectedCandidates(data.problems.map((_: any, i: number) => i)); // Select all by default
+                             } catch(e: any) {
+                                 setError(e.message);
+                             } finally {
+                                 setLoading(false);
+                             }
+                        }}
+                        disabled={loading || selectedUnits.length === 0}
+                     >
+                         AI候補を生成
+                     </button>
+
+                     {candidates.length > 0 && (
+                         <div style={{textAlign: 'left', marginBottom: '2rem'}}>
+                             <h3>生成候補 (確認して選択)</h3>
+                             {candidates.map((c, i) => (
+                                 <div key={i} style={{border: '1px solid #ccc', padding: '1rem', marginBottom: '0.5rem', borderRadius: '4px'}}>
+                                     <label style={{display: 'flex', gap: '1rem'}}>
+                                         <input 
+                                            type="checkbox" 
+                                            checked={selectedCandidates.includes(i)}
+                                            onChange={() => {
+                                                setSelectedCandidates(prev => 
+                                                    prev.includes(i) ? prev.filter(x => x !== i) : [...prev, i]
+                                                );
+                                            }}
+                                         />
+                                         <div style={{flex: 1}}>
+                                             <div><strong>問題:</strong> {c.stem_latex}</div>
+                                             <div><strong>解答:</strong> {c.answer_latex}</div>
+                                             {c.explanation_latex && (
+                                                 <div style={{marginTop: '0.5rem', fontSize: '0.9rem', color: '#28a745'}}>
+                                                     ✓ 解説あり
+                                                 </div>
+                                             )}
+                                         </div>
+                                     </label>
+                                 </div>
+                             ))}
+                             <button 
+                                className={styles.generateButton}
+                                style={{background: '#17a2b8', marginBottom: '1rem', marginRight: '1rem'}}
+                                onClick={async () => {
+                                     if (selectedCandidates.length === 0) return;
+                                     setLoading(true);
+                                     setError('');
+                                     try {
+                                         const newCandidates = [...candidates];
+                                         let successCount = 0;
+                                         
+                                         // Process sequentially
+                                         for (const idx of selectedCandidates) {
+                                             const item = newCandidates[idx];
+                                             // Skip if already has feedback? or regenerate? let's regenerate.
+                                             
+                                             const res = await fetch('/api/feedback_ai', {
+                                                 method: 'POST',
+                                                 headers: { 'Content-Type': 'application/json' },
+                                                 body: JSON.stringify({ problem: item })
+                                             });
+                                             
+                                             if (res.ok) {
+                                                 const feedbackSet = await res.json();
+                                                 if (feedbackSet && feedbackSet.items && feedbackSet.items.length > 0) {
+                                                     const fb = feedbackSet.items[0]; // Assuming 1-to-1 for now based on prompt
+                                                     // Merge feedback
+                                                     newCandidates[idx] = {
+                                                         ...item,
+                                                         explanation_latex: fb.explanation_latex,
+                                                         hint_latex: fb.hint_latex,
+                                                         common_mistake_latex: fb.common_mistake_latex
+                                                     };
+                                                     successCount++;
+                                                 }
+                                             }
+                                         }
+                                         setCandidates(newCandidates);
+                                         if (successCount < selectedCandidates.length) {
+                                             setError(`一部の解説生成に失敗しました (${successCount}/${selectedCandidates.length})`);
+                                         }
+                                     } catch(e: any) {
+                                         setError(e.message);
+                                     } finally {
+                                         setLoading(false);
+                                     }
+                                }}
+                                disabled={selectedCandidates.length === 0 || loading}
+                             >
+                                 選択した問題の解説を生成
+                             </button>
+
+                             <button 
+                                className={styles.generateButton}
+                                onClick={handleGenerate}
+                                disabled={selectedCandidates.length === 0 || loading}
+                             >
+                                 選択した問題でPDFを作成
+                             </button>
+                         </div>
+                     )}
+                 </div>
+             )}
         </div>
       </main>
 

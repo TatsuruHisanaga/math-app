@@ -32,6 +32,9 @@ export interface Question {
   unit_title: string;
   stem_latex: string;
   answer_latex: string;
+  explanation_latex?: string;
+  hint_latex?: string;
+  common_mistake_latex?: string;
 }
 
 export class QuestionGenerator {
@@ -169,5 +172,10 @@ export class QuestionGenerator {
     }
 
     return questions;
+  }
+
+  public getUnitTitle(unitId: string): string {
+    const unit = this.unitMap.units[unitId];
+    return unit ? unit.title_ja : unitId;
   }
 }
