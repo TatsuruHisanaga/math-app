@@ -189,7 +189,7 @@ export default function Home() {
       </Head>
 
       <main className={styles.main}>
-        <h1 className={styles.title}>数学演習テスト生成 (MVP)</h1>
+        <h1 className={styles.title}>数学演習プリント生成</h1>
 
         <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', justifyContent: 'center' }}>
           <button
@@ -201,7 +201,7 @@ export default function Home() {
               border: 'none', borderRadius: '4px'
             }}
           >
-            テンプレート生成
+            テンプレートから作成
           </button>
           <button
             onClick={() => setMode('AI')}
@@ -212,7 +212,7 @@ export default function Home() {
               border: 'none', borderRadius: '4px'
             }}
           >
-            AI生成 (β)
+           AIで作成
           </button>
         </div>
 
@@ -253,7 +253,7 @@ export default function Home() {
             <div>
               <h3>問題数 ({count})</h3>
               <input
-                type="range" min="5" max="30"
+                type="range" min="3" max="30"
                 value={count} onChange={(e) => setCount(Number(e.target.value))}
               />
             </div>
@@ -297,7 +297,7 @@ export default function Home() {
               onClick={handleAutoGenerate}
               disabled={loading || selectedUnits.length === 0}
             >
-              AIでPDFを自動作成
+              AIでプリントを自動作成
             </button>
           )}
         </div>

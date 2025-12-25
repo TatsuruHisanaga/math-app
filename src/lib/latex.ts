@@ -124,11 +124,10 @@ export class PDFBuilder {
 }
 
 % Answer Box (Empty) - For Problem Sheet
-% Width is adjusted to prevent overflow past labels
+% Removed label as per user request
 \\newcommand{\\answerbox}[2]{
   \\par\\vspace{0.2em}
-  \\noindent\\textbf{答:}
-  \\begin{minipage}[t][#1][t]{\\dimexpr\\linewidth-3em\\relax}
+  \\begin{minipage}[t][#1][t]{\\dimexpr\\linewidth-1em\\relax}
     \\mbox{}
   \\end{minipage}
 }
