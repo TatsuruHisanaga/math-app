@@ -71,52 +71,59 @@ export default async function handler(
     // \end{qbox}
     // \end{needspace}
 
-    let problemBody = '';
+    // Generate Problem Part (Empty Answer Box)
+    let problemBody = '\\section*{問題}\\vspace{1em}';
     questions.forEach((q, idx) => {
-        // Full-width Japanese parenthesis for number
         const qNum = `（${idx + 1}）`; 
-        // Heuristic for answer box height based on 'work_required' or simple logic
-        // "options.moreWorkSpace" could increase this.
         const workHeight = options.moreWorkSpace ? '6cm' : '3cm';
 
         problemBody += `
 \\begin{needspace}{4cm}
 \\begin{qbox}
 \\textbf{${qNum}} ${q.stem_latex}
-\\answerbox{${workHeight}}
+\\answerbox{${workHeight}}{}
 \\end{qbox}
 \\end{needspace}
         `;
     });
 
-    // Answer PDF
-    // Simple list with Unit Tags
-    let answerBody = '\\begin{itemize}';
+    // Generate Answer Part (Filled Answer Box) with Page Break
+    // Re-using the same layout but filling the answer box.
+    let answerBody = '\\newpage\\section*{解答}\\vspace{1em}';
     questions.forEach((q, idx) => {
         const qNum = `（${idx + 1}）`;
-        // Tag format: [UnitName]
-        const tag = `\\textbf{[${q.unit_title}]}`;
-        answerBody += `
-\\item[${qNum}] ${tag} \\quad $${q.answer_latex}$
-        `;
+        const workHeight = options.moreWorkSpace ? '6cm' : '3cm';
+        // Content inside answer box
+        const answerContent = `\\textbf{答}: $${q.answer_latex}$`;
         
-        if (q.explanation_latex || q.hint_latex || q.common_mistake_latex) {
-            answerBody += '\\begin{itemize}';
-            if (q.explanation_latex) answerBody += `\\item[\\textbf{解説}] ${q.explanation_latex}`;
-            if (q.hint_latex) answerBody += `\\item[\\textbf{ヒント}] ${q.hint_latex}`;
-            if (q.common_mistake_latex) answerBody += `\\item[\\textbf{注意}] ${q.common_mistake_latex}`;
-            answerBody += '\\end{itemize}\\vspace{0.5em}';
+        // Include explanation if available?
+        // User said "image is problem and answer box page, and answer box filled page".
+        // If we add explanation, it might overflow the box if fixed height.
+        // For now, let's keep it simple as requested: just the answer.
+        // If explanation exists, maybe append it below the box?
+        // "Answer in the answer box" implies just the answer.
+        
+        let explanationBlock = '';
+        if (q.explanation_latex) {
+             explanationBlock = `\\par\\vspace{0.5em}\\noindent\\small{\\textbf{解説}: ${q.explanation_latex}}`;
         }
+
+        answerBody += `
+\\begin{needspace}{4cm}
+\\begin{qbox}
+\\textbf{${qNum}} ${q.stem_latex}
+\\answerbox{${workHeight}}{$${q.answer_latex}$}
+${explanationBlock}
+\\end{qbox}
+\\end{needspace}
+        `;
     });
-    answerBody += '\\end{itemize}';
 
     // 3. Combine into single LaTeX document
     // Problems first, then a page break, then Answers.
     // Adding a header or title for the Answer section might be nice.
     const fullBody = `
 ${problemBody}
-\\newpage
-\\section*{解答}
 ${answerBody}
     `;
 

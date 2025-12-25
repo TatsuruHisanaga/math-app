@@ -4,8 +4,6 @@ export interface AIProblemItem {
   stem_latex: string;
   answer_latex: string;
   explanation_latex: string;
-  hint_latex: string;
-  common_mistake_latex: string;
   unit_id: string;
   difficulty: Difficulty;
 }

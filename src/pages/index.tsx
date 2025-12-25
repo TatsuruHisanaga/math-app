@@ -213,25 +213,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className={styles.section}>
-          <h2>3. オプション</h2>
-          <label className={styles.checkboxBlock}>
-            <input 
-                type="checkbox" 
-                checked={options.stumblingBlock} 
-                onChange={e => setOptions({...options, stumblingBlock: e.target.checked})}
-            />
-            つまずき補助 (30% 前提単元を混入)
-          </label>
-          <label className={styles.checkboxBlock}>
-            <input 
-                type="checkbox" 
-                checked={options.moreWorkSpace} 
-                onChange={e => setOptions({...options, moreWorkSpace: e.target.checked})}
-            />
-            途中式欄多め
-          </label>
-        </section>
+         {/* Options Removed */}
 
         <div className={styles.actions}>
              {error && <p className={styles.error}>{error}</p>}

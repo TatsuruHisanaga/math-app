@@ -118,9 +118,20 @@ export class PDFBuilder {
   \\par\\vspace{1em} % Space between questions
 }
 
-% Answer Box is just vertical space now, no border
-\\newcommand{\\answerbox}[1]{
-  \\vspace{#1}
+% Answer Box with optional content
+% #1: Height, #2: Content (empty for problem sheet)
+\\newcommand{\\answerbox}[2]{
+  % Separator line (dotted) - minimal space above
+  {\\noindent\\tiny\\dotfill}\\par
+  
+  % Answer Label
+  \\noindent\\textbf{答:}
+  
+  % Content area
+  \\begin{minipage}[t][#1][t]{\\linewidth}
+    \\centering
+    \\Large #2   % Changed from LARGE to Large to fit steps better
+  \\end{minipage}
 }
 
 \\begin{document}

@@ -15,12 +15,6 @@
           "explanation_latex": {
             "type": "string"
           },
-          "hint_latex": {
-            "type": "string"
-          },
-          "common_mistake_latex": {
-            "type": "string"
-          },
           "unit_id": {
             "type": "string"
           },
@@ -37,8 +31,6 @@
           "stem_latex",
           "answer_latex",
           "explanation_latex",
-          "hint_latex",
-          "common_mistake_latex",
           "unit_id",
           "difficulty"
         ],
