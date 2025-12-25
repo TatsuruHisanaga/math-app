@@ -63,8 +63,11 @@ export class AIClient {
     const systemPrompt = `You are a skilled mathematics teacher creating exercise problems for Japanese students.
 Generate ${count} math problems based on the unit topic and difficulty provided.
 Output MUST be a valid JSON object strictly matching the schema.
-- 'stem_latex': The problem text in LaTeX. Use Japanese for text.
-- 'answer_latex': The answer text in LaTeX.
+- 'stem_latex': The problem text in LaTeX. Use Japanese for text. IMPORTANT: All math expressions (e.g. equations, variables like x) MUST be wrapped in $...$ (inline math) or $$...$$ (display math). Example: "次の方程式を解け: $x^2 + 3x + 2 = 0$"
+- 'answer_latex': The answer text in LaTeX. Math must be wrapped in $...$ if mixed with text, or just the math expression.
+- 'explanation_latex': Detailed explanation. Wrap all math in $...$.
+- 'hint_latex': Hint. Wrap all math in $...$.
+- 'common_mistake_latex': Common pitfall. Wrap all math in $...$.
 - 'difficulty': One of L1, L2, L3.
 `;
     // TODO: Add more detailed instruction on LaTeX format if needed (e.g. "Use \\dfrac not \\frac")

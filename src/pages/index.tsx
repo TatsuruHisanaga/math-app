@@ -16,6 +16,7 @@ export default function Home() {
     moreWorkSpace: false,
   });
   const [loading, setLoading] = useState(false);
+  const [progress, setProgress] = useState('');
   const [error, setError] = useState('');
 
   // Load basic unit data (mock or verify from public json?)
@@ -75,7 +76,10 @@ export default function Home() {
                   unit_id: c.unit_id,
                   unit_title: uTitle,
                   stem_latex: c.stem_latex,
-                  answer_latex: c.answer_latex
+                  answer_latex: c.answer_latex,
+                  explanation_latex: c.explanation_latex,
+                  hint_latex: c.hint_latex,
+                  common_mistake_latex: c.common_mistake_latex
               };
           });
           body = {
@@ -253,6 +257,7 @@ export default function Home() {
                                 return;
                              }
                              setLoading(true);
+                             setProgress('AI生成を開始します...');
                              setError('');
                              try {
                                  const res = await fetch('/api/generate_ai', {
@@ -264,14 +269,77 @@ export default function Home() {
                                          count
                                      })
                                  });
+                                 
                                  if (!res.ok) throw new Error('AI Generation failed');
-                                 const data = await res.json();
-                                 setCandidates(data.problems);
-                                 setSelectedCandidates(data.problems.map((_: any, i: number) => i)); // Select all by default
+                                 
+                                 // Handle streaming response
+                                 const reader = res.body?.getReader();
+                                 if (!reader) throw new Error('ReadableStream not supported');
+                                 
+                                 const decoder = new TextDecoder();
+                                 let buffer = '';
+                                 let collectedProblems: any[] = []; // Rename to avoid confusion
+
+                                 while (true) {
+                                     const { done, value } = await reader.read();
+                                     if (done) break;
+                                     
+                                     buffer += decoder.decode(value, { stream: true });
+                                     const lines = buffer.split('\n\n');
+                                     
+                                     // Handle incomplete buffer logic properly
+                                     // If last item is empty string (caused by trailing \n\n), pop it.
+                                     // If not empty, it's incomplete chunk, save back to buffer.
+                                     // Wait, standard SSE ends with \n\n. split result will have empty string at end.
+                                     
+                                     // BUT: If the chunk ended exactly at \n\n, lines will have empty string at end.
+                                     // If chunk ended in middle, last element is partial.
+                                     // We need to be careful.
+                                     // Let's assume standard behavior:
+                                     
+                                     buffer = lines.pop() || ''; 
+                                     
+                                     for (const line of lines) {
+                                         if (line.trim().startsWith('data: ')) {
+                                             try {
+                                                 const jsonStr = line.trim().substring(6);
+                                                 const data = JSON.parse(jsonStr);
+                                                 
+                                                 if (data.type === 'progress') {
+                                                     setProgress(`生成中: ${data.count} / ${data.total} 問完了`);
+                                                 } else if (data.type === 'complete') {
+                                                     collectedProblems = data.problems;
+                                                 } else if (data.type === 'error') {
+                                                     throw new Error(data.message);
+                                                 }
+                                             } catch (parseError) {
+                                                 console.error('JSON Parse Error:', parseError, line);
+                                             }
+                                         }
+                                     }
+                                 }
+                                 
+                                 // Fallback check if buffer has remaining data
+                                 if (buffer.trim().startsWith('data: ')) {
+                                      try {
+                                         const data = JSON.parse(buffer.trim().substring(6));
+                                         if (data.type === 'complete') {
+                                             collectedProblems = data.problems;
+                                         }
+                                      } catch (e) { console.error('Final buffer parse error', e); }
+                                 }
+
+                                 if (collectedProblems.length === 0) {
+                                     throw new Error('生成された問題がありませんでした。APIキーや設定を確認してください。');
+                                 }
+
+                                 setCandidates(collectedProblems);
+                                 setSelectedCandidates(collectedProblems.map((_: any, i: number) => i)); 
                              } catch(e: any) {
                                  setError(e.message);
                              } finally {
                                  setLoading(false);
+                                 setProgress('');
                              }
                         }}
                         disabled={loading || selectedUnits.length === 0}
@@ -306,58 +374,7 @@ export default function Home() {
                                      </label>
                                  </div>
                              ))}
-                             <button 
-                                className={styles.generateButton}
-                                style={{background: '#17a2b8', marginBottom: '1rem', marginRight: '1rem'}}
-                                onClick={async () => {
-                                     if (selectedCandidates.length === 0) return;
-                                     setLoading(true);
-                                     setError('');
-                                     try {
-                                         const newCandidates = [...candidates];
-                                         let successCount = 0;
-                                         
-                                         // Process sequentially
-                                         for (const idx of selectedCandidates) {
-                                             const item = newCandidates[idx];
-                                             // Skip if already has feedback? or regenerate? let's regenerate.
-                                             
-                                             const res = await fetch('/api/feedback_ai', {
-                                                 method: 'POST',
-                                                 headers: { 'Content-Type': 'application/json' },
-                                                 body: JSON.stringify({ problem: item })
-                                             });
-                                             
-                                             if (res.ok) {
-                                                 const feedbackSet = await res.json();
-                                                 if (feedbackSet && feedbackSet.items && feedbackSet.items.length > 0) {
-                                                     const fb = feedbackSet.items[0]; // Assuming 1-to-1 for now based on prompt
-                                                     // Merge feedback
-                                                     newCandidates[idx] = {
-                                                         ...item,
-                                                         explanation_latex: fb.explanation_latex,
-                                                         hint_latex: fb.hint_latex,
-                                                         common_mistake_latex: fb.common_mistake_latex
-                                                     };
-                                                     successCount++;
-                                                 }
-                                             }
-                                         }
-                                         setCandidates(newCandidates);
-                                         if (successCount < selectedCandidates.length) {
-                                             setError(`一部の解説生成に失敗しました (${successCount}/${selectedCandidates.length})`);
-                                         }
-                                     } catch(e: any) {
-                                         setError(e.message);
-                                     } finally {
-                                         setLoading(false);
-                                     }
-                                }}
-                                disabled={selectedCandidates.length === 0 || loading}
-                             >
-                                 選択した問題の解説を生成
-                             </button>
-
+                             
                              <button 
                                 className={styles.generateButton}
                                 onClick={handleGenerate}
@@ -378,9 +395,9 @@ export default function Home() {
             {loading ? (
                 <>
                     <div className={styles.spinner}></div>
-                    <p>PDFを生成中...</p>
+                    <p>{progress || 'PDFを生成中...'}</p>
                     <p style={{fontSize: '0.9rem', color: '#666'}}>
-                        数式をLaTeXで組版しています。<br/>
+                        {progress ? 'AIが問題を生成・検証しています。' : '数式をLaTeXで組版しています。'}<br/>
                         ※初回はフォントキャッシュ生成のため数分かかる場合があります。
                     </p>
                 </>

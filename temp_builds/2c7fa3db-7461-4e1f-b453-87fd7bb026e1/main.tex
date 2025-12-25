@@ -1,0 +1,88 @@
+
+\documentclass[a4paper,10pt,twocolumn]{article}
+\usepackage{luatexja}
+\usepackage[top=10mm,bottom=10mm,left=10mm,right=10mm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{multicol}
+\usepackage{needspace}
+
+% Clean box layout matching the reference image style
+% Single frame, question number and text inside, empty space below.
+\newsavebox{\myqbox}
+\newenvironment{qbox}{%
+  \begin{lrbox}{\myqbox}%
+  % Subtract framesep and rule to fit exactly in column
+  \begin{minipage}{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}
+  \setlength{\parskip}{5pt}
+}{%
+  \end{minipage}%
+  \end{lrbox}%
+  \par\noindent
+  \fbox{\usebox{\myqbox}}%
+  \par\vspace{1em} % Space between questions
+}
+
+% Answer Box is just vertical space now, no border
+\newcommand{\answerbox}[1]{
+  \vspace{#1}
+}
+
+\begin{document}
+
+
+
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（1）} 次の二次方程式を解きなさい：$x^2 - 5x + 6 = 0$
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（2）} 次の二次方程式を解きなさい：$x^2 + 4x + 4 = 0$
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（3）} 次の二次方程式を解きなさい：$x^2 - 9 = 0$
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\newpage
+\section*{解答}
+\begin{itemize}
+\item[（1）] \textbf{[二次方程式]} \quad $x = 2, 3$
+        \begin{itemize}\item[\textbf{解説}] The given quadratic equation is $x^2 - 5x + 6 = 0$. To solve it, we can factor the quadratic expression. We look for two numbers that multiply to the constant term, $6$, and add to the linear coefficient, $-5$. These numbers are $-2$ and $-3$ because $(-2) \times (-3) = 6$ and $(-2) + (-3) = -5$. Thus, we can factor the quadratic as $(x - 2)(x - 3) = 0$. 
+
+Using the zero product property, we set each factor to zero: 
+
+1. $x - 2 = 0$ gives $x = 2$.
+2. $x - 3 = 0$ gives $x = 3$.
+
+Therefore, the solutions to the equation are $x = 2$ and $x = 3$.\item[\textbf{ヒント}] Try to factor the quadratic equation $x^2 - 5x + 6 = 0$. Look for two numbers that multiply to 6 and add to -5.\item[\textbf{注意}] A common mistake is to incorrectly identify the numbers that multiply to the constant term and add to the coefficient of the linear term. For example, mixing the signs and choosing $2$ and $3$, instead of $-2$ and $-3$, will lead to incorrect factors and incorrect solutions. Always double-check your signs when factoring.\end{itemize}\vspace{0.5em}
+\item[（2）] \textbf{[二次方程式]} \quad $x = -2$
+        \begin{itemize}\item[\textbf{解説}] この二次方程式 $x^2 + 4x + 4 = 0$ は、平方完成または因数分解によって解くことができます。この場合、因数分解が容易です。
+
+まず、左辺の式を因数分解してみましょう。
+
+$x^2 + 4x + 4 = (x + 2)(x + 2) = (x + 2)^2$
+
+したがって、方程式は $(x + 2)^2 = 0$ になります。
+
+この方程式を解くには、$(x + 2)^2 = 0$ となる、すなわち $x + 2 = 0$ となる $x$ の値を求めます。
+
+$x + 2 = 0$ を解くと、
+
+$x = -2$
+
+したがって、二次方程式 $x^2 + 4x + 4 = 0$ の解は $x = -2$ です。\item[\textbf{ヒント}] この方程式は完全な平方形式になっています。式を $(x + a)^2 = 0$ の形に変形してみましょう。\item[\textbf{注意}] よくある間違いは、因数分解の過程で $(x+2)(x+2) = x^2 + 4x + 4$ を正しく認識せず、誤った因数を見つけようとすることです。また、平方完成法を行う際に、定数項を正しく調整しないこともあります。\end{itemize}\vspace{0.5em}
+\item[（3）] \textbf{[二次方程式]} \quad $x = -3, 3$
+        \begin{itemize}\item[\textbf{解説}] この二次方程式は $x^2 - 9 = 0$ の形をしています。まず、方程式を解くために $x^2$ の項を分離します。両辺に 9 を加えると、$x^2 = 9$ になります。次に、両辺の平方根をとります。\n\n$x = \pm \sqrt{9}$\n\nここで、$\sqrt{9} = 3$ なので、$x = \pm 3$ となります。したがって、解は $x = -3$ および $x = 3$ です。\item[\textbf{ヒント}] 方程式 $x^2 - 9 = 0$ は、$x^2 = 9$ と考えることができます。それから両辺の平方根をとると、解を見つけることができます。\item[\textbf{注意}] 一般的な間違いは、二次方程式の解を求めるときに平方根のプラスマイナスを忘れることです。$x^2 = 9$ の場合、$x = 3$ だけでなく、$x = -3$ も解であることを思い出してください。\end{itemize}\vspace{0.5em}\end{itemize}
+    
+
+\end{document}
+     

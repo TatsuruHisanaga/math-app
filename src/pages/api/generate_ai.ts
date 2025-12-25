@@ -48,12 +48,60 @@ export default async function handler(
     const client = new AIClient(apiKey);
     const pipeline = new GenerationPipeline(client);
 
-    const problems = await pipeline.generateVerified(unitTitles, typeof count === 'string' ? parseInt(count) : count, difficulty);
+    // Set headers for streaming
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    res.flushHeaders();
 
-    res.status(200).json({ problems });
+    // Custom callback to stream progress
+    const onProgress = (count: number, total: number) => {
+        res.write(`data: ${JSON.stringify({ type: 'progress', count, total })}\n\n`);
+    };
+
+    // We need to modify pipeline to accept a callback or check how we can hook into it.
+    // For now, let's just make pipeline return intermediate results or modify it.
+    // Actually, let's modify the pipeline class or just inline the logic if it's not too complex.
+    // Since I can't easily change the pipeline signature across files without multiple edits, 
+    // I will use a slight workaround: Assume pipeline.generateVerified can be monitored? 
+    // No, I'll update GenerationPipeline to accept a callback in the next step. 
+    // But for this file, I'll assume it accepts it.
+    
+    // WAIT: I need to update GenerationPipeline first.
+    // let's revert to standard JSON for a moment if I can't stream easily? 
+    // No, I must implement it.
+    
+    // Use an extended version of generateVerified momentarily code-injected here or update the class.
+    // I will update the class `src/lib/verify/regenerate.ts` in the next tool call.
+    // Here I will call it assuming the signature update.
+    
+    const targetCount = typeof count === 'string' ? parseInt(count) : count;
+    
+    // We request slightly more from AI to account for verification failures, 
+    // but the pipeline loop needs the exact target count to stop.
+    // The previous implementation of generateVerified inside GenerationPipeline handles buffering internally 
+    // based on 'needed' count.
+    
+    const problems = await pipeline.generateVerified(
+        unitTitles, 
+        targetCount, 
+        difficulty || 'L1', // Default difficulty if array or undefined
+        (current: number, total: number) => {
+             res.write(`data: ${JSON.stringify({ type: 'progress', count: current, total })}\n\n`);
+        }
+    );
+
+    res.write(`data: ${JSON.stringify({ type: 'complete', problems })}\n\n`);
+    res.end();
 
   } catch (error: any) {
     console.error('AI Generation Error:', error);
-    res.status(500).json({ message: 'AI generation failed', error: error.message });
+    // If headers sent, we can't send status 500 JSON.
+    if (!res.headersSent) {
+        res.status(500).json({ message: 'AI generation failed', error: error.message });
+    } else {
+        res.write(`data: ${JSON.stringify({ type: 'error', message: error.message })}\n\n`);
+        res.end();
+    }
   }
 }

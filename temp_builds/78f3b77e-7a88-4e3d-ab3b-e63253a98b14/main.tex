@@ -1,0 +1,85 @@
+
+\documentclass[a4paper,10pt,twocolumn]{article}
+\usepackage{luatexja}
+\usepackage[top=10mm,bottom=10mm,left=10mm,right=10mm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{multicol}
+\usepackage{needspace}
+
+% Clean box layout matching the reference image style
+% Single frame, question number and text inside, empty space below.
+\newsavebox{\myqbox}
+\newenvironment{qbox}{%
+  \begin{lrbox}{\myqbox}%
+  % Subtract framesep and rule to fit exactly in column
+  \begin{minipage}{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}
+  \setlength{\parskip}{5pt}
+}{%
+  \end{minipage}%
+  \end{lrbox}%
+  \par\noindent
+  \fbox{\usebox{\myqbox}}%
+  \par\vspace{1em} % Space between questions
+}
+
+% Answer Box is just vertical space now, no border
+\newcommand{\answerbox}[1]{
+  \vspace{#1}
+}
+
+\begin{document}
+
+
+
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（1）} 次の式を展開してください: $(x + 3)(x + 2)$
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（2）} 次の式を展開してください: $(2x - 1)(x + 4)$
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（3）} 次の式を展開してください: $(x - 5)^2$
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（4）} 次の式を展開してください: $(3x + 2)(x - 3)$
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（5）} 次の式を展開してください: $(2x + 3)^2$
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\newpage
+\section*{解答}
+\begin{itemize}
+\item[（1）] \textbf{[expansion_polynomials]} \quad $$x^2 + 5x + 6$$
+        \begin{itemize}\item[\textbf{解説}] まず、分配法則を用いて展開します。$(x + 3)(x + 2) = x(x + 2) + 3(x + 2) = x^2 + 2x + 3x + 6 = x^2 + 5x + 6$\item[\textbf{ヒント}] 分配法則を使って各項を展開しましょう。\item[\textbf{注意}] 間違えて、$x^2 + 6x + 6$と計算してしまうことがあります。\end{itemize}\vspace{0.5em}
+\item[（2）] \textbf{[expansion_polynomials]} \quad $$2x^2 + 7x - 4$$
+        \begin{itemize}\item[\textbf{解説}] 分配法則を使います。$(2x - 1)(x + 4) = 2x(x + 4) - 1(x + 4) = 2x^2 + 8x - x - 4 = 2x^2 + 7x - 4$\item[\textbf{ヒント}] 各項に分けて分配法則を適用しましょう。\item[\textbf{注意}] 負の符号を忘れてしまうことがあります。\end{itemize}\vspace{0.5em}
+\item[（3）] \textbf{[expansion_polynomials]} \quad $$x^2 - 10x + 25$$
+        \begin{itemize}\item[\textbf{解説}] 二乗の公式を使います。$(x - 5)^2 = (x - 5)(x - 5) = x^2 - 5x - 5x + 25 = x^2 - 10x + 25$\item[\textbf{ヒント}] 二乗公式 $(a - b)^2 = a^2 - 2ab + b^2$ を使いましょう。\item[\textbf{注意}] $x^2 - 25$と計算してしまうことがあります。\end{itemize}\vspace{0.5em}
+\item[（4）] \textbf{[expansion_polynomials]} \quad $$3x^2 - 7x - 6$$
+        \begin{itemize}\item[\textbf{解説}] 分配法則を使います。$(3x + 2)(x - 3) = 3x(x - 3) + 2(x - 3) = 3x^2 - 9x + 2x - 6 = 3x^2 - 7x - 6$\item[\textbf{ヒント}] 各項を順番に展開しましょう。\item[\textbf{注意}] 符号に注意してください。間違えて符号を変えることがあります。\end{itemize}\vspace{0.5em}
+\item[（5）] \textbf{[expansion_polynomials]} \quad $$4x^2 + 12x + 9$$
+        \begin{itemize}\item[\textbf{解説}] 二乗の公式を使います。$(2x + 3)^2 = (2x + 3)(2x + 3) = 4x^2 + 6x + 6x + 9 = 4x^2 + 12x + 9$\item[\textbf{ヒント}] 二乗公式 $(a + b)^2 = a^2 + 2ab + b^2$ を使いましょう。\item[\textbf{注意}] 中間項を$6x$と計算してしまうことがあります。\end{itemize}\vspace{0.5em}\end{itemize}
+    
+
+\end{document}
+     
