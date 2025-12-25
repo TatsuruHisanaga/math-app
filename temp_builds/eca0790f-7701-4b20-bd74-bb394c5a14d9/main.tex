@@ -1,0 +1,219 @@
+
+\documentclass[a4paper,10pt,twocolumn]{article}
+\usepackage{luatexja}
+\usepackage[top=10mm,bottom=10mm,left=10mm,right=10mm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{multicol}
+\usepackage{needspace}
+\usepackage{xcolor}
+pagestyle{empty}
+
+% Internal padding for fbox
+\setlength{\fboxsep}{8pt}
+
+% Clean box layout matching the reference image style
+% Single frame, question number and text inside, empty space below.
+\newsavebox{\myqbox}
+\newenvironment{qbox}{%
+  \begin{lrbox}{\myqbox}%
+  % Subtract framesep and rule to fit exactly in column. fboxsep is now 8pt.
+  \begin{minipage}{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}
+  \setlength{\parskip}{5pt}
+}{%
+  \end{minipage}%
+  \end{lrbox}%
+  \par\noindent
+  \fbox{\usebox{\myqbox}}%
+  \par\vspace{1em} % Space between questions
+}
+
+% Answer Box (Empty) - For Problem Sheet
+% Width is adjusted to prevent overflow past labels
+\newcommand{\answerbox}[2]{
+  \par\vspace{0.2em}
+  \noindent\textbf{答:}
+  \begin{minipage}[t][#1][t]{\dimexpr\linewidth-3em\relax}
+    \mbox{}
+  \end{minipage}
+}
+
+% Answer Box (Filled) - For Answer Sheet
+% Dynamic height and calculated width to ensure wrapping within the box
+\newcommand{\answeredbox}[1]{
+  \par\vspace{0.2em}
+  \noindent\textbf{答:}\ 
+  \begin{minipage}[t]{\dimexpr\linewidth-3em\relax}
+    \raggedright
+    \color{red}
+    \normalsize #1
+  \end{minipage}
+  \par
+}
+
+\begin{document}
+
+
+
+\begin{center}
+{\Large \textbf{数学演習プリント}} \\
+\vspace{0.5em}
+{\small 単元: 整式の計算（展開） \quad 難易度: 基礎, 標準} \\
+\rule{\linewidth}{0.4pt}
+\end{center}
+\vspace{1em}
+
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（1）} $(x + 2)(x + 3)$ を展開せよ。
+\answerbox{3cm}{}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（2）} $(2x - 1)(x + 4)$ を展開せよ。
+\answerbox{3cm}{}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（3）} $(x - 5)(x + 2)$ を展開せよ。
+\answerbox{3cm}{}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（4）} $(3x + 4)(x - 2)$ を展開せよ。
+\answerbox{3cm}{}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（5）} $(x + 1)(x + 1)$ を展開せよ。
+\answerbox{3cm}{}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（6）} $(x - 3)(x - 4)$ を展開せよ。
+\answerbox{3cm}{}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（7）} $(2x + 3)(x - 5)$ を展開せよ。
+\answerbox{3cm}{}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（8）} $(x + 6)(x + 1)$ を展開せよ。
+\answerbox{3cm}{}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（9）} $(x - 1)(x + 5)$ を展開せよ。
+\answerbox{3cm}{}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（10）} $(4x + 1)(x + 3)$ を展開せよ。
+\answerbox{3cm}{}
+\end{qbox}
+\end{needspace}
+        
+\newpage\section*{解答}\vspace{1em}
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（1）} $(x + 2)(x + 3)$ を展開せよ。
+\answeredbox{$$(x + 2)(x + 3) = x^2 + 5x + 6$$}
+\par\vspace{0.5em}\noindent\small{\textbf{解説}:\par まず、分配法則を使います。$x$ を $x + 3$ と $2$ を $x + 3$ のそれぞれに掛けます。これにより、$x^2 + 3x + 2x + 6$ となります。次に、同類項をまとめます。$3x + 2x = 5x$ なので、最終的に $x^2 + 5x + 6$ になります。}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（2）} $(2x - 1)(x + 4)$ を展開せよ。
+\answeredbox{$$(2x - 1)(x + 4) = 2x^2 + 8x - 1$$}
+\par\vspace{0.5em}\noindent\small{\textbf{解説}:\par 分配法則を使います。$2x$ を $x + 4$ に掛けて $2x^2 + 8x$、次に $-1$ を $x + 4$ に掛けて $-x - 4$ を得ます。これを合わせると $2x^2 + 8x - 1$ になります。}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（3）} $(x - 5)(x + 2)$ を展開せよ。
+\answeredbox{$$(x - 5)(x + 2) = x^2 - 3x - 10$$}
+\par\vspace{0.5em}\noindent\small{\textbf{解説}:\par 分配法則を用いて、$x$ を $x + 2$ と $-5$ を $x + 2$ に掛けます。$x^2 + 2x - 5x - 10$ となり、同類項をまとめると $x^2 - 3x - 10$ になります。}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（4）} $(3x + 4)(x - 2)$ を展開せよ。
+\answeredbox{$$(3x + 4)(x - 2) = 3x^2 - 6x + 4x - 8$$}
+\par\vspace{0.5em}\noindent\small{\textbf{解説}:\par まず、$3x$ を $x - 2$ に掛けると $3x^2 - 6x$ になります。次に、$4$ を $x - 2$ に掛けて $4x - 8$ となります。これを合わせると $3x^2 - 2x - 8$ になります。}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（5）} $(x + 1)(x + 1)$ を展開せよ。
+\answeredbox{$$(x + 1)(x + 1) = x^2 + 2x + 1$$}
+\par\vspace{0.5em}\noindent\small{\textbf{解説}:\par 分配法則を用いて $x$ を $x + 1$ に掛け、次に $1$ を $x + 1$ に掛けます。これにより $x^2 + x + x + 1$ となり、同類項をまとめて $x^2 + 2x + 1$ になります。}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（6）} $(x - 3)(x - 4)$ を展開せよ。
+\answeredbox{$$(x - 3)(x - 4) = x^2 - 7x + 12$$}
+\par\vspace{0.5em}\noindent\small{\textbf{解説}:\par 分配法則を使います。$x$ を $x - 4$ に掛け、$-3$ を $x - 4$ に掛けると $x^2 - 4x - 3x + 12$ になります。同類項をまとめて $x^2 - 7x + 12$ となります。}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（7）} $(2x + 3)(x - 5)$ を展開せよ。
+\answeredbox{$$(2x + 3)(x - 5) = 2x^2 - 10x + 3x - 15$$}
+\par\vspace{0.5em}\noindent\small{\textbf{解説}:\par まず、$2x$ を $x - 5$ に掛け、次に $3$ を $x - 5$ に掛けます。これにより $2x^2 - 10x + 3x - 15$ となり、同類項をまとめると $2x^2 - 7x - 15$ になります。}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（8）} $(x + 6)(x + 1)$ を展開せよ。
+\answeredbox{$$(x + 6)(x + 1) = x^2 + 7x + 6$$}
+\par\vspace{0.5em}\noindent\small{\textbf{解説}:\par 分配法則を用いて $x$ を $x + 1$ に掛け、$6$ を $x + 1$ に掛けます。これにより $x^2 + x + 6x + 6$ となり、同類項をまとめて $x^2 + 7x + 6$ になります。}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（9）} $(x - 1)(x + 5)$ を展開せよ。
+\answeredbox{$$(x - 1)(x + 5) = x^2 + 4x - 5$$}
+\par\vspace{0.5em}\noindent\small{\textbf{解説}:\par 分配法則を用いて $x$ を $x + 5$ に掛け、$-1$ を $x + 5$ に掛けます。これにより $x^2 + 5x - x - 5$ となり、同類項をまとめて $x^2 + 4x - 5$ になります。}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（10）} $(4x + 1)(x + 3)$ を展開せよ。
+\answeredbox{$$(4x + 1)(x + 3) = 4x^2 + 12x + 1$$}
+\par\vspace{0.5em}\noindent\small{\textbf{解説}:\par $4x$ を $x + 3$ に掛け、$1$ を $x + 3$ に掛けます。これにより $4x^2 + 12x + 1$ となります。}
+\end{qbox}
+\end{needspace}
+        
+    
+
+\end{document}
+     

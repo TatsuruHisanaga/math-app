@@ -46,6 +46,11 @@ export default async function handler(
 
     const gen = getGenerator();
     
+    // Resolve Difficulty Labels for Header
+    const diffLabels = { 'L1': '基礎', 'L2': '標準', 'L3': '発展' };
+    const displayDiffs = (difficulties as string[]).map(d => diffLabels[d as keyof typeof diffLabels] || d).join(', ');
+    const displayUnits = (units as string[]).map(id => gen.getUnitTitle(id)).join(', ');
+
     // 1. Generate Questions (or use provided)
     let questions: any[];
     if (req.body.providedQuestions && Array.isArray(req.body.providedQuestions) && req.body.providedQuestions.length > 0) {
@@ -60,19 +65,19 @@ export default async function handler(
     }
 
     // 2. Build LaTeX Content
-    // Problem PDF
-    // Use minipage inside tcolorbox directly or wrap content?
-    // We want 2 columns.
-    // Each question:
-    // \begin{needspace}{5em}
-    // \begin{qbox}
-    // (1) ...
-    // \answerbox{3cm} 
-    // \end{qbox}
-    // \end{needspace}
+    // Header for Problem Page
+    const header = `
+\\begin{center}
+{\\Large \\textbf{数学演習プリント}} \\\\
+\\vspace{0.5em}
+{\\small 単元: ${displayUnits} \\quad 難易度: ${displayDiffs}} \\\\
+\\rule{\\linewidth}{0.4pt}
+\\end{center}
+\\vspace{1em}
+`;
 
     // Generate Problem Part (Empty Answer Box)
-    let problemBody = '\\section*{問題}\\vspace{1em}';
+    let problemBody = header;
     questions.forEach((q, idx) => {
         const qNum = `（${idx + 1}）`; 
         const workHeight = options.moreWorkSpace ? '6cm' : '3cm';
@@ -105,14 +110,14 @@ export default async function handler(
         
         let explanationBlock = '';
         if (q.explanation_latex) {
-             explanationBlock = `\\par\\vspace{0.5em}\\noindent\\small{\\textbf{解説}: ${q.explanation_latex}}`;
+             explanationBlock = `\\par\\vspace{0.5em}\\noindent\\small{\\textbf{解説}:\\par ${q.explanation_latex}}`;
         }
 
         answerBody += `
 \\begin{needspace}{4cm}
 \\begin{qbox}
 \\textbf{${qNum}} ${q.stem_latex}
-\\answerbox{${workHeight}}{$${q.answer_latex}$}
+\\answeredbox{$${q.answer_latex}$}
 ${explanationBlock}
 \\end{qbox}
 \\end{needspace}

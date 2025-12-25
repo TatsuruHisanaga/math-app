@@ -101,13 +101,18 @@ export class PDFBuilder {
 \\usepackage{amsmath,amssymb}
 \\usepackage{multicol}
 \\usepackage{needspace}
+\\usepackage{xcolor}
+\\pagestyle{empty}
+
+% Internal padding for fbox
+\\setlength{\\fboxsep}{8pt}
 
 % Clean box layout matching the reference image style
 % Single frame, question number and text inside, empty space below.
 \\newsavebox{\\myqbox}
 \\newenvironment{qbox}{%
   \\begin{lrbox}{\\myqbox}%
-  % Subtract framesep and rule to fit exactly in column
+  % Subtract framesep and rule to fit exactly in column. fboxsep is now 8pt.
   \\begin{minipage}{\\dimexpr\\linewidth-2\\fboxsep-2\\fboxrule\\relax}
   \\setlength{\\parskip}{5pt}
 }{%
@@ -118,20 +123,27 @@ export class PDFBuilder {
   \\par\\vspace{1em} % Space between questions
 }
 
-% Answer Box with optional content
-% #1: Height, #2: Content (empty for problem sheet)
+% Answer Box (Empty) - For Problem Sheet
+% Width is adjusted to prevent overflow past labels
 \\newcommand{\\answerbox}[2]{
-  % Separator line (dotted) - minimal space above
-  {\\noindent\\tiny\\dotfill}\\par
-  
-  % Answer Label
+  \\par\\vspace{0.2em}
   \\noindent\\textbf{答:}
-  
-  % Content area
-  \\begin{minipage}[t][#1][t]{\\linewidth}
-    \\centering
-    \\Large #2   % Changed from LARGE to Large to fit steps better
+  \\begin{minipage}[t][#1][t]{\\dimexpr\\linewidth-3em\\relax}
+    \\mbox{}
   \\end{minipage}
+}
+
+% Answer Box (Filled) - For Answer Sheet
+% Dynamic height and calculated width to ensure wrapping within the box
+\\newcommand{\\answeredbox}[1]{
+  \\par\\vspace{0.2em}
+  \\noindent\\textbf{答:}\\ 
+  \\begin{minipage}[t]{\\dimexpr\\linewidth-3em\\relax}
+    \\raggedright
+    \\color{red}
+    \\normalsize #1
+  \\end{minipage}
+  \\par
 }
 
 \\begin{document}

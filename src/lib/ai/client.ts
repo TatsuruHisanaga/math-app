@@ -59,17 +59,22 @@ export class AIClient {
     return JSON.parse(content) as T;
   }
 
+
   async generateProblems(topic: string, count: number, difficulty: string): Promise<AIProblemSet> {
+    // Dynamic Model Selection based on difficulty
+    let model = this.modelProblem;
+    if (['L1', 'L2'].includes(difficulty)) {
+        model = 'gpt-4o-mini';
+    }
+
     const systemPrompt = `You are a skilled mathematics teacher creating exercise problems for Japanese students.
 Generate ${count} math problems based on the unit topic and difficulty provided.
 Output MUST be a valid JSON object strictly matching the schema.
-- 'stem_latex': The problem text in LaTeX. Use Japanese for text. IMPORTANT: All math expressions (e.g. equations, variables like x) MUST be wrapped in $...$ (inline math) or $$...$$ (display math). DO NOT include the answer in this field. Example: "次の方程式を解け: $x^2 + 3x + 2 = 0$" (Good), "$x^2 + 3x + 2 = 0, x=-1,-2$" (Bad).
-- 'stem_latex': The problem text in LaTeX. Use Japanese for text. IMPORTANT: All math expressions (e.g. equations, variables like x) MUST be wrapped in $...$ (inline math) or $$...$$ (display math). DO NOT include the answer in this field. Example: "次の方程式を解け: $x^2 + 3x + 2 = 0$" (Good), "$x^2 + 3x + 2 = 0, x=-1,-2$" (Bad).
+- 'stem_latex': The problem text in LaTeX. Use Japanese for text. IMPORTANT: All math expressions (e.g. equations, variables like x) MUST be wrapped in $...$ (inline math) or $$...$$ (display math). DO NOT include the answer in this field.
 - 'answer_latex': The descriptive answer in LaTeX. Include intermediate steps/derivations. Example: "$(x+1)(x+2) = 0 \\rightarrow x = -1, -2$". Wrappers $...$ required. Do NOT include "Answer:" prefix.
 - 'explanation_latex': Detailed explanation. Wrap all math in $...$.
 - 'difficulty': One of L1, L2, L3.
 `;
-    // TODO: Add more detailed instruction on LaTeX format if needed (e.g. "Use \\dfrac not \\frac")
 
     const userPrompt = `Unit: ${topic}
 Count: ${count}
@@ -77,7 +82,7 @@ Difficulty: ${difficulty}
 `;
 
     return this.callOpenAI<AIProblemSet>(
-        this.modelProblem,
+        model,
         systemPrompt,
         userPrompt,
         "problem_set",

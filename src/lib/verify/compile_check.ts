@@ -7,11 +7,11 @@ export async function checkCompilation(latexSnippet: string, type: 'stem' | 'ans
   // Wrap snippet to match actual usage context
   let content = latexSnippet;
   if (type === 'stem') {
-      // Wrapped in qbox (minipage)
-      content = `\\begin{qbox}\n${latexSnippet}\n\\end{qbox}`;
+      // Wrapped in qbox
+      content = `\\begin{qbox}\n${latexSnippet}\n\\answerbox{3cm}{}\n\\end{qbox}`;
   } else {
-      // Wrapped in itemize
-      content = `\\begin{itemize}\n\\item ${latexSnippet}\n\\end{itemize}`;
+      // Wrapped in qbox + answeredbox (Answer Sheet context)
+      content = `\\begin{qbox}\nProblem Stem\n\\answeredbox{${latexSnippet}}\n\\end{qbox}`;
   }
 
   const fullBody = builder.getLayoutTemplate(content);

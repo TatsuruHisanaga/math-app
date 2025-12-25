@@ -1,0 +1,61 @@
+
+\documentclass[a4paper,10pt,twocolumn]{article}
+\usepackage{luatexja}
+\usepackage[top=10mm,bottom=10mm,left=10mm,right=10mm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{multicol}
+\usepackage{needspace}
+\usepackage{xcolor}
+pagestyle{empty}
+
+% Internal padding for fbox
+\setlength{\fboxsep}{8pt}
+
+% Clean box layout matching the reference image style
+% Single frame, question number and text inside, empty space below.
+\newsavebox{\myqbox}
+\newenvironment{qbox}{%
+  \begin{lrbox}{\myqbox}%
+  % Subtract framesep and rule to fit exactly in column. fboxsep is now 8pt.
+  \begin{minipage}{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}
+  \setlength{\parskip}{5pt}
+}{%
+  \end{minipage}%
+  \end{lrbox}%
+  \par\noindent
+  \fbox{\usebox{\myqbox}}%
+  \par\vspace{1em} % Space between questions
+}
+
+% Answer Box (Empty) - For Problem Sheet
+% Width is adjusted to prevent overflow past labels
+\newcommand{\answerbox}[2]{
+  \par\vspace{0.2em}
+  \noindent\textbf{答:}
+  \begin{minipage}[t][#1][t]{\dimexpr\linewidth-3em\relax}
+    \mbox{}
+  \end{minipage}
+}
+
+% Answer Box (Filled) - For Answer Sheet
+% Dynamic height and calculated width to ensure wrapping within the box
+\newcommand{\answeredbox}[1]{
+  \par\vspace{0.2em}
+  \noindent\textbf{答:}\ 
+  \begin{minipage}[t]{\dimexpr\linewidth-3em\relax}
+    \raggedright
+    \color{red}
+    \normalsize #1
+  \end{minipage}
+  \par
+}
+
+\begin{document}
+
+\begin{qbox}
+$10p - 4p + 3p$ の計算をしてください。
+\answerbox{3cm}{}
+\end{qbox}
+
+\end{document}
+     
