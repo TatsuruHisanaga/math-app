@@ -21,6 +21,7 @@ export class GenerationPipeline {
         topic: string, 
         count: number, 
         difficulty: string,
+        modelOverride?: string,
         onProgress?: (current: number, total: number) => void
     ): Promise<ValidatedProblem[]> {
         let validProblems: ValidatedProblem[] = [];
@@ -39,7 +40,7 @@ export class GenerationPipeline {
             try {
                 if (needed <= 0) break;
 
-                const problemSet = await this.client.generateProblems(topic, bufferCount, difficulty);
+                const problemSet = await this.client.generateProblems(topic, bufferCount, difficulty, modelOverride);
                 
                 if (!problemSet || !problemSet.problems) {
                     lastError = "AI returned empty problem set.";

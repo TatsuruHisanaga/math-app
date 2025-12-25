@@ -60,10 +60,14 @@ export class AIClient {
   }
 
 
-  async generateProblems(topic: string, count: number, difficulty: string): Promise<AIProblemSet> {
-    // Dynamic Model Selection based on difficulty
-    let model = this.modelProblem;
-    if (['L1', 'L2'].includes(difficulty)) {
+  async generateProblems(topic: string, count: number, difficulty: string, modelOverride?: string): Promise<AIProblemSet> {
+    // Use override if provided, otherwise default to hardcoded logic
+    let model = modelOverride || this.modelProblem;
+    
+    // Fallback logic if NO override is provided: 
+    // Defaults were previously L1/L2 -> mini, but user now wants control.
+    // If modelOverride is NOT provided, we still use the default this.modelProblem (gpt-4o).
+    if (!modelOverride && ['L1', 'L2'].includes(difficulty)) {
         model = 'gpt-4o-mini';
     }
 

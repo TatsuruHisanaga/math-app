@@ -17,6 +17,7 @@ export default function Home() {
     stumblingBlock: false,
     moreWorkSpace: false,
   });
+  const [aiModel, setAiModel] = useState<'gpt-4o' | 'gpt-4o-mini'>('gpt-4o');
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState('');
   const [error, setError] = useState('');
@@ -53,7 +54,8 @@ export default function Home() {
         body: JSON.stringify({
           units: selectedUnits,
           difficulty: difficulty[0] || 'L1',
-          count
+          count,
+          aiModel
         })
       });
 
@@ -255,6 +257,27 @@ export default function Home() {
                 value={count} onChange={(e) => setCount(Number(e.target.value))}
               />
             </div>
+            {mode === 'AI' && (
+              <div>
+                <h3>AIモデル</h3>
+                <div style={{ display: 'flex', gap: '1rem' }}>
+                  <label className={styles.checkbox}>
+                    <input
+                      type="radio"
+                      checked={aiModel === 'gpt-4o'}
+                      onChange={() => setAiModel('gpt-4o')}
+                    /> 高品質 (gpt-4o)
+                  </label>
+                  <label className={styles.checkbox}>
+                    <input
+                      type="radio"
+                      checked={aiModel === 'gpt-4o-mini'}
+                      onChange={() => setAiModel('gpt-4o-mini')}
+                    /> 高速 (gpt-4o-mini)
+                  </label>
+                </div>
+              </div>
+            )}
           </div>
         </section>
 

@@ -34,7 +34,8 @@ export default async function handler(
     const { 
         units, // string[] unit IDs
         difficulty, // string
-        count // number
+        count, // number
+        aiModel // string (optional)
     } = req.body;
 
     if (!units || !count || !difficulty) {
@@ -85,7 +86,8 @@ export default async function handler(
     const problems = await pipeline.generateVerified(
         unitTitles, 
         targetCount, 
-        difficulty || 'L1', // Default difficulty if array or undefined
+        difficulty || 'L1', 
+        aiModel, // Custom model override
         (current: number, total: number) => {
              res.write(`data: ${JSON.stringify({ type: 'progress', count: current, total })}\n\n`);
         }
