@@ -1,63 +1,255 @@
 {
   "units": {
-    "u1": {
-      "id": "u1",
-      "title_ja": "正負・分数の計算",
+    "m1_shiki": {
+      "id": "m1_shiki",
+      "title_ja": "数I: 数と式",
       "prerequisites": [],
-      "symbol_packs": [],
-      "templates": { "L1": ["t1_1", "t1_2"], "L2": ["t1_3", "t1_4"], "L3": ["t1_5"] }
+      "templates": {
+        "L1": [],
+        "L2": [],
+        "L3": []
+      }
     },
-    "u2": {
-      "id": "u2",
-      "title_ja": "文字式の計算",
-      "prerequisites": ["u1"],
-      "symbol_packs": [],
-      "templates": { "L1": ["t2_1", "t2_2"], "L2": ["t2_3", "t2_4"], "L3": ["t2_5"] }
+    "m1_shugo": {
+      "id": "m1_shugo",
+      "title_ja": "数I: 集合と命題",
+      "prerequisites": [],
+      "templates": {
+        "L1": [],
+        "L2": [],
+        "L3": []
+      }
     },
-    "u3": {
-      "id": "u3",
-      "title_ja": "指数法則",
-      "prerequisites": ["u2"],
-      "symbol_packs": [],
-      "templates": { "L1": ["t3_1", "t3_2"], "L2": ["t3_3", "t3_4"], "L3": ["t3_5"] }
+    "m1_2ji_func": {
+      "id": "m1_2ji_func",
+      "title_ja": "数I: 2次関数",
+      "prerequisites": [
+        "m1_shiki"
+      ],
+      "templates": {
+        "L1": [],
+        "L2": [],
+        "L3": []
+      }
     },
-    "u4": {
-      "id": "u4",
-      "title_ja": "平方根",
-      "prerequisites": ["u1", "u3"],
-      "symbol_packs": [],
-      "templates": { "L1": ["t4_1", "t4_2"], "L2": ["t4_3", "t4_4"], "L3": ["t4_5"] }
+    "m1_trig": {
+      "id": "m1_trig",
+      "title_ja": "数I: 図形と計量",
+      "prerequisites": [
+        "m1_shiki"
+      ],
+      "templates": {
+        "L1": [],
+        "L2": [],
+        "L3": []
+      }
     },
-    "u5": {
-      "id": "u5",
-      "title_ja": "整式の計算（展開）",
-      "prerequisites": ["u2"],
-      "symbol_packs": [],
-      "templates": { "L1": ["t5_1", "t5_2"], "L2": ["t5_3", "t5_4"], "L3": ["t5_5"] }
+    "m1_data": {
+      "id": "m1_data",
+      "title_ja": "数I: データの分析",
+      "prerequisites": [],
+      "templates": {
+        "L1": [],
+        "L2": [],
+        "L3": []
+      }
     },
-    "u6": {
-      "id": "u6",
-      "title_ja": "因数分解",
-      "prerequisites": ["u5"],
-      "symbol_packs": [],
-      "templates": { "L1": ["t6_1", "t6_2"], "L2": ["t6_3", "t6_4"], "L3": ["t6_5"] }
+    "ma_baai": {
+      "id": "ma_baai",
+      "title_ja": "数A: 場合の数と確率",
+      "prerequisites": [],
+      "templates": {
+        "L1": [],
+        "L2": [],
+        "L3": []
+      }
     },
-    "u7": {
-      "id": "u7",
-      "title_ja": "一次方程式",
-      "prerequisites": ["u2"],
-      "symbol_packs": [],
-      "templates": { "L1": ["t7_1", "t7_2"], "L2": ["t7_3", "t7_4"], "L3": ["t7_5"] }
+    "ma_seishitsu": {
+      "id": "ma_seishitsu",
+      "title_ja": "数A: 整数の性質",
+      "prerequisites": [],
+      "templates": {
+        "L1": [],
+        "L2": [],
+        "L3": []
+      }
     },
-    "u8": {
-      "id": "u8",
-      "title_ja": "二次方程式",
-      "prerequisites": ["u6", "u4"],
-      "symbol_packs": [],
-      "templates": { "L1": ["t8_1", "t8_2"], "L2": ["t8_3", "t8_4"], "L3": ["t8_5"] }
+    "ma_zukei": {
+      "id": "ma_zukei",
+      "title_ja": "数A: 図形の性質",
+      "prerequisites": [],
+      "templates": {
+        "L1": [],
+        "L2": [],
+        "L3": []
+      }
+    },
+    "m2_shiki_shomei": {
+      "id": "m2_shiki_shomei",
+      "title_ja": "数II: 式と証明",
+      "prerequisites": [
+        "m1_shiki"
+      ],
+      "templates": {
+        "L1": [],
+        "L2": [],
+        "L3": []
+      }
+    },
+    "m2_fuku_2ji": {
+      "id": "m2_fuku_2ji",
+      "title_ja": "数II: 複素数と方程式",
+      "prerequisites": [
+        "m1_2ji_func"
+      ],
+      "templates": {
+        "L1": [],
+        "L2": [],
+        "L3": []
+      }
+    },
+    "m2_zukei_hoteishiki": {
+      "id": "m2_zukei_hoteishiki",
+      "title_ja": "数II: 図形と方程式",
+      "prerequisites": [
+        "m1_2ji_func",
+        "ma_zukei"
+      ],
+      "templates": {
+        "L1": [],
+        "L2": [],
+        "L3": []
+      }
+    },
+    "m2_sankaku": {
+      "id": "m2_sankaku",
+      "title_ja": "数II: 三角関数",
+      "prerequisites": [
+        "m1_trig"
+      ],
+      "templates": {
+        "L1": [],
+        "L2": [],
+        "L3": []
+      }
+    },
+    "m2_shisu_taisu": {
+      "id": "m2_shisu_taisu",
+      "title_ja": "数II: 指数関数・対数関数",
+      "prerequisites": [
+        "m1_shiki"
+      ],
+      "templates": {
+        "L1": [],
+        "L2": [],
+        "L3": []
+      }
+    },
+    "m2_bibun_sekibun": {
+      "id": "m2_bibun_sekibun",
+      "title_ja": "数II: 微分法・積分法",
+      "prerequisites": [
+        "m1_2ji_func",
+        "m2_shiki_shomei"
+      ],
+      "templates": {
+        "L1": [],
+        "L2": [],
+        "L3": []
+      }
+    },
+    "mb_suiretsu": {
+      "id": "mb_suiretsu",
+      "title_ja": "数B: 数列",
+      "prerequisites": [],
+      "templates": {
+        "L1": [],
+        "L2": [],
+        "L3": []
+      }
+    },
+    "mb_toukei": {
+      "id": "mb_toukei",
+      "title_ja": "数B: 統計的な推測",
+      "prerequisites": [
+        "m1_data"
+      ],
+      "templates": {
+        "L1": [],
+        "L2": [],
+        "L3": []
+      }
+    },
+    "mc_vector": {
+      "id": "mc_vector",
+      "title_ja": "数C: ベクトル",
+      "prerequisites": [
+        "m2_zukei_hoteishiki"
+      ],
+      "templates": {
+        "L1": [],
+        "L2": [],
+        "L3": []
+      }
+    },
+    "mc_kyokusen": {
+      "id": "mc_kyokusen",
+      "title_ja": "数C: 平面上の曲線と複素数平面",
+      "prerequisites": [
+        "m2_fuku_2ji",
+        "m2_sankaku"
+      ],
+      "templates": {
+        "L1": [],
+        "L2": [],
+        "L3": []
+      }
+    },
+    "m3_kyukan": {
+      "id": "m3_kyukan",
+      "title_ja": "数III: 極限",
+      "prerequisites": [
+        "m2_bibun_sekibun",
+        "m2_shisu_taisu",
+        "m2_sankaku"
+      ],
+      "templates": {
+        "L1": [],
+        "L2": [],
+        "L3": []
+      }
+    },
+    "m3_bibun": {
+      "id": "m3_bibun",
+      "title_ja": "数III: 微分法",
+      "prerequisites": [
+        "m3_kyukan"
+      ],
+      "templates": {
+        "L1": [],
+        "L2": [],
+        "L3": []
+      }
+    },
+    "m3_sekibun": {
+      "id": "m3_sekibun",
+      "title_ja": "数III: 積分法",
+      "prerequisites": [
+        "m3_bibun"
+      ],
+      "templates": {
+        "L1": [],
+        "L2": [],
+        "L3": []
+      }
     }
   },
   "symbol_packs": {
-    "geom": { "title": "図形公式", "items": ["S = \\pi r^2"] }
+    "geom": {
+      "title": "図形公式",
+      "items": [
+        "S = \\pi r^2"
+      ]
+    }
   }
 }

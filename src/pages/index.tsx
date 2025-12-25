@@ -24,16 +24,59 @@ export default function Home() {
   const [mode, setMode] = useState<'TEMPLATE' | 'AI'>('TEMPLATE');
   const [showSuccess, setShowSuccess] = useState(false);
 
-  // Load basic unit data
-  const UNIT_LIST = [
-    { id: 'u1', title: '正負・分数の計算' },
-    { id: 'u2', title: '文字式の計算' },
-    { id: 'u3', title: '指数法則' },
-    { id: 'u4', title: '平方根' },
-    { id: 'u5', title: '整式の計算（展開）' },
-    { id: 'u6', title: '因数分解' },
-    { id: 'u7', title: '一次方程式' },
-    { id: 'u8', title: '二次方程式' },
+  // Expanded Unit List with categories
+  const CURRICULUM = [
+    {
+      subject: '数学I',
+      units: [
+        { id: 'm1_shiki', title: '数と式' },
+        { id: 'm1_shugo', title: '集合と命題' },
+        { id: 'm1_2ji_func', title: '2次関数' },
+        { id: 'm1_trig', title: '図形と計量' },
+        { id: 'm1_data', title: 'データの分析' },
+      ]
+    },
+    {
+      subject: '数学A',
+      units: [
+        { id: 'ma_baai', title: '場合の数と確率' },
+        { id: 'ma_seishitsu', title: '整数の性質' },
+        { id: 'ma_zukei', title: '図形の性質' },
+      ]
+    },
+    {
+      subject: '数学II',
+      units: [
+        { id: 'm2_shiki_shomei', title: '式と証明' },
+        { id: 'm2_fuku_2ji', title: '複素数と方程式' },
+        { id: 'm2_zukei_hoteishiki', title: '図形と方程式' },
+        { id: 'm2_sankaku', title: '三角関数' },
+        { id: 'm2_shisu_taisu', title: '指数・対数関数' },
+        { id: 'm2_bibun_sekibun', title: '微分法・積分法' },
+      ]
+    },
+    {
+      subject: '数学B',
+      units: [
+        { id: 'mb_suiretsu', title: '数列' },
+        { id: 'mb_toukei', title: '統計的な推測' },
+      ]
+    },
+    {
+      subject: '数学C',
+      units: [
+        { id: 'mc_vector', title: 'ベクトル' },
+        { id: 'mc_kyokusen', title: '平面曲線・複素数平面' },
+      ]
+    },
+    {
+      subject: '数学III',
+      units: [
+        { id: 'm3_kyukan', title: '極限' },
+        { id: 'm3_bibun', title: '微分法' },
+        { id: 'm3_sekibun', title: '積分法' },
+      ]
+    }
   ];
 
   const handleAutoGenerate = async () => {
@@ -218,15 +261,22 @@ export default function Home() {
 
         <section className={styles.section}>
           <h2>1. 単元選択</h2>
-          <div className={styles.grid}>
-            {UNIT_LIST.map(u => (
-              <button
-                key={u.id}
-                className={`${styles.card} ${selectedUnits.includes(u.id) ? styles.active : ''}`}
-                onClick={() => toggleUnit(u.id)}
-              >
-                {u.title}
-              </button>
+          <div className={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            {CURRICULUM.map(cat => (
+              <div key={cat.subject}>
+                <h3 style={{ marginBottom: '0.5rem', color: '#666', fontSize: '0.9rem' }}>{cat.subject}</h3>
+                <div className={styles.grid}>
+                  {cat.units.map(u => (
+                    <button
+                      key={u.id}
+                      className={`${styles.card} ${selectedUnits.includes(u.id) ? styles.active : ''}`}
+                      onClick={() => toggleUnit(u.id)}
+                    >
+                      {u.title}
+                    </button>
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
         </section>
