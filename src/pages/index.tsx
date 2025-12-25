@@ -21,7 +21,6 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState('');
   const [error, setError] = useState('');
-  const [mode, setMode] = useState<'TEMPLATE' | 'AI'>('TEMPLATE');
   const [showSuccess, setShowSuccess] = useState(false);
 
   // Expanded Unit List with categories
@@ -78,6 +77,9 @@ export default function Home() {
       ]
     }
   ];
+
+  // Flat list for lookups
+  const ALL_UNITS = CURRICULUM.flatMap(cat => cat.units);
 
   const handleAutoGenerate = async () => {
     if (selectedUnits.length === 0) {
@@ -152,7 +154,7 @@ export default function Home() {
           providedQuestions: collectedProblems.map((p, idx) => ({
             ...p,
             id: `ai_${idx}`,
-            unit_title: UNIT_LIST.find(u => u.id === p.unit_id)?.title || p.unit_id
+            unit_title: ALL_UNITS.find(u => u.id === p.unit_id)?.title || p.unit_id
           })),
           units: selectedUnits,
           difficulties: difficulty,
@@ -165,7 +167,7 @@ export default function Home() {
 
       const blob = await pdfRes.blob();
       const unitNames = selectedUnits
-        .map(id => UNIT_LIST.find(u => u.id === id)?.title ?? id)
+        .map(id => ALL_UNITS.find(u => u.id === id)?.title ?? id)
         .join('_');
       saveAs(blob, `AI_Math_${unitNames}_${new Date().toISOString().slice(0, 10)}.pdf`);
 
@@ -234,34 +236,13 @@ export default function Home() {
       <main className={styles.main}>
         <h1 className={styles.title}>数学演習プリント生成</h1>
 
-        <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', justifyContent: 'center' }}>
-          <button
-            onClick={() => setMode('TEMPLATE')}
-            style={{
-              padding: '0.5rem 1rem',
-              background: mode === 'TEMPLATE' ? '#0070f3' : '#eee',
-              color: mode === 'TEMPLATE' ? '#fff' : '#000',
-              border: 'none', borderRadius: '4px'
-            }}
-          >
-            テンプレートから作成
-          </button>
-          <button
-            onClick={() => setMode('AI')}
-            style={{
-              padding: '0.5rem 1rem',
-              background: mode === 'AI' ? '#0070f3' : '#eee',
-              color: mode === 'AI' ? '#fff' : '#000',
-              border: 'none', borderRadius: '4px'
-            }}
-          >
-           AIで作成
-          </button>
+        <div className={styles.header}>
+          <p>AIがレベルに合わせた問題を自動生成します</p>
         </div>
 
         <section className={styles.section}>
           <h2>1. 単元選択</h2>
-          <div className={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             {CURRICULUM.map(cat => (
               <div key={cat.subject}>
                 <h3 style={{ marginBottom: '0.5rem', color: '#666', fontSize: '0.9rem' }}>{cat.subject}</h3>
@@ -307,9 +288,8 @@ export default function Home() {
                 value={count} onChange={(e) => setCount(Number(e.target.value))}
               />
             </div>
-            {mode === 'AI' && (
-              <div>
-                <h3>AIモデル</h3>
+            <div>
+              <h3>AIモデル</h3>
                 <div style={{ display: 'flex', gap: '1rem' }}>
                   <label className={styles.checkbox}>
                     <input
@@ -323,33 +303,21 @@ export default function Home() {
                       type="radio"
                       checked={aiModel === 'gpt-4o-mini'}
                       onChange={() => setAiModel('gpt-4o-mini')}
-                    /> 高速 (gpt-4o-mini)
+                    /> 高速 (gpt-4o-mii)
                   </label>
                 </div>
               </div>
-            )}
           </div>
         </section>
 
         <div className={styles.actions}>
-          {mode === 'TEMPLATE' ? (
             <button
               className={styles.generateButton}
-              onClick={handleGenerate}
-              disabled={loading || selectedUnits.length === 0}
-            >
-              PDFを作成する
-            </button>
-          ) : (
-            <button
-              className={styles.generateButton}
-              style={{ background: '#28a745' }}
               onClick={handleAutoGenerate}
               disabled={loading || selectedUnits.length === 0}
             >
-              AIでプリントを自動作成
+              {loading ? '生成中...' : 'AIでPDFを自動作成'}
             </button>
-          )}
         </div>
       </main>
 

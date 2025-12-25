@@ -1,21 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import fs from 'fs';
 import path from 'path';
-import { QuestionGenerator } from '@/lib/generator';
 import { AIClient } from '@/lib/ai/client';
 import { GenerationPipeline } from '@/lib/verify/regenerate';
-
-// Singleton generator access (copied from generate.ts pattern)
-let generator: QuestionGenerator | null = null;
-const getGenerator = () => {
-    if (!generator) {
-        const dataDir = path.resolve(process.cwd(), 'data');
-        generator = new QuestionGenerator(
-            path.join(dataDir, 'unit_map.json'),
-            path.join(dataDir, 'templates.json')
-        );
-    }
-    return generator;
-}
 
 export default async function handler(
   req: NextApiRequest,
@@ -42,9 +29,15 @@ export default async function handler(
         return res.status(400).json({ message: 'Missing required fields' });
     }
 
-    const gen = getGenerator();
-    // Resolve unit IDs to titles
-    const unitTitles = (units as string[]).map(id => gen.getUnitTitle(id)).join(', ');
+    // Resolve unit IDs to titles directly from JSON to avoid stale singleton
+    const unitMapPath = path.resolve(process.cwd(), 'data/unit_map.json');
+    const unitMapData = JSON.parse(fs.readFileSync(unitMapPath, 'utf-8'));
+    const unitTitles = (units as string[])
+        .map(id => unitMapData.units[id]?.title_ja || id)
+        .join(', ');
+    
+    console.log('API request units:', units);
+    console.log('Resolved titles for AI:', unitTitles);
 
     const client = new AIClient(apiKey);
     const pipeline = new GenerationPipeline(client);

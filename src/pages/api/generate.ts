@@ -24,6 +24,10 @@ const getGenerator = () => {
 
 const builder = new PDFBuilder();
 
+const escapeLatex = (str: string) => {
+    return str.replace(/[&%$#_{}~^\\]/g, '\\$&');
+};
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -65,12 +69,12 @@ export default async function handler(
     }
 
     // 2. Build LaTeX Content
-    // Header for Problem Page
+    // Header for Problem Page - MUST ESCAPE UNDERSCORES IN IDs
     const header = `
 \\begin{center}
 {\\Large \\textbf{数学演習プリント}} \\\\
 \\vspace{0.5em}
-{\\small 単元: ${displayUnits} \\quad 難易度: ${displayDiffs}} \\\\
+{\\small 単元: ${escapeLatex(displayUnits)} \\quad 難易度: ${escapeLatex(displayDiffs)}} \\\\
 \\rule{\\linewidth}{0.4pt}
 \\end{center}
 \\vspace{1em}
@@ -93,20 +97,9 @@ export default async function handler(
     });
 
     // Generate Answer Part (Filled Answer Box) with Page Break
-    // Re-using the same layout but filling the answer box.
     let answerBody = '\\newpage\\section*{解答}\\vspace{1em}';
     questions.forEach((q, idx) => {
         const qNum = `（${idx + 1}）`;
-        const workHeight = options.moreWorkSpace ? '6cm' : '3cm';
-        // Content inside answer box
-        const answerContent = `\\textbf{答}: $${q.answer_latex}$`;
-        
-        // Include explanation if available?
-        // User said "image is problem and answer box page, and answer box filled page".
-        // If we add explanation, it might overflow the box if fixed height.
-        // For now, let's keep it simple as requested: just the answer.
-        // If explanation exists, maybe append it below the box?
-        // "Answer in the answer box" implies just the answer.
         
         let explanationBlock = '';
         if (q.explanation_latex) {
@@ -117,7 +110,7 @@ export default async function handler(
 \\begin{needspace}{4cm}
 \\begin{qbox}
 \\textbf{${qNum}} ${q.stem_latex}
-\\answeredbox{$${q.answer_latex}$}
+\\answeredbox{${q.answer_latex}}
 ${explanationBlock}
 \\end{qbox}
 \\end{needspace}
