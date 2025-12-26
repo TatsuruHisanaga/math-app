@@ -5,6 +5,7 @@ import styles from '@/styles/AiCreation.module.css';
 import commonStyles from '@/styles/Home.module.css'; // Reuse some global styles
 import { saveAs } from 'file-saver';
 import confetti from 'canvas-confetti';
+import LatexRenderer from '@/components/LatexRenderer';
 
 interface AIProblem {
     stem_latex: string;
@@ -259,7 +260,9 @@ export default function AiCreation() {
                     <div className={styles.resultContainer}>
                         <div className={styles.intentBox}>
                             <h3>🎯 出題のねらい・構成</h3>
-                            <p>{intent}</p>
+                            <div style={{ whiteSpace: 'pre-wrap' }}>
+                                <LatexRenderer content={intent} />
+                            </div>
                         </div>
 
                         <div className={styles.resultHeader}>
@@ -278,16 +281,22 @@ export default function AiCreation() {
                                 <div key={i} className={styles.problemCard}>
                                     <div className={styles.problemNumber}>Question {i + 1}</div>
                                     <div className={styles.problemDifficulty}>難易度: {p.difficulty}</div>
-                                    <div className={styles.latexPreview}>{p.stem_latex}</div>
+                                    <div className={styles.latexPreview}>
+                                        <LatexRenderer content={p.stem_latex} />
+                                    </div>
                                     <details className={styles.answerDetails}>
                                         <summary>正解と解説を確認</summary>
                                         <div className={styles.answerContent}>
                                             <div style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>【正解】</div>
-                                            <div className={styles.latexPreview}>{p.answer_latex}</div>
+                                            <div className={styles.latexPreview}>
+                                                <LatexRenderer content={p.answer_latex} />
+                                            </div>
                                             {p.explanation_latex && (
                                                 <>
                                                     <div style={{ fontWeight: 'bold', margin: '1rem 0 0.5rem' }}>【解説】</div>
-                                                    <div style={{ whiteSpace: 'pre-wrap' }}>{p.explanation_latex}</div>
+                                                    <div style={{ whiteSpace: 'pre-wrap', marginTop: '0.5rem' }}>
+                                                        <LatexRenderer content={p.explanation_latex} />
+                                                    </div>
                                                 </>
                                             )}
                                         </div>
