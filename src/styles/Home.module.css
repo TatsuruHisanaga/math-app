@@ -57,14 +57,14 @@
 .card:hover,
 .card:focus,
 .card:active {
-  color: #0070f3;
-  border-color: #0070f3;
+  color: #D4AF37; /* Metallic Gold */
+  border-color: #FFB300;
 }
 
 .active {
-    background: #0070f3;
-    color: white !important;
-    border-color: #0070f3;
+    background: #FFB300;
+    color: #333 !important; /* Dark text for contrast */
+    border-color: #FFB300;
 }
 
 .row {
@@ -88,14 +88,20 @@
 }
 
 .generateButton {
-    background: #0070f3;
-    color: white;
+    background: #FFB300;
+    color: #333;
     border: none;
     padding: 1rem 3rem;
     font-size: 1.2rem;
+    font-weight: bold;
     border-radius: 50px;
     cursor: pointer;
-    transition: transform 0.1s;
+    transition: transform 0.1s, background-color 0.15s;
+    box-shadow: 0 4px 14px rgba(255, 179, 0, 0.4);
+}
+
+.generateButton:hover {
+    background: #FFA000;
 }
 
 .generateButton:disabled {
@@ -134,17 +140,86 @@
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
-.spinner {
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #0070f3;
-    border-radius: 50%;
+/* Character Animation - Smaller & Yellow */
+.characterWrapper {
+    position: relative;
     width: 40px;
-    height: 40px;
-    animation: spin 1s linear infinite;
-    margin: 0 auto 1rem auto;
+    height: 50px;
+    margin: 0 auto 1.5rem auto;
 }
 
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+.characterBody {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: 30px;
+    height: 32px;
+    background: #FFD700; /* Vibrant Yellow */
+    border-radius: 50% 50% 40% 40%; /* Rounder top */
+    animation: bodyBob 0.4s ease-in-out infinite alternate;
+    z-index: 2;
+    box-shadow: inset -3px -3px rgba(0,0,0,0.1);
 }
+
+/* Eye Left */
+.characterBody::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 6px;
+    width: 4px;
+    height: 4px;
+    background: #333;
+    border-radius: 50%;
+    box-shadow: 14px 0 #333; /* Eye Right */
+}
+
+/* Blush */
+.characterBody::after {
+    content: '';
+    position: absolute;
+    top: 16px;
+    left: 4px;
+    width: 6px;
+    height: 3px;
+    background: #ff8a8a;
+    border-radius: 50%;
+    opacity: 0.6;
+    box-shadow: 16px 0 #ff8a8a;
+}
+
+.leftLeg, .rightLeg {
+    position: absolute;
+    bottom: 2px;
+    width: 8px;
+    height: 12px;
+    background: #DAA520; /* Goldenrod */
+    border-radius: 4px;
+    transform-origin: top center;
+}
+
+.leftLeg {
+    left: 8px;
+    animation: walkLeft 0.4s ease-in-out infinite;
+}
+
+.rightLeg {
+    right: 8px;
+    animation: walkRight 0.4s ease-in-out infinite;
+}
+
+@keyframes bodyBob {
+    from { transform: translateY(0) scaleX(1); }
+    to { transform: translateY(-3px) scaleX(1.05); }
+}
+
+@keyframes walkLeft {
+    0%, 100% { transform: translateY(0) rotate(-15deg); }
+    50% { transform: translateY(-2px) rotate(15deg); }
+}
+
+@keyframes walkRight {
+    0%, 100% { transform: translateY(-2px) rotate(15deg); }
+    50% { transform: translateY(0) rotate(-15deg); }
+}
+

@@ -46,10 +46,14 @@ export class PDFBuilder {
 
       // Note: We might need to add /Library/TeX/texbin to PATH for the spawn process
       // if it's not already there.
+      // Use environment PATH or a sensible default for Linux/Docker
       const env = { ...process.env };
-      // Append standard TeX paths just in case
-      const texPath = '/Library/TeX/texbin:/usr/local/bin:/opt/homebrew/bin';
-      env.PATH = `${texPath}:${env.PATH || ''}`;
+      // On many Linux setups, lualatex is in /usr/bin or /usr/local/bin which are usually in PATH.
+      // We only append specific paths if we are on macOS for local dev convenience.
+      if (process.platform === 'darwin') {
+        const texPath = '/Library/TeX/texbin:/usr/local/bin:/opt/homebrew/bin';
+        env.PATH = `${texPath}:${env.PATH || ''}`;
+      }
 
       // Timeout after 120 seconds to prevent infinite hangs (first run cache can be slow)
       const processNode = spawn(cmd, args, { env });

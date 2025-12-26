@@ -24,15 +24,40 @@ export class GenerationPipeline {
         modelOverride?: string,
         onProgress?: (current: number, total: number) => void
     ): Promise<ValidatedProblem[]> {
+        const systemPrompt = `You are a skilled mathematics teacher creating exercise problems for Japanese students.
+Generate ${count} math problems based on the unit topic and difficulty provided.
+IMPORTANT: You MUST STRICTLY adhere to the provided unit topic(s). DO NOT generate problems outside the specified scope.
+Output MUST be a valid JSON object strictly matching the schema.
+- 'stem_latex': The problem text in LaTeX. Use Japanese for text. IMPORTANT: All math expressions (e.g. equations, variables like x) MUST be wrapped in $...$ (inline math) or $$...$$ (display math). DO NOT include the answer in this field.
+- 'answer_latex': The descriptive answer in LaTeX. Include intermediate steps/derivations. Example: "$(x+1)(x+2) = 0 \\rightarrow x = -1, -2$". Wrappers $...$ required. Do NOT include "Answer:" prefix.
+- 'explanation_latex': Detailed explanation. Wrap all math in $...$.
+- 'difficulty': One of L1, L2, L3.
+`;
+
+        const userPrompt = `Unit: ${topic}
+Count: ${count}
+Difficulty: ${difficulty}
+`;
+
+        return this.generateVerifiedFromPrompt(systemPrompt, userPrompt, count, modelOverride, onProgress);
+    }
+
+    async generateVerifiedFromPrompt(
+        systemPrompt: string,
+        userPrompt: string | any[],
+        targetCount: number,
+        modelOverride?: string,
+        onProgress?: (current: number, total: number) => void
+    ): Promise<ValidatedProblem[]> {
         let validProblems: ValidatedProblem[] = [];
         let attempts = 0;
-        let needed = count;
+        let needed = targetCount;
         let lastError = "";
 
         // Initial progress
-        if (onProgress) onProgress(0, count);
+        if (onProgress) onProgress(0, targetCount);
 
-        while (attempts <= this.maxRetries && validProblems.length < count) {
+        while (attempts <= this.maxRetries && validProblems.length < targetCount) {
             attempts++;
             // Request slightly more to buffer for failures
             const bufferCount = Math.ceil(needed * (attempts === 1 ? 1.5 : 1.2));
@@ -40,7 +65,13 @@ export class GenerationPipeline {
             try {
                 if (needed <= 0) break;
 
-                const problemSet = await this.client.generateProblems(topic, bufferCount, difficulty, modelOverride);
+                // Adjust the prompts slightly if it's a retry to ask for the remaining count
+                let currentSystemPrompt = systemPrompt;
+                if (attempts > 1) {
+                    currentSystemPrompt += `\nNOTE: Please generate exactly ${bufferCount} problems to complete the set.`;
+                }
+
+                const problemSet = await this.client.generateProblemsFromPrompt(currentSystemPrompt, userPrompt, modelOverride);
                 
                 if (!problemSet || !problemSet.problems) {
                     lastError = "AI returned empty problem set.";
@@ -48,13 +79,13 @@ export class GenerationPipeline {
                 }
 
                 for (const p of problemSet.problems) {
-                    if (validProblems.length >= count) break;
+                    if (validProblems.length >= targetCount) break;
 
                     const validation = await this.verifyProblem(p);
                     if (validation.success) {
                         validProblems.push(p);
                         needed--;
-                        if (onProgress) onProgress(validProblems.length, count);
+                        if (onProgress) onProgress(validProblems.length, targetCount);
                     } else {
                         lastError = `Rejected: ${validation.code} - ${validation.reason}`;
                         console.warn(`Problem rejected: ${validation.code} - ${validation.reason} \nContent: ${p.stem_latex}`);

@@ -3,6 +3,7 @@ import Head from 'next/head';
 import styles from '@/styles/Home.module.css';
 import confetti from 'canvas-confetti';
 import { saveAs } from 'file-saver';
+import Link from 'next/link';
 
 // Type definitions matching backend
 type Unit = { id: string; title_ja: string };
@@ -87,7 +88,7 @@ export default function Home() {
       return;
     }
     setLoading(true);
-    setProgress('AI生成を開始します...');
+    setProgress('問題を作成中...');
     setError('');
     setShowSuccess(false);
 
@@ -128,7 +129,7 @@ export default function Home() {
               const data = JSON.parse(jsonStr);
 
               if (data.type === 'progress') {
-                setProgress(`AI生成中: ${data.count} / ${data.total} 問完了`);
+                setProgress(`問題作成中: ${data.count} / ${data.total} 問完了`);
               } else if (data.type === 'complete') {
                 collectedProblems = data.problems;
               } else if (data.type === 'error') {
@@ -169,7 +170,7 @@ export default function Home() {
       const unitNames = selectedUnits
         .map(id => ALL_UNITS.find(u => u.id === id)?.title ?? id)
         .join('_');
-      saveAs(blob, `AI_Math_${unitNames}_${new Date().toISOString().slice(0, 10)}.pdf`);
+      saveAs(blob, `${unitNames}_${new Date().toISOString().slice(0, 10)}.pdf`);
 
       // 3. Success
       confetti({
@@ -238,6 +239,9 @@ export default function Home() {
 
         <div className={styles.header}>
           <p>AIがレベルに合わせた問題を自動生成します</p>
+          <Link href="/ai-creation" className={styles.card} style={{ border: '2px solid #FFB300', fontWeight: 'bold' }}>
+            ✨ 自由入力・ファイルから作成 (新機能)
+          </Link>
         </div>
 
         <section className={styles.section}>
@@ -303,7 +307,7 @@ export default function Home() {
                       type="radio"
                       checked={aiModel === 'gpt-4o-mini'}
                       onChange={() => setAiModel('gpt-4o-mini')}
-                    /> 高速 (gpt-4o-mii)
+                    /> 高速 (gpt-4o-mini)
                   </label>
                 </div>
               </div>
@@ -316,7 +320,7 @@ export default function Home() {
               onClick={handleAutoGenerate}
               disabled={loading || selectedUnits.length === 0}
             >
-              {loading ? '生成中...' : 'AIでPDFを自動作成'}
+              {loading ? '作成中...' : 'プリントを作成'}
             </button>
         </div>
       </main>
@@ -326,7 +330,11 @@ export default function Home() {
           <div className={styles.modalContent}>
             {loading ? (
               <>
-                <div className={styles.spinner}></div>
+                <div className={styles.characterWrapper}>
+                  <div className={styles.characterBody}></div>
+                  <div className={styles.leftLeg}></div>
+                  <div className={styles.rightLeg}></div>
+                </div>
                 <h3>{progress || '処理中...'}</h3>
                 <p style={{ fontSize: '0.9rem', color: '#666', marginTop: '1rem' }}>
                   AIが問題を生成・検証し、PDFを作成しています。<br />
@@ -366,7 +374,7 @@ export default function Home() {
       {showSuccess && (
         <div className={styles.modalOverlay}>
           <div className={styles.modalContent} style={{ textAlign: 'center' }}>
-            <h2 style={{ color: '#28a745', marginBottom: '1rem' }}>🎉 PDFを作成しました！</h2>
+            <h2 style={{ color: '#28a745', marginBottom: '1rem' }}>PDFを作成しました！</h2>
             <p>ダウンロードが開始されます。</p>
             <button
               className={styles.generateButton}
