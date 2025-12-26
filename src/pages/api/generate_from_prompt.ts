@@ -30,11 +30,12 @@ export default async function handler(
     const [fields, files] = await form.parse(req);
     
     const userMessage = fields.prompt?.[0] || '';
-    const count = parseInt(fields.count?.[0] || '5');
+    const countParam = parseInt(fields.count?.[0] || '5');
+    const autoCount = fields.autoCount?.[0] === 'true';
     const aiModel = fields.aiModel?.[0] || 'gpt-4o';
     
     let userPromptParts: any[] = [{ type: 'text', text: userMessage }];
-    
+
     // Process Files
     if (files.files) {
       const uploadedFiles = Array.isArray(files.files) ? files.files : [files.files];
@@ -67,12 +68,16 @@ export default async function handler(
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
     res.flushHeaders();
+    
+    const countInstruction = autoCount 
+      ? "Determine an appropriate number of problems based on the context and reference material (generate between 3 to 10 problems)."
+      : `Generate exactly ${countParam} problems.`;
 
     const systemPrompt = `You are a professional mathematics teacher and editor. 
 Your goal is to generate high-quality math problems based on the user's instructions and provided reference material (images or PDF text).
 
 INSTRUCTIONS:
-- Generate exactly ${count} problems.
+- ${countInstruction}
 - Use the reference material as a guide for topic, difficulty, and style.
 - Output MUST be a valid JSON object strictly matching the schema.
 - All math expressions MUST be wrapped in $...$ (inline) or $$...$$ (display).
@@ -86,14 +91,31 @@ JSON format details:
 - 'difficulty': One of L1, L2, L3.
 `;
 
+    // If autoCount is true, we don't want the pipeline to keep retrying to reach a fixed "targetCount".
+    // We can pass a targetCount that is effectively "whatever you get first time".
+    // However, if some are invalid, we might want some retries.
+    // Let's set a targetCount that signals "Auto" to the pipeline, or just use countParam as a limit.
+    // Actually, if autoCount is true, let's just use 10 as the "needed" limit but tell AI to decide.
+    // The pipeline will stop once it has AT LEAST 1 problem if we modify it, but let's keep it simple:
+    // If autoCount, we'll take what we get in the first valid batch.
+    
+    let targetCount = autoCount ? 1 : countParam; 
+    // Wait, if targetCount is 1, the pipeline stops at 1.
+    // If autoCount is true, we want the AI to return e.g. 5, and we verify all 5.
+    
+    // I should probably add a flag to the pipeline or just use a helper.
+    // Let's use countParam as the "limit" if manual, or 10 if auto.
+    const pipelineTarget = autoCount ? 10 : countParam;
+
     const problems = await pipeline.generateVerifiedFlexible(
       systemPrompt,
       userPromptParts,
-      count,
+      pipelineTarget,
       aiModel,
       (current: number, total: number) => {
         res.write(`data: ${JSON.stringify({ type: 'progress', count: current, total })}\n\n`);
-      }
+      },
+      autoCount // stopAfterFirstAttempt
     );
 
     res.write(`data: ${JSON.stringify({ type: 'complete', problems })}\n\n`);

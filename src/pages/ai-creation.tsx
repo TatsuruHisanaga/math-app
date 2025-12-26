@@ -16,6 +16,7 @@ interface AIProblem {
 export default function AiCreation() {
     const [prompt, setPrompt] = useState('');
     const [count, setCount] = useState(5);
+    const [autoCount, setAutoCount] = useState(false);
     const [files, setFiles] = useState<File[]>([]);
     const [previews, setPreviews] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
@@ -65,6 +66,7 @@ export default function AiCreation() {
             const formData = new FormData();
             formData.append('prompt', prompt);
             formData.append('count', count.toString());
+            formData.append('autoCount', autoCount.toString());
             files.forEach(file => {
                 formData.append('files', file);
             });
@@ -160,13 +162,15 @@ export default function AiCreation() {
                     <Link href="/" className={styles.backLink}>
                         ← トップへ戻る
                     </Link>
-                    <h1>AI自由記述・ファイル作成</h1>
+                    <h1>テキスト・ファイルから問題作成</h1>
                     <div></div>
                 </div>
 
                 <div className={styles.chatContainer}>
                     <div className={styles.inputArea}>
-                        <label className={styles.label}>AIへの指示 (ChatGPTのように具体的な要望を伝えてください)</label>
+                        <p style={{ fontSize: '0.95rem', color: '#666', fontWeight: 'bold', marginBottom: '0.2rem' }}>
+                            AIへの指示 (ChatGPTのように具体的な要望を伝えてください)
+                        </p>
                         <textarea 
                             className={styles.textarea}
                             placeholder="例: 中学3年生レベルの因数分解の問題を5問作ってください。特にたすき掛けを使うものを中心に。"
@@ -174,39 +178,15 @@ export default function AiCreation() {
                             onChange={(e) => setPrompt(e.target.value)}
                         />
 
-                        <div className={styles.fileControls}>
-                            <button 
-                                className={styles.fileLabel}
-                                onClick={() => fileInputRef.current?.click()}
-                            >
-                                📎 ファイルを添付 (画像/PDF)
-                            </button>
-                            <input 
-                                type="file"
-                                ref={fileInputRef}
-                                className={styles.fileInput}
-                                onChange={handleFileChange}
-                                multiple
-                                accept="image/*,application/pdf"
-                            />
-                            
-                            <div className={styles.problemCount}>
-                                <span>問題数:</span>
-                                <input 
-                                    type="number" 
-                                    min="1" max="20"
-                                    value={count}
-                                    onChange={(e) => setCount(parseInt(e.target.value))}
-                                />
-                            </div>
-                        </div>
-
                         {previews.length > 0 && (
                             <div className={styles.previewArea}>
                                 {previews.map((src, i) => (
                                     <div key={i} className={styles.previewItem}>
                                         {src.startsWith('/') ? (
-                                            <div style={{ padding: '5px', fontSize: '10px' }}>{files[i].name}</div>
+                                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', fontSize: '10px', padding: '4px', textAlign: 'center' }}>
+                                                <span>📄</span>
+                                                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', width: '100%' }}>{files[i].name}</span>
+                                            </div>
                                         ) : (
                                             <img src={src} alt="preview" />
                                         )}
@@ -216,13 +196,55 @@ export default function AiCreation() {
                             </div>
                         )}
 
-                        <div className={styles.actions}>
+                        <div className={styles.controlsRow}>
+                            <div className={styles.leftControls}>
+                                <div className={styles.fileControls}>
+                                    <label className={styles.fileLabel}>
+                                        <input 
+                                            type="file" 
+                                            multiple 
+                                            accept="image/*,application/pdf"
+                                            className={styles.fileInput}
+                                            onChange={handleFileChange}
+                                        />
+                                        ファイルを選択
+                                    </label>
+                                </div>
+                                
+                                <div className={styles.problemCount}>
+                                    <span>問題数</span>
+                                    <div className={styles.countToggle}>
+                                        <div 
+                                            className={`${styles.toggleOption} ${autoCount ? styles.toggleOptionActive : ''}`}
+                                            onClick={() => setAutoCount(true)}
+                                        >
+                                            お任せ
+                                        </div>
+                                        <div 
+                                            className={`${styles.toggleOption} ${!autoCount ? styles.toggleOptionActive : ''}`}
+                                            onClick={() => setAutoCount(false)}
+                                        >
+                                            指定
+                                        </div>
+                                    </div>
+                                    <input 
+                                        type="number" 
+                                        min="1" max="20"
+                                        value={count}
+                                        disabled={autoCount}
+                                        onChange={(e) => setCount(parseInt(e.target.value))}
+                                        className={styles.numberInput}
+                                    />
+                                </div>
+                            </div>
+
                             <button 
                                 className={commonStyles.generateButton}
                                 onClick={handleGenerate}
-                                disabled={loading}
+                                disabled={loading || (!prompt && files.length === 0)}
+                                style={{ padding: '0.9rem 2.5rem', fontSize: '1.1rem', borderRadius: '14px' }}
                             >
-                                {loading ? '作成中...' : 'AIに問題を頼む'}
+                                {loading ? '分析中...' : 'AIに問題を頼む'}
                             </button>
                         </div>
                     </div>

@@ -47,7 +47,8 @@ Difficulty: ${difficulty}
         userPrompt: string | any[],
         targetCount: number,
         modelOverride?: string,
-        onProgress?: (current: number, total: number) => void
+        onProgress?: (current: number, total: number) => void,
+        stopAfterFirstAttempt: boolean = false
     ): Promise<ValidatedProblem[]> {
         let validProblems: ValidatedProblem[] = [];
         let attempts = 0;
@@ -91,6 +92,11 @@ Difficulty: ${difficulty}
                         console.warn(`Problem rejected: ${validation.code} - ${validation.reason} \nContent: ${p.stem_latex}`);
                     }
                 }
+                
+                // If auto mode, we only want the first batch (plus retries only if EVERYTHING failed, maybe?)
+                // Actually, let's just break if we got ANY valid problems and stopAfterFirstAttempt is true.
+                if (stopAfterFirstAttempt && validProblems.length > 0) break;
+
             } catch (e: any) {
                 lastError = e.message;
                 console.error("AI Generation failed", e);
