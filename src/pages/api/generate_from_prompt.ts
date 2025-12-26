@@ -63,6 +63,12 @@ export default async function handler(
     const client = new AIClient(apiKey);
     const pipeline = new GenerationPipeline(client);
 
+    console.log('API: Pipeline object checked. Methods:', Object.getOwnPropertyNames(Object.getPrototypeOf(pipeline)));
+    if (typeof (pipeline as any).generateVerifiedFlexible !== 'function') {
+        console.error('API Error: generateVerifiedFlexible is MISSING from pipeline instance!');
+        console.log('Available keys:', Object.keys(pipeline));
+    }
+
     // Set headers for streaming SSE
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
@@ -87,7 +93,7 @@ JSON format details:
 - 'difficulty': One of L1, L2, L3.
 `;
 
-    const problems = await pipeline.generateVerifiedFromPrompt(
+    const problems = await pipeline.generateVerifiedFlexible(
       systemPrompt,
       userPromptParts,
       count,

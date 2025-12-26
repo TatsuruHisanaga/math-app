@@ -39,10 +39,10 @@ Count: ${count}
 Difficulty: ${difficulty}
 `;
 
-        return this.generateVerifiedFromPrompt(systemPrompt, userPrompt, count, modelOverride, onProgress);
+        return this.generateVerifiedFlexible(systemPrompt, userPrompt, count, modelOverride, onProgress);
     }
 
-    async generateVerifiedFromPrompt(
+    async generateVerifiedFlexible(
         systemPrompt: string,
         userPrompt: string | any[],
         targetCount: number,
