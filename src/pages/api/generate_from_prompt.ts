@@ -1,8 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import formidable from 'formidable';
 import fs from 'fs';
-// @ts-ignore
-import pdf from 'pdf-parse';
+const pdf = require('pdf-parse');
 import { AIClient } from '@/lib/ai/client';
 import { GenerationPipeline } from '@/lib/verify/regenerate';
 
