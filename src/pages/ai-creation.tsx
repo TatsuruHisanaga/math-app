@@ -122,6 +122,18 @@ export default function AiCreation() {
         }
     };
 
+    const downloadCurrentPdf = () => {
+        if (!pdfUrl) return;
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = pdfUrl;
+        const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+        a.download = `Math_AI_${dateStr}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    };
+
     const handleExportPdf = async (problems: AIProblem[], autoDownload = true) => {
         if (!problems || problems.length === 0) return;
         
@@ -290,7 +302,7 @@ export default function AiCreation() {
                                 </button>
                                 <button 
                                     className={commonStyles.generateButton}
-                                    onClick={() => handleExportPdf(results)}
+                                    onClick={pdfUrl ? downloadCurrentPdf : () => handleExportPdf(results, true)}
                                     style={{ padding: '0.6rem 1.5rem', fontSize: '0.9rem', borderRadius: '10px' }}
                                 >
                                     ダウンロード
