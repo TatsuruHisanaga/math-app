@@ -82,12 +82,17 @@ INSTRUCTIONS:
 - Output MUST be a valid JSON object strictly matching the schema.
 - All math expressions MUST be wrapped in $...$ (inline) or $$...$$ (display).
 - Use Japanese for all text elements.
+- Use Japanese for all text elements.
+- IMPORTANT: You MUST escape all backslashes in JSON strings. Use "\\text" instead of "\text", "\\frac" instead of "\frac". Single backslashes will be read as control characters (like tab for \t) and corrupt the output.
 - Difficulty should be L1 (Basic), L2 (Standard), or L3 (Advanced).
+- Generate 3-4 progressive hints for each problem in the 'hints' array. Hint 1 should be a conceptual nudge, while the last hint should be close to the solution step.
 
 JSON format details:
 - 'stem_latex': The problem text.
 - 'answer_latex': The descriptive answer with intermediate steps.
 - 'explanation_latex': Detailed explanation for the student.
+- 'explanation_latex': Detailed explanation for the student.
+- 'hints': Array of strings (3-4 hints).
 - 'difficulty': One of L1, L2, L3.
 - 'intent': (At the root level) A brief description of the generation intent or educational goal in Japanese.
 `;

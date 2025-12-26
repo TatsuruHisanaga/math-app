@@ -23,8 +23,16 @@
             "enum": [
               "L1",
               "L2",
-              "L3"
+              "L3",
+              "L4",
+              "L5"
             ]
+          },
+          "hints": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         },
         "required": [
@@ -32,7 +40,8 @@
           "answer_latex",
           "explanation_latex",
           "unit_id",
-          "difficulty"
+          "difficulty",
+          "hints"
         ],
         "additionalProperties": false
       }

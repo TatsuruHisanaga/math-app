@@ -51,7 +51,7 @@ export default async function handler(
     const gen = getGenerator();
     
     // Resolve Difficulty Labels for Header
-    const diffLabels = { 'L1': '基礎', 'L2': '標準', 'L3': '発展' };
+    const diffLabels = { 'L1': '基礎', 'L2': '標準', 'L3': '応用', 'L4': '難関', 'L5': '最難関' };
     const displayDiffs = (difficulties as string[]).map(d => diffLabels[d as keyof typeof diffLabels] || d).join(', ');
     const displayUnits = (units as string[]).map(id => gen.getUnitTitle(id)).join(', ');
 
@@ -117,12 +117,43 @@ ${explanationBlock}
         `;
     });
 
+    // Generate Teaching Assistant Page if requested
+    let instructorBody = '';
+    if (options.teachingAssistant) {
+        instructorBody = '\\newpage\\section*{講師用ガイド（ヒント・指導案）}\\vspace{1em}';
+        questions.forEach((q, idx) => {
+             const qNum = `（${idx + 1}）`;
+             
+             let hintsBlock = '';
+             if (q.hints && Array.isArray(q.hints) && q.hints.length > 0) {
+                 hintsBlock = '\\par\\vspace{0.5em}\\textbf{学習ヒント}:\\begin{itemize}';
+                 q.hints.forEach((h: string, hIdx: number) => {
+                     hintsBlock += `\\item \\textbf{ヒント ${hIdx + 1}}: ${h}`;
+                 });
+                 hintsBlock += '\\end{itemize}';
+             }
+
+             instructorBody += `
+\\begin{needspace}{5cm}
+\\begin{qbox}
+\\textbf{${qNum}} ${q.stem_latex}
+\\par\\vspace{0.5em}
+${hintsBlock}
+\\par\\vspace{0.5em}
+\\textbf{解説}:\\par ${q.explanation_latex || 'なし'}
+\\end{qbox}
+\\end{needspace}
+             `;
+        });
+    }
+
     // 3. Combine into single LaTeX document
     // Problems first, then a page break, then Answers.
     // Adding a header or title for the Answer section might be nice.
     const fullBody = `
 ${problemBody}
 ${answerBody}
+${instructorBody}
     `;
 
     const latexSource = builder.getLayoutTemplate(fullBody);

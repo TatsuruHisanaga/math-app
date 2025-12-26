@@ -11,6 +11,7 @@ interface AIProblem {
     answer_latex: string;
     explanation_latex: string;
     difficulty: string;
+    hints?: string[];
 }
 
 export default function AiCreation() {
@@ -26,6 +27,7 @@ export default function AiCreation() {
     const [intent, setIntent] = useState('');
     const [pdfUrl, setPdfUrl] = useState<string | null>(null);
     const [showPreview, setShowPreview] = useState(false);
+    const [teachingAssistantMode, setTeachingAssistantMode] = useState(false);
     
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -151,9 +153,13 @@ export default function AiCreation() {
                         unit_title: 'AI生成問題'
                     })),
                     units: ['ai_prompt'],
-                    difficulties: ['L1', 'L2', 'L3'],
+                    difficulties: Array.from(new Set(problems.map(p => p.difficulty))),
                     count: problems.length,
-                    options: { stumblingBlock: false, moreWorkSpace: false }
+                    options: { 
+                        stumblingBlock: false, 
+                        moreWorkSpace: false,
+                        teachingAssistant: teachingAssistantMode 
+                    }
                 })
             });
 
@@ -265,6 +271,21 @@ export default function AiCreation() {
                                         onChange={(e) => setCount(parseInt(e.target.value))}
                                         className={styles.numberInput}
                                     />
+                                </div>
+
+                                <div className={styles.teachingAssistantToggle} style={{ marginTop: '1rem' }}>
+                                    <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', fontSize: '0.9rem' }}>
+                                        <input 
+                                            type="checkbox" 
+                                            checked={teachingAssistantMode} 
+                                            onChange={(e) => setTeachingAssistantMode(e.target.checked)}
+                                            style={{ marginRight: '0.5rem', width: '16px', height: '16px' }} 
+                                        />
+                                        ティーチングアシスタントモード
+                                    </label>
+                                    <p style={{ fontSize: '0.8rem', color: '#888', marginLeft: '1.6rem', marginTop: '0.2rem' }}>
+                                        解説に加え、各問題のヒントステップを掲載した講師用ページを追加します。
+                                    </p>
                                 </div>
                             </div>
 
