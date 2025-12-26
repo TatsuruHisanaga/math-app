@@ -285,49 +285,67 @@ export default function Home() {
 
         <section className={styles.section}>
           <h2>2. 難易度 & 設定</h2>
-          <div className={styles.row}>
-            <div>
+          <div className={styles.settingsGrid}>
+            {/* Difficulty */}
+            <div className={styles.controlGroup}>
               <h3>難易度</h3>
-              {[
-                { id: 'L1', label: '基礎' },
-                { id: 'L2', label: '標準' },
-                { id: 'L3', label: '発展' }
-              ].map(d => (
-                <label key={d.id} className={styles.checkbox}>
-                  <input
-                    type="checkbox"
-                    checked={difficulty.includes(d.id)}
-                    onChange={() => toggleDifficulty(d.id)}
-                  /> {d.label}
-                </label>
-              ))}
-            </div>
-            <div>
-              <h3>問題数 ({count})</h3>
-              <input
-                type="range" min="3" max="30"
-                value={count} onChange={(e) => setCount(Number(e.target.value))}
-              />
-            </div>
-            <div>
-              <h3>AIモデル</h3>
-                <div style={{ display: 'flex', gap: '1rem' }}>
-                  <label className={styles.checkbox}>
-                    <input
-                      type="radio"
-                      checked={aiModel === 'gpt-4o'}
-                      onChange={() => setAiModel('gpt-4o')}
-                    /> 高品質 (gpt-4o)
-                  </label>
-                  <label className={styles.checkbox}>
-                    <input
-                      type="radio"
-                      checked={aiModel === 'gpt-4o-mini'}
-                      onChange={() => setAiModel('gpt-4o-mini')}
-                    /> 高速 (gpt-4o-mini)
-                  </label>
-                </div>
+              <div className={styles.toggleGroup}>
+                {[
+                  { id: 'L1', label: '基礎' },
+                  { id: 'L2', label: '標準' },
+                  { id: 'L3', label: '発展' }
+                ].map(d => (
+                  <div
+                    key={d.id}
+                    className={`${styles.toggleButton} ${difficulty.includes(d.id) ? styles.active : ''}`}
+                    onClick={() => toggleDifficulty(d.id)}
+                  >
+                    {d.label}
+                  </div>
+                ))}
               </div>
+            </div>
+
+            {/* Count */}
+            <div className={styles.controlGroup}>
+              <h3>
+                問題数
+                <span style={{ color: '#FFB300', fontSize: '1.2rem', fontWeight: 'bold' }}>{count}</span>
+              </h3>
+              <div className={styles.sliderContainer}>
+                <span style={{ fontSize: '0.8rem', color: '#999', fontWeight: 'bold' }}>3</span>
+                <input
+                  type="range" min="3" max="30"
+                  value={count}
+                  onChange={(e) => setCount(Number(e.target.value))}
+                  className={styles.rangeInput}
+                />
+                <span style={{ fontSize: '0.8rem', color: '#999', fontWeight: 'bold' }}>30</span>
+              </div>
+            </div>
+
+            {/* AI Model */}
+            <div className={styles.controlGroup}>
+              <h3>AIモデル</h3>
+              <div className={styles.modelOptions}>
+                {[
+                  { id: 'gpt-4o', name: '高品質 (gpt-4o)', desc: '高い論理的思考で良問を作成' },
+                  { id: 'gpt-4o-mini', name: '高速 (gpt-4o-mini)', desc: '生成スピードを優先' }
+                ].map((m) => (
+                  <div
+                    key={m.id}
+                    className={`${styles.modelCard} ${aiModel === m.id ? styles.selected : ''}`}
+                    onClick={() => setAiModel(m.id as any)}
+                  >
+                    <div className={styles.radioCircle}></div>
+                    <div className={styles.modelInfo}>
+                      <span className={styles.modelName}>{m.name}</span>
+                      <span className={styles.modelDesc}>{m.desc}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </section>
 
