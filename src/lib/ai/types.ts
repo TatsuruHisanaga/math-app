@@ -10,6 +10,7 @@ export interface AIProblemItem {
 
 export interface AIProblemSet {
   problems: AIProblemItem[];
+  intent: string;
 }
 
 export interface AIFeedbackItem {

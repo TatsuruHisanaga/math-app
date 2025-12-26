@@ -76,7 +76,7 @@ export default async function handler(
     // The previous implementation of generateVerified inside GenerationPipeline handles buffering internally 
     // based on 'needed' count.
     
-    const problems = await pipeline.generateVerified(
+    const { problems, intent } = await pipeline.generateVerified(
         unitTitles, 
         targetCount, 
         difficulty || 'L1', 
@@ -86,7 +86,7 @@ export default async function handler(
         }
     );
 
-    res.write(`data: ${JSON.stringify({ type: 'complete', problems })}\n\n`);
+    res.write(`data: ${JSON.stringify({ type: 'complete', problems, intent })}\n\n`);
     res.end();
 
   } catch (error: any) {

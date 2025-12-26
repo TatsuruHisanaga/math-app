@@ -36,10 +36,14 @@
         ],
         "additionalProperties": false
       }
+    },
+    "intent": {
+      "type": "string"
     }
   },
   "required": [
-    "problems"
+    "problems",
+    "intent"
   ],
   "additionalProperties": false
 }

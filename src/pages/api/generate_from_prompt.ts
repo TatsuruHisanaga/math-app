@@ -89,6 +89,7 @@ JSON format details:
 - 'answer_latex': The descriptive answer with intermediate steps.
 - 'explanation_latex': Detailed explanation for the student.
 - 'difficulty': One of L1, L2, L3.
+- 'intent': (At the root level) A brief description of the generation intent or educational goal in Japanese.
 `;
 
     // If autoCount is true, we don't want the pipeline to keep retrying to reach a fixed "targetCount".
@@ -107,7 +108,7 @@ JSON format details:
     // Let's use countParam as the "limit" if manual, or 10 if auto.
     const pipelineTarget = autoCount ? 10 : countParam;
 
-    const problems = await pipeline.generateVerifiedFlexible(
+    const { problems, intent } = await pipeline.generateVerifiedFlexible(
       systemPrompt,
       userPromptParts,
       pipelineTarget,
@@ -118,7 +119,7 @@ JSON format details:
       autoCount // stopAfterFirstAttempt
     );
 
-    res.write(`data: ${JSON.stringify({ type: 'complete', problems })}\n\n`);
+    res.write(`data: ${JSON.stringify({ type: 'complete', problems, intent })}\n\n`);
     res.end();
 
   } catch (error: any) {

@@ -23,6 +23,7 @@ export default function AiCreation() {
     const [progress, setProgress] = useState('');
     const [error, setError] = useState('');
     const [results, setResults] = useState<AIProblem[]>([]);
+    const [intent, setIntent] = useState('');
     
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -60,6 +61,7 @@ export default function AiCreation() {
         setLoading(true);
         setError('');
         setResults([]);
+        setIntent('');
         setProgress('AIがリクエストを解析中...');
 
         try {
@@ -96,6 +98,8 @@ export default function AiCreation() {
                     if (line.trim().startsWith('data: ')) {
                         const data = JSON.parse(line.trim().substring(6));
                         if (data.type === 'complete') {
+                            setResults(data.problems);
+                            setIntent(data.intent);
                             await handleExportPdf(data.problems);
                             confetti({
                                 particleCount: 100,
@@ -251,6 +255,48 @@ export default function AiCreation() {
                 </div>
 
                 {error && <div className={commonStyles.error} style={{ textAlign: 'center' }}>{error}</div>}
+                {results.length > 0 && (
+                    <div className={styles.resultContainer}>
+                        <div className={styles.intentBox}>
+                            <h3>🎯 出題のねらい・構成</h3>
+                            <p>{intent}</p>
+                        </div>
+
+                        <div className={styles.resultHeader}>
+                            <h2>作成された問題 ({results.length}問)</h2>
+                            <button 
+                                className={commonStyles.generateButton}
+                                onClick={() => handleExportPdf(results)}
+                                style={{ padding: '0.6rem 1.5rem', fontSize: '0.9rem', borderRadius: '10px' }}
+                            >
+                                再ダウンロード
+                            </button>
+                        </div>
+                        
+                        <div className={styles.resultList}>
+                            {results.map((p, i) => (
+                                <div key={i} className={styles.problemCard}>
+                                    <div className={styles.problemNumber}>Question {i + 1}</div>
+                                    <div className={styles.problemDifficulty}>難易度: {p.difficulty}</div>
+                                    <div className={styles.latexPreview}>{p.stem_latex}</div>
+                                    <details className={styles.answerDetails}>
+                                        <summary>正解と解説を確認</summary>
+                                        <div className={styles.answerContent}>
+                                            <div style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>【正解】</div>
+                                            <div className={styles.latexPreview}>{p.answer_latex}</div>
+                                            {p.explanation_latex && (
+                                                <>
+                                                    <div style={{ fontWeight: 'bold', margin: '1rem 0 0.5rem' }}>【解説】</div>
+                                                    <div style={{ whiteSpace: 'pre-wrap' }}>{p.explanation_latex}</div>
+                                                </>
+                                            )}
+                                        </div>
+                                    </details>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
             </main>
 
             {loading && (
