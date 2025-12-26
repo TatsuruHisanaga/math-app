@@ -1,0 +1,60 @@
+
+\documentclass[a4paper,10pt,twocolumn]{article}
+\usepackage{luatexja}
+\usepackage[top=10mm,bottom=10mm,left=10mm,right=10mm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{multicol}
+\usepackage{needspace}
+\usepackage{xcolor}
+\pagestyle{empty}
+
+% Internal padding for fbox
+\setlength{\fboxsep}{8pt}
+
+% Clean box layout matching the reference image style
+% Single frame, question number and text inside, empty space below.
+\newsavebox{\myqbox}
+\newenvironment{qbox}{%
+  \begin{lrbox}{\myqbox}%
+  % Subtract framesep and rule to fit exactly in column. fboxsep is now 8pt.
+  \begin{minipage}{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}
+  \setlength{\parskip}{5pt}
+}{%
+  \end{minipage}%
+  \end{lrbox}%
+  \par\noindent
+  \fbox{\usebox{\myqbox}}%
+  \par\vspace{1em} % Space between questions
+}
+
+% Answer Box (Empty) - For Problem Sheet
+% Removed label as per user request
+\newcommand{\answerbox}[2]{
+  \par\vspace{0.2em}
+  \begin{minipage}[t][#1][t]{\dimexpr\linewidth-1em\relax}
+    \mbox{}
+  \end{minipage}
+}
+
+% Answer Box (Filled) - For Answer Sheet
+% Dynamic height and calculated width to ensure wrapping within the box
+\newcommand{\answeredbox}[1]{
+  \par\vspace{0.2em}
+  \noindent\textbf{答:}\ 
+  \begin{minipage}[t]{\dimexpr\linewidth-3em\relax}
+    \raggedright
+    \color{red}
+    \normalsize #1
+  \end{minipage}
+  \par
+}
+
+\begin{document}
+
+\begin{qbox}
+Problem Stem
+\answeredbox{与えられた方程式は $x^2 - 5x + 6 = 0$ です。これは因数分解できます：\n$$x^2 - 5x + 6 = (x - 2)(x - 3) = 0$$\nそれぞれの因子を0に等しくして解を求めます。\n\n$x - 2 = 0$ のとき、$x = 2$。\n$x - 3 = 0$ のとき、$x = 3$。\n\nしたがって、解は $x = 2, 3$ です。}
+\end{qbox}
+
+\end{document}
+     

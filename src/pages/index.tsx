@@ -167,10 +167,19 @@ export default function Home() {
       if (!pdfRes.ok) throw new Error('PDF Creation failed');
 
       const blob = await pdfRes.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
       const unitNames = selectedUnits
         .map(id => ALL_UNITS.find(u => u.id === id)?.title ?? id)
-        .join('_');
-      saveAs(blob, `${unitNames}_${new Date().toISOString().slice(0, 10)}.pdf`);
+        .join('_')
+        .replace(/[\s\.]+/g, '_'); // Sanitize filename
+      a.download = `${unitNames}_${new Date().toISOString().slice(0, 10)}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
 
       // 3. Success
       confetti({
@@ -207,7 +216,15 @@ export default function Home() {
       });
       if (!res.ok) throw new Error('Generation failed');
       const blob = await res.blob();
-      saveAs(blob, `Math_Exercise_${new Date().toISOString().slice(0, 10)}.pdf`);
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = `Math_Exercise_${new Date().toISOString().slice(0, 10)}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
     } catch (e: any) {
       setError(e.message);
     } finally {

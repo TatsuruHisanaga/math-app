@@ -3,7 +3,6 @@ import Head from 'next/head';
 import Link from 'next/link';
 import styles from '@/styles/AiCreation.module.css';
 import commonStyles from '@/styles/Home.module.css'; // Reuse some global styles
-import { saveAs } from 'file-saver';
 import confetti from 'canvas-confetti';
 import LatexRenderer from '@/components/LatexRenderer';
 
@@ -25,6 +24,8 @@ export default function AiCreation() {
     const [error, setError] = useState('');
     const [results, setResults] = useState<AIProblem[]>([]);
     const [intent, setIntent] = useState('');
+    const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+    const [showPreview, setShowPreview] = useState(false);
     
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -41,8 +42,7 @@ export default function AiCreation() {
                     };
                     reader.readAsDataURL(file);
                 } else {
-                    // For PDFs or others, just a placeholder
-                    setPreviews(prev => [...prev, '/pdf-icon.png']); // Or something similar
+                    setPreviews(prev => [...prev, '/pdf-icon.png']); 
                 }
             });
         }
@@ -63,6 +63,7 @@ export default function AiCreation() {
         setError('');
         setResults([]);
         setIntent('');
+        setPdfUrl(null);
         setProgress('AIがリクエストを解析中...');
 
         try {
@@ -101,7 +102,7 @@ export default function AiCreation() {
                         if (data.type === 'complete') {
                             setResults(data.problems);
                             setIntent(data.intent);
-                            await handleExportPdf(data.problems);
+                            await handleExportPdf(data.problems, true);
                             confetti({
                                 particleCount: 100,
                                 spread: 70,
@@ -121,7 +122,7 @@ export default function AiCreation() {
         }
     };
 
-    const handleExportPdf = async (problems: AIProblem[]) => {
+    const handleExportPdf = async (problems: AIProblem[], autoDownload = true) => {
         if (!problems || problems.length === 0) return;
         
         setLoading(true);
@@ -147,7 +148,19 @@ export default function AiCreation() {
             if (!res.ok) throw new Error('PDF作成に失敗しました');
 
             const blob = await res.blob();
-            saveAs(blob, `AI_Generated_Math_${new Date().toISOString().slice(0,10)}.pdf`);
+            const url = window.URL.createObjectURL(blob);
+            setPdfUrl(url);
+
+            if (autoDownload) {
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+                a.download = `Math_AI_${dateStr}.pdf`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
         } catch (e: any) {
             setError(e.message);
         } finally {
@@ -267,14 +280,33 @@ export default function AiCreation() {
 
                         <div className={styles.resultHeader}>
                             <h2>作成された問題 ({results.length}問)</h2>
-                            <button 
-                                className={commonStyles.generateButton}
-                                onClick={() => handleExportPdf(results)}
-                                style={{ padding: '0.6rem 1.5rem', fontSize: '0.9rem', borderRadius: '10px' }}
-                            >
-                                再ダウンロード
-                            </button>
+                            <div style={{ display: 'flex', gap: '1rem' }}>
+                                <button 
+                                    className={commonStyles.secondaryButton || styles.secondaryButton}
+                                    onClick={() => setShowPreview(!showPreview)}
+                                    style={{ padding: '0.6rem 1.5rem', fontSize: '0.9rem', borderRadius: '10px' }}
+                                >
+                                    {showPreview ? 'プレビューを閉じる' : 'PDFをプレビュー'}
+                                </button>
+                                <button 
+                                    className={commonStyles.generateButton}
+                                    onClick={() => handleExportPdf(results)}
+                                    style={{ padding: '0.6rem 1.5rem', fontSize: '0.9rem', borderRadius: '10px' }}
+                                >
+                                    ダウンロード
+                                </button>
+                            </div>
                         </div>
+
+                        {showPreview && pdfUrl && (
+                            <div className={styles.pdfPreviewContainer}>
+                                <iframe 
+                                    src={`${pdfUrl}#toolbar=0`} 
+                                    className={styles.pdfIframe}
+                                    title="PDF Preview"
+                                />
+                            </div>
+                        )}
                         
                         <div className={styles.resultList}>
                             {results.map((p, i) => (

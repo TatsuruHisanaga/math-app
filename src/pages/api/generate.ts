@@ -132,8 +132,8 @@ ${answerBody}
 
     // 5. Return PDF directly
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', 'attachment; filename=math_test.pdf');
-    res.send(pdfBuffer);
+    res.setHeader('Content-Disposition', 'attachment; filename="math_test.pdf"');
+    res.end(pdfBuffer);
 
   } catch (error: any) {
     console.error(error);
