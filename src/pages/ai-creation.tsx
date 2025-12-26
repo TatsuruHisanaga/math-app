@@ -93,10 +93,8 @@ export default function AiCreation() {
                 for (const line of lines) {
                     if (line.trim().startsWith('data: ')) {
                         const data = JSON.parse(line.trim().substring(6));
-                        if (data.type === 'progress') {
-                            setProgress(`検証中: ${data.count} / ${data.total} 問完了`);
-                        } else if (data.type === 'complete') {
-                            setResults(data.problems);
+                        if (data.type === 'complete') {
+                            await handleExportPdf(data.problems);
                             confetti({
                                 particleCount: 100,
                                 spread: 70,
@@ -116,8 +114,8 @@ export default function AiCreation() {
         }
     };
 
-    const handleExportPdf = async () => {
-        if (results.length === 0) return;
+    const handleExportPdf = async (problems: AIProblem[]) => {
+        if (!problems || problems.length === 0) return;
         
         setLoading(true);
         setProgress('PDFを作成中...');
@@ -127,14 +125,14 @@ export default function AiCreation() {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    providedQuestions: results.map((p, idx) => ({
+                    providedQuestions: problems.map((p, idx) => ({
                         ...p,
                         id: `ai_prompt_${idx}`,
                         unit_title: 'AI生成問題'
                     })),
                     units: ['ai_prompt'],
                     difficulties: ['L1', 'L2', 'L3'],
-                    count: results.length,
+                    count: problems.length,
                     options: { stumblingBlock: false, moreWorkSpace: false }
                 })
             });
@@ -231,47 +229,6 @@ export default function AiCreation() {
                 </div>
 
                 {error && <div className={commonStyles.error} style={{ textAlign: 'center' }}>{error}</div>}
-
-                {results.length > 0 && (
-                    <div className={styles.resultContainer}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                            <h2>生成された問題 ({results.length}問)</h2>
-                            <button 
-                                className={commonStyles.generateButton}
-                                onClick={handleExportPdf}
-                                style={{ padding: '0.6rem 2rem', fontSize: '1rem' }}
-                            >
-                                PDFとしてダウンロード
-                            </button>
-                        </div>
-                        <div className={styles.resultList}>
-                            {results.map((p, i) => (
-                                <div key={i} className={styles.problemCard}>
-                                    <div className={styles.problemHeader}>
-                                        <span style={{ fontWeight: 'bold' }}>問題 {i + 1}</span>
-                                        <span style={{ fontSize: '0.8rem', color: '#888' }}>
-                                            難易度: {p.difficulty}
-                                        </span>
-                                    </div>
-                                    <div style={{ marginBottom: '1rem' }}>
-                                        <span className={styles.label}>問題文</span>
-                                        <div className={styles.latexBox}>{p.stem_latex}</div>
-                                    </div>
-                                    <div style={{ marginBottom: '1rem' }}>
-                                        <span className={styles.label}>正解と解説</span>
-                                        <div className={styles.latexBox}>{p.answer_latex}</div>
-                                    </div>
-                                    {p.explanation_latex && (
-                                        <div>
-                                            <span className={styles.label}>追加解説</span>
-                                            <div style={{ fontSize: '0.9rem', color: '#444' }}>{p.explanation_latex}</div>
-                                        </div>
-                                    )}
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                )}
             </main>
 
             {loading && (
