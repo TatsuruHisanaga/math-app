@@ -66,7 +66,7 @@ export default function AiCreation() {
         setResults([]);
         setIntent('');
         setPdfUrl(null);
-        setProgress('AIがリクエストを解析中...');
+        setProgress('問題を作成中...');
 
         try {
             const formData = new FormData();
@@ -383,7 +383,7 @@ export default function AiCreation() {
                         </div>
                         <h3>{progress || '処理中...'}</h3>
                         <p style={{ fontSize: '0.8rem', color: '#666', marginTop: '1rem' }}>
-                            AIが内容を理解し、数学的に正しい問題を生成しています。<br />
+AIが問題を生成・検証し、PDFを作成しています。
                             数分かかる場合があります。
                         </p>
                     </div>
