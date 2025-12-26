@@ -22,7 +22,8 @@ export class GenerationPipeline {
         count: number, 
         difficulty: string,
         modelOverride?: string,
-        onProgress?: (current: number, total: number) => void
+        onProgress?: (current: number, total: number) => void,
+        otherRequests?: string
     ): Promise<{ problems: ValidatedProblem[], intent: string }> {
         const systemPrompt = `You are a skilled mathematics teacher creating exercise problems for Japanese students.
 Generate ${count} math problems based on the unit topic and difficulty provided.
@@ -35,10 +36,14 @@ Output MUST be a valid JSON object strictly matching the schema.
 - 'intent': A brief description of the generation intent in Japanese.
 `;
 
-        const userPrompt = `Unit: ${topic}
+        let userPrompt = `Unit: ${topic}
 Count: ${count}
 Difficulty: ${difficulty}
 `;
+
+        if (otherRequests) {
+            userPrompt += `Other Requests: ${otherRequests}\n`;
+        }
 
         return this.generateVerifiedFlexible(systemPrompt, userPrompt, count, modelOverride, onProgress);
     }

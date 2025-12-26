@@ -131,7 +131,7 @@ export default function AiCreation() {
         a.download = `Math_AI_${dateStr}.pdf`;
         document.body.appendChild(a);
         a.click();
-        document.body.removeChild(a);
+        setTimeout(() => document.body.removeChild(a), 100);
     };
 
     const handleExportPdf = async (problems: AIProblem[], autoDownload = true) => {
@@ -171,7 +171,7 @@ export default function AiCreation() {
                 a.download = `Math_AI_${dateStr}.pdf`;
                 document.body.appendChild(a);
                 a.click();
-                document.body.removeChild(a);
+                setTimeout(() => document.body.removeChild(a), 100);
             }
         } catch (e: any) {
             setError(e.message);

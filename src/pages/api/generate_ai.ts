@@ -83,7 +83,8 @@ export default async function handler(
         aiModel, // Custom model override
         (current: number, total: number) => {
              res.write(`data: ${JSON.stringify({ type: 'progress', count: current, total })}\n\n`);
-        }
+        },
+        req.body.additionalRequest
     );
 
     res.write(`data: ${JSON.stringify({ type: 'complete', problems, intent })}\n\n`);

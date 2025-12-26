@@ -1,0 +1,60 @@
+
+\documentclass[a4paper,10pt,twocolumn]{article}
+\usepackage{luatexja}
+\usepackage[top=10mm,bottom=10mm,left=10mm,right=10mm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{multicol}
+\usepackage{needspace}
+\usepackage{xcolor}
+\pagestyle{empty}
+
+% Internal padding for fbox
+\setlength{\fboxsep}{8pt}
+
+% Clean box layout matching the reference image style
+% Single frame, question number and text inside, empty space below.
+\newsavebox{\myqbox}
+\newenvironment{qbox}{%
+  \begin{lrbox}{\myqbox}%
+  % Subtract framesep and rule to fit exactly in column. fboxsep is now 8pt.
+  \begin{minipage}{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}
+  \setlength{\parskip}{5pt}
+}{%
+  \end{minipage}%
+  \end{lrbox}%
+  \par\noindent
+  \fbox{\usebox{\myqbox}}%
+  \par\vspace{1em} % Space between questions
+}
+
+% Answer Box (Empty) - For Problem Sheet
+% Removed label as per user request
+\newcommand{\answerbox}[2]{
+  \par\vspace{0.2em}
+  \begin{minipage}[t][#1][t]{\dimexpr\linewidth-1em\relax}
+    \mbox{}
+  \end{minipage}
+}
+
+% Answer Box (Filled) - For Answer Sheet
+% Dynamic height and calculated width to ensure wrapping within the box
+\newcommand{\answeredbox}[1]{
+  \par\vspace{0.2em}
+  \noindent\textbf{答:}\ 
+  \begin{minipage}[t]{\dimexpr\linewidth-3em\relax}
+    \raggedright
+    \color{red}
+    \normalsize #1
+  \end{minipage}
+  \par
+}
+
+\begin{document}
+
+\begin{qbox}
+Problem Stem
+\answeredbox{関数 $f(x) = x^3 - 3x^2 + 4$ の極値を求めるために、まず導関数を求めます。\n\n$f'(x) = 3x^2 - 6x$\n\n次に、$f'(x) = 0$ となる点を求めます。$3x^2 - 6x = 0$ より、$3x(x - 2) = 0$ です。\n\n従って、$x = 0$ または $x = 2$ です。これらの点での関数の値を調べます。\n\n$x = 0$ のとき、$f(x) = 4$\n$x = 2$ のとき、$f(x) = 0$\n\n次に、$f''(x) = 6x - 6$ を用いて、二階導関数で極値を確認します。\n\n$x = 0$ のとき、$f''(0) = -6$ なので、極大値ではありません。\n$x = 2$ のとき、$f''(2) = 6$ なので、極値は極小値です。\n\nしたがって、極小値は $x = 1$ で $f(x) = 3$ です。}
+\end{qbox}
+
+\end{document}
+     

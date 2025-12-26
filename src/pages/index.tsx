@@ -4,6 +4,7 @@ import styles from '@/styles/Home.module.css';
 import confetti from 'canvas-confetti';
 import { saveAs } from 'file-saver';
 import Link from 'next/link';
+import LatexRenderer from '@/components/LatexRenderer'; // Import LatexRenderer
 
 // Type definitions matching backend
 type Unit = { id: string; title_ja: string };
@@ -19,10 +20,13 @@ export default function Home() {
     moreWorkSpace: false,
   });
   const [aiModel, setAiModel] = useState<'gpt-4o' | 'gpt-4o-mini'>('gpt-4o');
+  const [additionalRequest, setAdditionalRequest] = useState('');
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState('');
   const [error, setError] = useState('');
-  const [showSuccess, setShowSuccess] = useState(false);
+  const [intent, setIntent] = useState('');
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [showPreview, setShowPreview] = useState(true);
 
   // Expanded Unit List with categories
   const CURRICULUM = [
@@ -90,7 +94,6 @@ export default function Home() {
     setLoading(true);
     setProgress('問題を作成中...');
     setError('');
-    setShowSuccess(false);
 
     try {
       // 1. AI Generation
@@ -101,7 +104,8 @@ export default function Home() {
           units: selectedUnits,
           difficulty: difficulty[0] || 'L1',
           count,
-          aiModel
+          aiModel,
+          additionalRequest
         })
       });
 
@@ -113,6 +117,7 @@ export default function Home() {
       const decoder = new TextDecoder();
       let buffer = '';
       let collectedProblems: any[] = [];
+      let collectedIntent = ''; // New variable to capture intent
 
       while (true) {
         const { done, value } = await reader.read();
@@ -132,6 +137,7 @@ export default function Home() {
                 setProgress(`問題作成中: ${data.count} / ${data.total} 問完了`);
               } else if (data.type === 'complete') {
                 collectedProblems = data.problems;
+                collectedIntent = data.intent;
               } else if (data.type === 'error') {
                 throw new Error(data.message);
               }
@@ -176,10 +182,21 @@ export default function Home() {
         .join('_')
         .replace(/[\s\.]+/g, '_'); // Sanitize filename
       a.download = `${unitNames}_${new Date().toISOString().slice(0, 10)}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
+      
+      setPdfUrl(url);
+      if (collectedIntent) {
+          setIntent(collectedIntent);
+      }
+      setShowPreview(true);
+      
+      // Note: We do NOT auto-click download here anymore, we let the user preview first.
+      // But if we wanted auto-download, we would do:
+      // document.body.appendChild(a); a.click(); setTimeout(...)
+      
+      // Let's scroll to bottom to show results
+      setTimeout(() => {
+          window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+      }, 100);
 
       // 3. Success
       confetti({
@@ -187,7 +204,7 @@ export default function Home() {
         spread: 70,
         origin: { y: 0.6 }
       });
-      setShowSuccess(true);
+      // setShowSuccess(true); // Disable modal
     } catch (e: any) {
       setError(e.message || 'エラーが発生しました');
     } finally {
@@ -223,13 +240,30 @@ export default function Home() {
       a.download = `Math_Exercise_${new Date().toISOString().slice(0, 10)}.pdf`;
       document.body.appendChild(a);
       a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
+      setTimeout(() => {
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      }, 100);
     } catch (e: any) {
       setError(e.message);
     } finally {
       setLoading(false);
     }
+  };
+
+  const downloadCurrentPdf = () => {
+        if (!pdfUrl) return;
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = pdfUrl;
+        const unitNames = selectedUnits
+            .map(id => ALL_UNITS.find(u => u.id === id)?.title ?? id)
+            .join('_')
+            .replace(/[\s\.]+/g, '_');
+        a.download = `${unitNames}_${new Date().toISOString().slice(0, 10)}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => document.body.removeChild(a), 100);
   };
 
   const toggleUnit = (id: string) => {
@@ -346,6 +380,26 @@ export default function Home() {
                 ))}
               </div>
             </div>
+
+            {/* Additional Request */}
+            <div className={styles.controlGroup} style={{ gridColumn: '1 / -1' }}>
+                <h3>その他要望</h3>
+                <textarea
+                    placeholder="例: 文章題を多めにしてください、計算過程を詳しく書いてください etc."
+                    value={additionalRequest}
+                    onChange={(e) => setAdditionalRequest(e.target.value)}
+                    style={{
+                        width: '100%',
+                        padding: '1rem',
+                        borderRadius: '12px',
+                        border: '2px solid #eaeaea',
+                        fontSize: '0.95rem',
+                        minHeight: '80px',
+                        fontFamily: 'inherit',
+                        resize: 'vertical'
+                    }}
+                />
+            </div>
           </div>
         </section>
 
@@ -358,6 +412,48 @@ export default function Home() {
               {loading ? '作成中...' : 'プリントを作成'}
             </button>
         </div>
+
+        {/* Results Section */}
+        {pdfUrl && (
+            <div className={styles.section} style={{ marginTop: '2rem', border: '2px solid #FFB300', background: '#fffcf5' }}>
+                <h2 style={{ borderBottom: 'none', textAlign: 'center', fontSize: '1.5rem', marginBottom: '1rem' }}>🎉 生成完了</h2>
+                
+                {intent && (
+                    <div style={{ background: 'white', padding: '1.5rem', borderRadius: '12px', marginBottom: '1.5rem', border: '1px solid #eee' }}>
+                        <h3 style={{ margin: '0 0 1rem 0', color: '#555' }}>🎯 出題のねらい・構成</h3>
+                        <div style={{ whiteSpace: 'pre-wrap', lineHeight: '1.6' }}>
+                            <LatexRenderer content={intent} />
+                        </div>
+                    </div>
+                )}
+
+                <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginBottom: '1.5rem' }}>
+                    <button 
+                        className={styles.card} 
+                        onClick={() => setShowPreview(!showPreview)}
+                        style={{ padding: '0.8rem 2rem', fontWeight: 'bold' }}
+                    >
+                        {showPreview ? 'プレビューを隠す' : 'PDFプレビューを表示'}
+                    </button>
+                    <button 
+                        className={styles.generateButton}
+                        onClick={downloadCurrentPdf}
+                    >
+                        PDFをダウンロード
+                    </button>
+                </div>
+
+                {showPreview && (
+                    <div style={{ width: '100%', height: '600px', border: '1px solid #ddd', borderRadius: '8px', overflow: 'hidden' }}>
+                        <iframe 
+                            src={`${pdfUrl}#toolbar=0`} 
+                            style={{ width: '100%', height: '100%', border: 'none' }}
+                            title="PDF Preview"
+                        />
+                    </div>
+                )}
+            </div>
+        )}
       </main>
 
       {(loading || progress || error) && (
@@ -406,21 +502,7 @@ export default function Home() {
         </div>
       )}
 
-      {showSuccess && (
-        <div className={styles.modalOverlay}>
-          <div className={styles.modalContent} style={{ textAlign: 'center' }}>
-            <h2 style={{ color: '#28a745', marginBottom: '1rem' }}>PDFを作成しました！</h2>
-            <p>ダウンロードが開始されます。</p>
-            <button
-              className={styles.generateButton}
-              onClick={() => setShowSuccess(false)}
-              style={{ marginTop: '1.5rem' }}
-            >
-              閉じる
-            </button>
-          </div>
-        </div>
-      )}
+
     </div>
   );
 }
