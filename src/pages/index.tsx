@@ -7,12 +7,14 @@ import Link from 'next/link';
 import LatexRenderer from '@/components/LatexRenderer'; // Import LatexRenderer
 
 // Type definitions matching backend
-type Unit = { id: string; title_ja: string };
+type SubUnit = { id: string; title: string };
+type Unit = { id: string; title: string; subUnits?: SubUnit[] };
 type UnitMap = { units: Record<string, Unit> };
 
 export default function Home() {
   const [units, setUnits] = useState<Unit[]>([]);
   const [selectedUnits, setSelectedUnits] = useState<string[]>([]);
+  const [selectedSubUnits, setSelectedSubUnits] = useState<Record<string, string[]>>({});
   const [difficulty, setDifficulty] = useState<string[]>(['L1']);
   const [count, setCount] = useState<number>(10);
   const [options, setOptions] = useState({
@@ -43,7 +45,23 @@ export default function Home() {
     {
       subject: '数学A',
       units: [
-        { id: 'ma_baai', title: '場合の数と確率' },
+        { 
+            id: 'ma_baai', 
+            title: '場合の数と確率',
+            subUnits: [
+                { id: 'ma_baai_1', title: '集合の要素の個数' },
+                { id: 'ma_baai_2', title: '場合の数（和・積の法則）' },
+                { id: 'ma_baai_3', title: '順列(P)・階乗(!)' },
+                { id: 'ma_baai_4', title: '円順列・重複順列' },
+                { id: 'ma_baai_5', title: '組合せ(C)' },
+                { id: 'ma_baai_6', title: '同じものを含む順列' },
+                { id: 'ma_baai_7', title: '重複組合せ(H)' },
+                { id: 'ma_baai_8', title: '確率の定義・基本性質' },
+                { id: 'ma_baai_9', title: '独立試行・反復試行' },
+                { id: 'ma_baai_10', title: '条件付き確率・乗法定理' },
+                { id: 'ma_baai_11', title: '期待値' }
+            ]
+        },
         { id: 'ma_seishitsu', title: '整数の性質' },
         { id: 'ma_zukei', title: '図形の性質' },
       ]
@@ -102,6 +120,7 @@ export default function Home() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           units: selectedUnits,
+          unitDetails: selectedSubUnits,
           difficulty: difficulty[0] || 'L1',
           count,
           aiModel,
@@ -266,10 +285,45 @@ export default function Home() {
         setTimeout(() => document.body.removeChild(a), 100);
   };
 
+  /* Sub-unit toggle logic */
   const toggleUnit = (id: string) => {
-    setSelectedUnits(prev =>
-      prev.includes(id) ? prev.filter(u => u !== id) : [...prev, id]
-    );
+    setSelectedUnits(prev => {
+      const isSelected = prev.includes(id);
+      if (isSelected) {
+        // Deselecting: Remove from units and clear sub-units
+        const next = prev.filter(u => u !== id);
+        setSelectedSubUnits(prevSub => {
+            const copy = { ...prevSub };
+            delete copy[id];
+            return copy;
+        });
+        return next;
+      } else {
+        // Selecting: Add to units and Select ALL sub-units if available
+        const unit = ALL_UNITS.find(u => u.id === id);
+        if (unit?.subUnits) {
+            setSelectedSubUnits(prevSub => ({
+                ...prevSub,
+                [id]: unit.subUnits!.map(s => s.title)
+            }));
+        }
+        return [...prev, id];
+      }
+    });
+  };
+
+  const toggleSubUnit = (unitId: string, subTitle: string) => {
+      setSelectedSubUnits(prev => {
+          const current = prev[unitId] || [];
+          const exists = current.includes(subTitle);
+          let next;
+          if (exists) {
+              next = current.filter(t => t !== subTitle);
+          } else {
+              next = [...current, subTitle];
+          }
+          return { ...prev, [unitId]: next };
+      });
   };
 
   const toggleDifficulty = (d: string) => {
@@ -288,6 +342,18 @@ export default function Home() {
   };
 
   const visibleCurriculum = CURRICULUM.filter(cat => TAB_GROUPS[activeTab].includes(cat.subject));
+
+  /* Helper for bulk selection */
+  const handleSelectAll = (catUnits: Unit[]) => {
+      const ids = catUnits.map(u => u.id);
+      const isAllSelected = ids.every(id => selectedUnits.includes(id));
+      
+      if (isAllSelected) {
+          setSelectedUnits(prev => prev.filter(id => !ids.includes(id)));
+      } else {
+          setSelectedUnits(prev => Array.from(new Set([...prev, ...ids])));
+      }
+  };
 
   return (
     <div className={styles.container}>
@@ -348,22 +414,83 @@ export default function Home() {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            {visibleCurriculum.map(cat => (
-              <div key={cat.subject}>
-                <h3 style={{ marginBottom: '0.5rem', color: '#666', fontSize: '0.9rem' }}>{cat.subject}</h3>
-                <div className={styles.grid}>
-                  {cat.units.map(u => (
-                    <button
-                      key={u.id}
-                      className={`${styles.card} ${selectedUnits.includes(u.id) ? styles.active : ''}`}
-                      onClick={() => toggleUnit(u.id)}
-                    >
-                      {u.title}
-                    </button>
-                  ))}
+            {visibleCurriculum.map(cat => {
+              const isAllSelected = cat.units.every(u => selectedUnits.includes(u.id));
+              return (
+                <div key={cat.subject}>
+                    <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
+                        <h3 style={{ margin: 0, color: '#666', fontSize: '0.9rem', marginRight: '1rem' }}>{cat.subject}</h3>
+                        <button
+                            onClick={() => handleSelectAll(cat.units)}
+                            style={{
+                                fontSize: '0.75rem',
+                                padding: '2px 8px',
+                                border: '1px solid #ddd',
+                                background: isAllSelected ? '#eee' : '#fff',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                color: '#555'
+                            }}
+                        >
+                            {isAllSelected ? 'すべて解除' : 'すべて選択'}
+                        </button>
+                    </div>
+                    <div className={styles.grid}>
+                    {cat.units.map(u => (
+                        <button
+                        key={u.id}
+                        className={`${styles.card} ${selectedUnits.includes(u.id) ? styles.active : ''}`}
+                        onClick={() => toggleUnit(u.id)}
+                        style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', height: 'auto' }}
+                        >
+                            <span style={{ fontSize: '1rem' }}>{u.title}</span>
+                            
+                            {/* Sub-unit selection */}
+                            {selectedUnits.includes(u.id) && u.subUnits && (
+                                <div 
+                                    onClick={e => e.stopPropagation()} 
+                                    style={{ 
+                                        marginTop: '0.8rem', 
+                                        borderTop: '1px solid rgba(0,0,0,0.1)', 
+                                        paddingTop: '0.5rem',
+                                        width: '100%',
+                                        textAlign: 'left'
+                                    }}
+                                >
+                                    <div style={{fontSize: '0.75rem', fontWeight: 'bold', marginBottom:'4px', color: '#555'}}>詳細トピック:</div>
+                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                                        {u.subUnits.map(sub => (
+                                            <label 
+                                                key={sub.id} 
+                                                style={{
+                                                    display: 'flex', 
+                                                    alignItems: 'center', 
+                                                    fontSize: '0.75rem', 
+                                                    marginBottom: '2px', 
+                                                    cursor: 'pointer',
+                                                    background: 'rgba(255,255,255,0.4)',
+                                                    padding: '2px 6px',
+                                                    borderRadius: '4px'
+                                                }}
+                                            >
+                                                <input 
+                                                    type="checkbox" 
+                                                    checked={(selectedSubUnits[u.id] || []).includes(sub.title)} 
+                                                    onChange={() => toggleSubUnit(u.id, sub.title)}
+                                                    style={{ marginRight: '4px' }}
+                                                /> 
+                                                {sub.title}
+                                            </label>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </button>
+                    ))}
+                    </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
 

@@ -20,6 +20,7 @@ export default async function handler(
   try {
     const { 
         units, // string[] unit IDs
+        unitDetails, // Record<string, string[]> - Sub-topic titles
         difficulty, // string
         count, // number
         aiModel // string (optional)
@@ -32,9 +33,16 @@ export default async function handler(
     // Resolve unit IDs to titles directly from JSON to avoid stale singleton
     const unitMapPath = path.resolve(process.cwd(), 'data/unit_map.json');
     const unitMapData = JSON.parse(fs.readFileSync(unitMapPath, 'utf-8'));
-    const unitTitles = (units as string[])
-        .map(id => unitMapData.units[id]?.title_ja || id)
-        .join(', ');
+    
+    // Construct refined unit titles with sub-topics
+    const unitTitles = (units as string[]).map(id => {
+        const baseTitle = unitMapData.units[id]?.title_ja || id;
+        const details = unitDetails?.[id];
+        if (details && Array.isArray(details) && details.length > 0) {
+            return `${baseTitle} (重点トピック: ${details.join(', ')})`;
+        }
+        return baseTitle;
+    }).join(', ');
     
     console.log('API request units:', units);
     console.log('Resolved titles for AI:', unitTitles);
