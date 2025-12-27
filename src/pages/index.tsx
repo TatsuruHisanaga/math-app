@@ -15,6 +15,7 @@ export default function Home() {
   const [units, setUnits] = useState<Unit[]>([]);
   const [selectedUnits, setSelectedUnits] = useState<string[]>([]);
   const [selectedSubUnits, setSelectedSubUnits] = useState<Record<string, string[]>>({});
+  const [generatedProblems, setGeneratedProblems] = useState<any[]>([]); // New state
   const [difficulty, setDifficulty] = useState<string[]>(['L1']);
   const [count, setCount] = useState<number>(10);
   const [options, setOptions] = useState({
@@ -157,6 +158,7 @@ export default function Home() {
               } else if (data.type === 'complete') {
                 collectedProblems = data.problems;
                 collectedIntent = data.intent;
+                setGeneratedProblems(data.problems); // Store for rendering
               } else if (data.type === 'error') {
                 throw new Error(data.message);
               }
@@ -299,14 +301,8 @@ export default function Home() {
         });
         return next;
       } else {
-        // Selecting: Add to units and Select ALL sub-units if available
-        const unit = ALL_UNITS.find(u => u.id === id);
-        if (unit?.subUnits) {
-            setSelectedSubUnits(prevSub => ({
-                ...prevSub,
-                [id]: unit.subUnits!.map(s => s.title)
-            }));
-        }
+        // Selecting: Add to units, but DO NOT select sub-units by default (empty = implied all/generic)
+        // We initialize with empty array to allow manual selection
         return [...prev, id];
       }
     });
@@ -450,38 +446,44 @@ export default function Home() {
                                 <div 
                                     onClick={e => e.stopPropagation()} 
                                     style={{ 
-                                        marginTop: '0.8rem', 
-                                        borderTop: '1px solid rgba(0,0,0,0.1)', 
-                                        paddingTop: '0.5rem',
+                                        marginTop: '1rem', 
                                         width: '100%',
                                         textAlign: 'left'
                                     }}
                                 >
-                                    <div style={{fontSize: '0.75rem', fontWeight: 'bold', marginBottom:'4px', color: '#555'}}>詳細トピック:</div>
+                                    <div style={{fontSize: '0.75rem', fontWeight: 'bold', marginBottom:'8px', color: '#888'}}>
+                                        絞り込み (任意):
+                                    </div>
                                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                                        {u.subUnits.map(sub => (
-                                            <label 
-                                                key={sub.id} 
-                                                style={{
-                                                    display: 'flex', 
-                                                    alignItems: 'center', 
-                                                    fontSize: '0.75rem', 
-                                                    marginBottom: '2px', 
-                                                    cursor: 'pointer',
-                                                    background: 'rgba(255,255,255,0.4)',
-                                                    padding: '2px 6px',
-                                                    borderRadius: '4px'
-                                                }}
-                                            >
-                                                <input 
-                                                    type="checkbox" 
-                                                    checked={(selectedSubUnits[u.id] || []).includes(sub.title)} 
-                                                    onChange={() => toggleSubUnit(u.id, sub.title)}
-                                                    style={{ marginRight: '4px' }}
-                                                /> 
-                                                {sub.title}
-                                            </label>
-                                        ))}
+                                        {u.subUnits.map(sub => {
+                                            const isChecked = (selectedSubUnits[u.id] || []).includes(sub.title);
+                                            return (
+                                                <button
+                                                    key={sub.id}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation(); // Prevent unit toggle
+                                                        toggleSubUnit(u.id, sub.title);
+                                                    }}
+                                                    style={{
+                                                        fontSize: '0.75rem',
+                                                        padding: '4px 12px',
+                                                        borderRadius: '20px',
+                                                        border: isChecked ? '1px solid #FFB300' : '1px solid #eee',
+                                                        background: isChecked ? '#FFF8E1' : '#f9f9f9',
+                                                        color: isChecked ? '#B45309' : '#666',
+                                                        fontWeight: isChecked ? '600' : 'normal',
+                                                        cursor: 'pointer',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: '4px',
+                                                        transition: 'all 0.15s ease'
+                                                    }}
+                                                >
+                                                    {isChecked && <span>✓</span>}
+                                                    {sub.title}
+                                                </button>
+                                            );
+                                        })}
                                     </div>
                                 </div>
                             )}
@@ -622,12 +624,67 @@ export default function Home() {
                 </div>
 
                 {showPreview && (
-                    <div style={{ width: '100%', height: '600px', border: '1px solid #ddd', borderRadius: '8px', overflow: 'hidden' }}>
+                    <div style={{ width: '100%', height: '600px', border: '1px solid #ddd', borderRadius: '8px', overflow: 'hidden', marginBottom: '2rem' }}>
                         <iframe 
                             src={`${pdfUrl}#toolbar=0`} 
                             style={{ width: '100%', height: '100%', border: 'none' }}
                             title="PDF Preview"
                         />
+                    </div>
+                )}
+
+                {/* Generated Problems List */}
+                {generatedProblems.length > 0 && (
+                    <div style={{ marginTop: '2rem', borderTop: '2px dashed #FFB300', paddingTop: '2rem' }}>
+                        <h3 style={{ textAlign: 'center', marginBottom: '1.5rem', color: '#B45309' }}>📖 生成された問題一覧</h3>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                            {generatedProblems.map((p, idx) => (
+                                <div key={idx} style={{ background: 'white', padding: '1.5rem', borderRadius: '12px', border: '1px solid #eee', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
+                                    <div style={{ fontWeight: 'bold', marginBottom: '0.5rem', color: '#555', borderBottom: '1px solid #eee', paddingBottom: '0.5rem' }}>
+                                        問{idx + 1}
+                                    </div>
+                                    <div style={{ marginBottom: '1rem', fontSize: '1.1rem' }}>
+                                        <LatexRenderer content={p.stem_latex} />
+                                    </div>
+
+                                    <details style={{ background: '#f9f9f9', padding: '1rem', borderRadius: '8px', cursor: 'pointer' }}>
+                                        <summary style={{ fontWeight: 'bold', color: '#666' }}>解答・解説を表示</summary>
+                                        <div style={{ marginTop: '1rem' }}>
+                                            <div style={{ fontWeight: 'bold', color: '#d97706', marginBottom: '0.5rem' }}>【解答】</div>
+                                            <div style={{ marginBottom: '1rem' }}>
+                                                <LatexRenderer content={p.answer_latex} />
+                                            </div>
+                                            
+                                            {p.explanation_latex && (
+                                                <>
+                                                    <div style={{ fontWeight: 'bold', color: '#555', marginBottom: '0.5rem' }}>【解説】</div>
+                                                    <div style={{ whiteSpace: 'pre-wrap' }}>
+                                                        <LatexRenderer content={p.explanation_latex} />
+                                                    </div>
+                                                </>
+                                            )}
+
+                                            {p.teaching_point_latex && (
+                                                <div style={{ 
+                                                    marginTop: '1.5rem', 
+                                                    background: '#e3f2fd', 
+                                                    border: '1px solid #90caf9', 
+                                                    padding: '1rem', 
+                                                    borderRadius: '8px',
+                                                    color: '#0d47a1'
+                                                }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', fontWeight: 'bold', marginBottom: '0.5rem' }}>
+                                                        <span style={{ fontSize: '1.2rem', marginRight: '0.5rem' }}>💡</span>
+                                                        生徒への指導ポイント
+                                                    </div>
+                                                    <LatexRenderer content={p.teaching_point_latex} />
+                                                </div>
+                                            )}
+                                        </div>
+                                    </details>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 )}
             </div>

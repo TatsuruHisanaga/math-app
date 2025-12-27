@@ -62,9 +62,10 @@
 }
 
 .active {
-    background: #FFB300;
-    color: #333 !important; /* Dark text for contrast */
+    background: #fffbf0;
+    color: #333 !important;
     border-color: #FFB300;
+    box-shadow: 0 4px 12px rgba(255, 179, 0, 0.15);
 }
 
 .row {
