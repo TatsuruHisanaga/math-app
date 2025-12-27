@@ -396,7 +396,8 @@ export default function Home() {
                         fontSize: '0.95rem',
                         minHeight: '80px',
                         fontFamily: 'inherit',
-                        resize: 'vertical'
+                        resize: 'vertical',
+                        boxSizing: 'border-box'
                     }}
                 />
             </div>
