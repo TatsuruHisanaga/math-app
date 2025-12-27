@@ -278,6 +278,17 @@ export default function Home() {
     );
   };
 
+  /* Tabbed Selection Implementation */
+  const [activeTab, setActiveTab] = useState('1A'); // '1A' | '2B' | '3C'
+
+  const TAB_GROUPS: Record<string, string[]> = {
+      '1A': ['数学I', '数学A'],
+      '2B': ['数学II', '数学B'],
+      '3C': ['数学III', '数学C']
+  };
+
+  const visibleCurriculum = CURRICULUM.filter(cat => TAB_GROUPS[activeTab].includes(cat.subject));
+
   return (
     <div className={styles.container}>
       <Head>
@@ -296,9 +307,48 @@ export default function Home() {
         </div>
 
         <section className={styles.section}>
-          <h2>1. 単元選択</h2>
+          <h2>
+              1. 単元選択
+              <div style={{ display: 'inline-flex', flexWrap: 'wrap', gap: '0.5rem', marginLeft: '1rem', verticalAlign: 'middle' }}>
+                  {selectedUnits.length === 0 && <span style={{fontSize: '0.9rem', color: '#999', fontWeight: 'normal'}}>（未選択）</span>}
+                  {selectedUnits.map(id => {
+                      const unit = ALL_UNITS.find(u => u.id === id);
+                      return (
+                          <span key={id} style={{ 
+                              fontSize: '0.8rem', 
+                              padding: '2px 8px', 
+                              borderRadius: '12px', 
+                              background: '#333', 
+                              color: '#fff',
+                              fontWeight: 'normal' 
+                          }}>
+                              {unit?.title || id}
+                              <span 
+                                  onClick={(e) => { e.stopPropagation(); toggleUnit(id); }}
+                                  style={{ marginLeft: '6px', cursor: 'pointer', opacity: 0.8 }}
+                              >
+                                  ×
+                              </span>
+                          </span>
+                      );
+                  })}
+              </div>
+          </h2>
+
+          <div className={styles.toggleGroup} style={{ marginBottom: '1.5rem', background: 'white', border: '1px solid #ddd' }}>
+              {Object.keys(TAB_GROUPS).map(tabKey => (
+                  <div 
+                      key={tabKey}
+                      className={`${styles.toggleButton} ${activeTab === tabKey ? styles.active : ''}`}
+                      onClick={() => setActiveTab(tabKey)}
+                  >
+                      {TAB_GROUPS[tabKey].join('・')}
+                  </div>
+              ))}
+          </div>
+
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            {CURRICULUM.map(cat => (
+            {visibleCurriculum.map(cat => (
               <div key={cat.subject}>
                 <h3 style={{ marginBottom: '0.5rem', color: '#666', fontSize: '0.9rem' }}>{cat.subject}</h3>
                 <div className={styles.grid}>
