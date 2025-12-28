@@ -37,7 +37,7 @@ export class PDFBuilder {
       // latexmk is missing in BasicTeX by default sometimes. 
       // Switch to direct lualatex execution.
       // We run it twice to ensure references/page numbers are correct (though for this MVP once might suffice, safety first).
-      const cmd = '/Library/TeX/texbin/lualatex'; 
+      const cmd = 'lualatex'; 
       const args = [
         '--interaction=nonstopmode',
         `--output-directory=${jobDir}`,
