@@ -86,6 +86,9 @@ INSTRUCTIONS:
 - IMPORTANT: You MUST escape all backslashes in JSON strings. Use "\\text" instead of "\text", "\\frac" instead of "\frac". Single backslashes will be read as control characters (like tab for \t) and corrupt the output.
 - Difficulty should be L1 (Basic), L2 (Standard), or L3 (Advanced).
 - Generate 3-4 progressive hints for each problem in the 'hints' array. Hint 1 should be a conceptual nudge, while the last hint should be close to the solution step.
+- **CRITICAL**: When the user requests multiple sub-topics (e.g. "addition, subtraction, and base change formula"), you MUST ensure the problems are distributed EVENLY across all these topics. Do not focus on just one.
+- **CRITICAL**: Strictly adhere to any "negative constraints" (e.g. "do not mention X in the problem text").
+- Ensure problems are non-trivial and maintain the requested difficulty level even when covering multiple topics.
 
 JSON format details:
 - 'stem_latex': The problem text.

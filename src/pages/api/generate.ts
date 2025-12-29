@@ -70,14 +70,28 @@ export default async function handler(
 
     // 2. Build LaTeX Content
     // Header for Problem Page - MUST ESCAPE UNDERSCORES IN IDs
+    // 2. Build LaTeX Content
+    // Header for Problem Page
     const header = `
-\\begin{center}
-{\\Large \\textbf{数学演習プリント}} \\\\
-\\vspace{0.5em}
-{\\small 単元: ${escapeLatex(displayUnits)} \\quad 難易度: ${escapeLatex(displayDiffs)}} \\\\
-\\rule{\\linewidth}{0.4pt}
-\\end{center}
-\\vspace{1em}
+\\twocolumn[{
+  \\vspace{0.5em}
+  % Header Container
+  \\noindent
+  \\begin{minipage}[b]{0.6\\linewidth}
+    {\\LARGE \\textbf{数学演習プリント}} \\\\[0.4em]
+    {\\small \\color{darkgray} \\textbf{単元:} ${escapeLatex(displayUnits)} \\quad \\textbf{難易度:} ${escapeLatex(displayDiffs)}}
+  \\end{minipage}
+  \\hfill
+  \\begin{minipage}[b]{0.38\\linewidth}
+    \\begin{flushright}
+      \\small
+      \\textbf{日付}: \\underline{\\hspace{2.5cm}} \\quad \\textbf{氏名}: \\underline{\\hspace{2.5cm}}
+    \\end{flushright}
+  \\end{minipage}
+  \\par\\vspace{1em}
+  \\hrule height 0.5pt
+  \\vspace{2em}
+}]
 `;
 
     // Generate Problem Part (Empty Answer Box)
