@@ -7,14 +7,15 @@ import Link from 'next/link';
 import LatexRenderer from '@/components/LatexRenderer'; // Import LatexRenderer
 
 // Type definitions matching backend
-type SubUnit = { id: string; title: string };
+type Topic = { id: string; title: string };
+type SubUnit = { id: string; title: string; topics?: Topic[] };
 type Unit = { id: string; title: string; subUnits?: SubUnit[] };
 type UnitMap = { units: Record<string, Unit> };
 
 export default function Home() {
   const [units, setUnits] = useState<Unit[]>([]);
   const [selectedUnits, setSelectedUnits] = useState<string[]>([]);
-  const [selectedSubUnits, setSelectedSubUnits] = useState<Record<string, string[]>>({});
+  const [selectedTopics, setSelectedTopics] = useState<Record<string, string[]>>({});
   const [generatedProblems, setGeneratedProblems] = useState<any[]>([]); // New state
   const [difficulty, setDifficulty] = useState<string[]>(['L1']);
   const [count, setCount] = useState<number>(10);
@@ -32,15 +33,84 @@ export default function Home() {
   const [showPreview, setShowPreview] = useState(true);
 
   // Expanded Unit List with categories
-  const CURRICULUM = [
+  const CURRICULUM: { subject: string; units: Unit[] }[] = [
     {
       subject: '数学I',
       units: [
-        { id: 'm1_shiki', title: '数と式' },
-        { id: 'm1_shugo', title: '集合と命題' },
-        { id: 'm1_2ji_func', title: '2次関数' },
-        { id: 'm1_trig', title: '図形と計量' },
-        { id: 'm1_data', title: 'データの分析' },
+        { 
+            id: 'm1_shiki', 
+            title: '数と式',
+            subUnits: [
+                { id: 'm1_shiki_poly', title: '整式の計算', topics: [
+                    { id: 'm1_shiki_poly_1', title: '加法・減法・乗法' },
+                    { id: 'm1_shiki_poly_2', title: '因数分解' }
+                ]},
+                { id: 'm1_shiki_real', title: '実数', topics: [
+                    { id: 'm1_shiki_real_1', title: '実数・根号計算' },
+                    { id: 'm1_shiki_real_2', title: '1次不等式' },
+                    { id: 'm1_shiki_real_3', title: '絶対値' }
+                ]}
+            ] 
+        },
+        { 
+            id: 'm1_shugo', 
+            title: '集合と命題',
+            subUnits: [
+                { id: 'm1_shugo_set', title: '集合', topics: [
+                    { id: 'm1_shugo_set_1', title: '集合の要素・包含' },
+                    { id: 'm1_shugo_set_2', title: '共通部分・和集合' }
+                ]},
+                { id: 'm1_shugo_prop', title: '命題', topics: [
+                    { id: 'm1_shugo_prop_1', title: '命題と条件' },
+                    { id: 'm1_shugo_prop_2', title: '必要・十分条件' },
+                    { id: 'm1_shugo_prop_3', title: '逆・裏・対偶' }
+                ]}
+            ]
+        },
+        { 
+            id: 'm1_2ji_func', 
+            title: '2次関数',
+            subUnits: [
+                { id: 'm1_2ji_graph', title: '2次関数のグラフ', topics: [
+                    { id: 'm1_2ji_graph_1', title: 'グラフと平行移動' },
+                    { id: 'm1_2ji_graph_2', title: '最大・最小' }
+                ]},
+                { id: 'm1_2ji_eq', title: '方程式・不等式', topics: [
+                    { id: 'm1_2ji_eq_1', title: '2次方程式' },
+                    { id: 'm1_2ji_eq_2', title: 'グラフとx軸の共有点' },
+                    { id: 'm1_2ji_eq_3', title: '2次不等式' }
+                ]}
+            ]
+        },
+        { 
+            id: 'm1_trig', 
+            title: '図形と計量',
+            subUnits: [
+                { id: 'm1_trig_ratio', title: '三角比', topics: [
+                    { id: 'm1_trig_ratio_1', title: '三角比の定義' },
+                    { id: 'm1_trig_ratio_2', title: '相互関係' },
+                    { id: 'm1_trig_ratio_3', title: '拡張（鈍角）' }
+                ]},
+                { id: 'm1_trig_app', title: '図形への応用', topics: [
+                    { id: 'm1_trig_app_1', title: '正弦・余弦定理' },
+                    { id: 'm1_trig_app_2', title: '面積・空間図形' }
+                ]}
+            ]
+        },
+        { 
+            id: 'm1_data', 
+            title: 'データの分析',
+            subUnits: [
+                { id: 'm1_data_stat', title: 'データの代表値', topics: [
+                    { id: 'm1_data_stat_1', title: '平均・中央・最頻値' },
+                    { id: 'm1_data_stat_2', title: '四分位数・箱ひげ図' }
+                ]},
+                { id: 'm1_data_var', title: '散らばりと相関', topics: [
+                    { id: 'm1_data_var_1', title: '分散・標準偏差' },
+                    { id: 'm1_data_var_2', title: '相関関係' }
+                ]}
+            ]
+        },
       ]
     },
     {
@@ -50,21 +120,68 @@ export default function Home() {
             id: 'ma_baai', 
             title: '場合の数と確率',
             subUnits: [
-                { id: 'ma_baai_1', title: '集合の要素の個数' },
-                { id: 'ma_baai_2', title: '場合の数（和・積の法則）' },
-                { id: 'ma_baai_3', title: '順列(P)・階乗(!)' },
-                { id: 'ma_baai_4', title: '円順列・重複順列' },
-                { id: 'ma_baai_5', title: '組合せ(C)' },
-                { id: 'ma_baai_6', title: '同じものを含む順列' },
-                { id: 'ma_baai_7', title: '重複組合せ(H)' },
-                { id: 'ma_baai_8', title: '確率の定義・基本性質' },
-                { id: 'ma_baai_9', title: '独立試行・反復試行' },
-                { id: 'ma_baai_10', title: '条件付き確率・乗法定理' },
-                { id: 'ma_baai_11', title: '期待値' }
+                { id: 'ma_baai_sett', title: '集合の要素の個数', topics: [
+                     { id: 'ma_baai_sett_1', title: '和集合・補集合' },
+                     { id: 'ma_baai_sett_2', title: '3つの集合' }
+                ]},
+                { id: 'ma_baai_count', title: '場合の数', topics: [
+                    { id: 'ma_baai_count_1', title: '和・積の法則' },
+                    { id: 'ma_baai_count_2', title: '樹形図・辞書式' }
+                ]},
+                { id: 'ma_baai_perm', title: '順列', topics: [
+                    { id: 'ma_baai_perm_1', title: '順列(P)・階乗' },
+                    { id: 'ma_baai_perm_2', title: '円順列・じゅず順列' },
+                    { id: 'ma_baai_perm_3', title: '重複順列' },
+                    { id: 'ma_baai_perm_4', title: '同じものを含む順列' }
+                ]},
+                { id: 'ma_baai_comb', title: '組合せ', topics: [
+                    { id: 'ma_baai_comb_1', title: '組合せ(C)' },
+                    { id: 'ma_baai_comb_2', title: '組分け' },
+                    { id: 'ma_baai_comb_3', title: '重複組合せ(H)' }
+                ]},
+                { id: 'ma_baai_prob', title: '確率', topics: [
+                    { id: 'ma_baai_prob_1', title: '定義・基本性質' },
+                    { id: 'ma_baai_prob_2', title: '和事象・排反事象' },
+                    { id: 'ma_baai_prob_3', title: '余事象' },
+                    { id: 'ma_baai_prob_4', title: '独立試行' },
+                    { id: 'ma_baai_prob_5', title: '反復試行' },
+                    { id: 'ma_baai_prob_6', title: '条件付き確率' },
+                    { id: 'ma_baai_prob_7', title: '期待値' }
+                ]}
             ]
         },
-        { id: 'ma_seishitsu', title: '整数の性質' },
-        { id: 'ma_zukei', title: '図形の性質' },
+        { 
+            id: 'ma_seishitsu', 
+            title: '整数の性質',
+            subUnits: [
+                { id: 'ma_seishitsu_div', title: '約数と倍数', topics: [
+                    { id: 'ma_seishitsu_div_1', title: '約数・倍数' },
+                    { id: 'ma_seishitsu_div_2', title: '最大公約数・最小公倍数' }
+                ]},
+                { id: 'ma_seishitsu_euclid', title: 'ユークリッド', topics: [
+                    { id: 'ma_seishitsu_euclid_1', title: '互除法' },
+                    { id: 'ma_seishitsu_euclid_2', title: '不定方程式' }
+                ]},
+                { id: 'ma_seishitsu_n', title: '記数法', topics: [
+                    { id: 'ma_seishitsu_n_1', title: 'n進法' }
+                ]}
+            ]
+        },
+        { 
+            id: 'ma_zukei', 
+            title: '図形の性質',
+            subUnits: [
+                { id: 'ma_zukei_tri', title: '三角形の性質', topics: [
+                    { id: 'ma_zukei_tri_1', title: '五心(重心・外心etc)' },
+                    { id: 'ma_zukei_tri_2', title: 'チェバ・メネラウス' }
+                ]},
+                { id: 'ma_zukei_circ', title: '円の性質', topics: [
+                    { id: 'ma_zukei_circ_1', title: '円に内接する四角形' },
+                    { id: 'ma_zukei_circ_2', title: '方べき・接弦定理' },
+                    { id: 'ma_zukei_circ_3', title: '2円の位置関係' }
+                ]}
+            ]
+        },
       ]
     },
     {
@@ -121,7 +238,7 @@ export default function Home() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           units: selectedUnits,
-          unitDetails: selectedSubUnits,
+          unitDetails: selectedTopics,
           difficulty: difficulty[0] || 'L1',
           count,
           aiModel,
@@ -294,7 +411,7 @@ export default function Home() {
       if (isSelected) {
         // Deselecting: Remove from units and clear sub-units
         const next = prev.filter(u => u !== id);
-        setSelectedSubUnits(prevSub => {
+        setSelectedTopics(prevSub => {
             const copy = { ...prevSub };
             delete copy[id];
             return copy;
@@ -308,15 +425,15 @@ export default function Home() {
     });
   };
 
-  const toggleSubUnit = (unitId: string, subTitle: string) => {
-      setSelectedSubUnits(prev => {
+  const toggleTopic = (unitId: string, topicTitle: string) => {
+      setSelectedTopics(prev => {
           const current = prev[unitId] || [];
-          const exists = current.includes(subTitle);
+          const exists = current.includes(topicTitle);
           let next;
           if (exists) {
-              next = current.filter(t => t !== subTitle);
+              next = current.filter(t => t !== topicTitle);
           } else {
-              next = [...current, subTitle];
+              next = [...current, topicTitle];
           }
           return { ...prev, [unitId]: next };
       });
@@ -441,7 +558,7 @@ export default function Home() {
                         >
                             <span style={{ fontSize: '1rem' }}>{u.title}</span>
                             
-                            {/* Sub-unit selection */}
+                            {/* Sub-unit / Topic selection */}
                             {selectedUnits.includes(u.id) && u.subUnits && (
                                 <div 
                                     onClick={e => e.stopPropagation()} 
@@ -451,40 +568,43 @@ export default function Home() {
                                         textAlign: 'left'
                                     }}
                                 >
-                                    <div style={{fontSize: '0.75rem', fontWeight: 'bold', marginBottom:'8px', color: '#888'}}>
-                                        絞り込み (任意):
-                                    </div>
-                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                                        {u.subUnits.map(sub => {
-                                            const isChecked = (selectedSubUnits[u.id] || []).includes(sub.title);
-                                            return (
-                                                <button
-                                                    key={sub.id}
-                                                    onClick={(e) => {
-                                                        e.stopPropagation(); // Prevent unit toggle
-                                                        toggleSubUnit(u.id, sub.title);
-                                                    }}
-                                                    style={{
-                                                        fontSize: '0.75rem',
-                                                        padding: '4px 12px',
-                                                        borderRadius: '20px',
-                                                        border: isChecked ? '1px solid #FFB300' : '1px solid #eee',
-                                                        background: isChecked ? '#FFF8E1' : '#f9f9f9',
-                                                        color: isChecked ? '#B45309' : '#666',
-                                                        fontWeight: isChecked ? '600' : 'normal',
-                                                        cursor: 'pointer',
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        gap: '4px',
-                                                        transition: 'all 0.15s ease'
-                                                    }}
-                                                >
-                                                    {isChecked && <span>✓</span>}
-                                                    {sub.title}
-                                                </button>
-                                            );
-                                        })}
-                                    </div>
+                                    {u.subUnits.map(sub => (
+                                        <div key={sub.id} style={{ marginBottom: '1rem' }}>
+                                            <div style={{fontSize: '0.8rem', fontWeight: 'bold', marginBottom:'6px', color: '#666', borderBottom: '1px solid #eee', paddingBottom: '2px'}}>
+                                                {sub.title}
+                                            </div>
+                                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                                                {sub.topics?.map(topic => {
+                                                    const isChecked = (selectedTopics[u.id] || []).includes(topic.title);
+                                                    return (
+                                                        <button
+                                                            key={topic.id}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                toggleTopic(u.id, topic.title);
+                                                            }}
+                                                            style={{
+                                                                fontSize: '0.75rem',
+                                                                padding: '4px 10px',
+                                                                borderRadius: '16px',
+                                                                border: isChecked ? '1px solid #FFB300' : '1px solid #ddd',
+                                                                background: isChecked ? '#FFF8E1' : 'white',
+                                                                color: isChecked ? '#B45309' : '#555',
+                                                                cursor: 'pointer',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                gap: '4px',
+                                                                transition: 'all 0.1s'
+                                                            }}
+                                                        >
+                                                            {isChecked && <span style={{fontSize:'10px'}}>✓</span>}
+                                                            {topic.title}
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
                             )}
                         </button>
