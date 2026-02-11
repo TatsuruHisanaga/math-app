@@ -51,9 +51,10 @@ export default async function handler(
     const gen = getGenerator();
     
     // Resolve Difficulty Labels for Header
-    const diffLabels = { 'L1': '基礎', 'L2': '標準', 'L3': '応用', 'L4': '難関', 'L5': '最難関' };
-    const displayDiffs = (difficulties as string[]).map(d => diffLabels[d as keyof typeof diffLabels] || d).join(', ');
-    const displayUnits = (units as string[]).map(id => gen.getUnitTitle(id)).join(', ');
+    const diffLabels: Record<string, string> = { 'L1': '基礎', 'L2': '標準', 'L3': '発展', 'L4': '難関', 'L5': '最難関' };
+    console.log('Received difficulties:', difficulties);
+    const displayDiffs = (Array.isArray(difficulties) ? difficulties : [difficulties]).map((d: string) => diffLabels[d] || d).join('・');
+    const displayUnits = (Array.isArray(units) ? units : [units]).map((id: string) => gen.getUnitTitle(id)).join('・');
 
     // 1. Generate Questions (or use provided)
     let questions: any[];
