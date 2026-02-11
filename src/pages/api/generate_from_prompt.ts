@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import formidable from 'formidable';
 import fs from 'fs';
+import path from 'path';
 const pdf = require('pdf-parse');
 import { AIClient } from '@/lib/ai/client';
 import { GenerationPipeline } from '@/lib/verify/regenerate';
@@ -21,6 +22,11 @@ export default async function handler(
 
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
+    const logPath = path.resolve(process.cwd(), 'debug_generation.log');
+    const timestamp = new Date().toISOString();
+    try {
+      require('fs').appendFileSync(logPath, `[${timestamp}] Config Error: Missing API Key (generate_from_prompt)\n`);
+    } catch (e) { /* ignore */ }
     return res.status(500).json({ message: 'Server configuration error: Missing API Key' });
   }
 
@@ -132,6 +138,9 @@ JSON format details:
 
   } catch (error: any) {
     console.error('AI Prompt Generation Error:', error);
+    const logPath = path.resolve(process.cwd(), 'debug_generation.log');
+    const timestamp = new Date().toISOString();
+    fs.appendFileSync(logPath, `[${timestamp}] API Error (generate_from_prompt): ${error.message}\nStack: ${error.stack}\n`);
     if (!res.headersSent) {
       res.status(500).json({ message: 'AI generation failed', error: error.message });
     } else {

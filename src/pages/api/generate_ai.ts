@@ -14,6 +14,14 @@ export default async function handler(
 
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
+      const logPath = path.resolve(process.cwd(), 'debug_generation.log');
+      const timestamp = new Date().toISOString();
+      // Ensure fs and path are imported (they are at top of file)
+      // But verify if fs/path imports are available at this scope - yes they are global imports.
+      // Wait, I need to make sure I don't break if fs isn't imported yet, but it is.
+      try {
+        require('fs').appendFileSync(logPath, `[${timestamp}] Config Error: Missing API Key\n`);
+      } catch (e) { /* ignore */ }
       return res.status(500).json({ message: 'Server configuration error: Missing API Key' });
   }
 
@@ -100,6 +108,9 @@ export default async function handler(
 
   } catch (error: any) {
     console.error('AI Generation Error:', error);
+    const logPath = path.resolve(process.cwd(), 'debug_generation.log');
+    const timestamp = new Date().toISOString();
+    fs.appendFileSync(logPath, `[${timestamp}] API Error (generate_ai): ${error.message}\nStack: ${error.stack}\n`);
     // If headers sent, we can't send status 500 JSON.
     if (!res.headersSent) {
         res.status(500).json({ message: 'AI generation failed', error: error.message });
