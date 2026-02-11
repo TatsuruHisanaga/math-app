@@ -23,7 +23,7 @@ export default function Home() {
     stumblingBlock: false,
     moreWorkSpace: false,
   });
-  const [aiModel, setAiModel] = useState<'gpt-4o' | 'gpt-4o-mini'>('gpt-4o');
+  const [aiModel, setAiModel] = useState<'gpt-5.2' | 'gpt-5-mini'>('gpt-5.2');
   const [additionalRequest, setAdditionalRequest] = useState('');
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState('');
@@ -662,8 +662,8 @@ export default function Home() {
               <h3>AIモデル</h3>
               <div className={styles.modelOptions}>
                 {[
-                  { id: 'gpt-4o', name: '高品質 (gpt-4o)', desc: '高い論理的思考で良問を作成' },
-                  { id: 'gpt-4o-mini', name: '高速 (gpt-4o-mini)', desc: '生成スピードを優先' }
+                  { id: 'gpt-5.2', name: '高品質 (gpt-5.2)', desc: '高い論理的思考で良問を作成' },
+                  { id: 'gpt-5-mini', name: '高速 (gpt-5-mini)', desc: '生成スピードを優先' }
                 ].map((m) => (
                   <div
                     key={m.id}
