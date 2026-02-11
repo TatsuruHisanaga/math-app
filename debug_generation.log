@@ -1,0 +1,432 @@
+[2026-02-11T11:21:09.367Z] Problem rejected: COMPILE_FAILED - LaTeX compilation failed with code 1.
+Stderr: 
+Stdout: This is LuaHBTeX, Version 1.21.0 (TeX Live 2025) 
+ restricted system commands enabled.
+
+(/Users/tatsuru/math-app/temp_builds/87b2cb10-8f90-48fd-8370-ebcacd209487/main.
+tex
+LaTeX2e <2024-11-01> patch level 2
+L3 programming layer <2025-01-18>
+ (/usr/local/texlive/2025basic/texmf-dist/tex/latex/base/article.cls
+Document Class: article 2024/06/29 v1.4n Standard LaTeX document class
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/base/size10.clo))
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/luatexja.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/luatexja-core.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/infwarerr/infwarerr.sty)
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexbase/luatexbase.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/ctablestack/ctablestack.sty
+)) (/usr/local/texlive/2025basic/texmf-dist/tex/generic/ltxcmds/ltxcmds.sty)
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pdftexcmds/pdftexcmds.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/iftex/iftex.sty))
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/xkeyval/xkeyval.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/xkeyval/xkeyval.tex
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/xkeyval/xkvutils.tex
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/xkeyval/keyval.tex))))
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/etoolbox/etoolbox.sty)
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/ltj-base.sty)
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/ltj-latex.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/patches/lltjfont.s
+ty (/usr/local/texlive/2025basic/texmf-dist/tex/latex/base/tuenc.def))
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/patches/lltjdefs.s
+ty
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/jfm-ujisv.lua)
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/jfm-ujis.lua))
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/patches/lltjcore-2
+41201.sty (/usr/local/texlive/2025basic/texmf-dist/tex/latex/l3kernel/expl3.sty
+
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/l3backend/l3backend-luatex.d
+ef)))
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/patches/lltjp-atbe
+gshi.sty)
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/patches/lltjp-geom
+etry.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/iftex/ifluatex.sty))))
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/luatexja-compat.st
+y)) (/usr/local/texlive/2025basic/texmf-dist/tex/latex/geometry/geometry.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/iftex/ifvtex.sty))
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/amsmath/amsmath.sty
+For additional information on amsmath, use the `?' option.
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/amsmath/amstext.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/amsmath/amsgen.sty))
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/amsmath/amsbsy.sty)
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/amsmath/amsopn.sty))
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/amsfonts/amssymb.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/amsfonts/amsfonts.sty))
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/tools/multicol.sty
+
+Package multicol Warning: May not work with the twocolumn option on input line 
+140.
+
+) (/usr/local/texlive/2025basic/texmf-dist/tex/latex/needspace/needspace.sty)
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/xcolor/xcolor.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/graphics-cfg/color.cfg)
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/graphics-def/luatex.def)
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/graphics/mathcolor.ltx))
+No file main.aux.
+*geometry* driver: auto-detecting
+*geometry* detected driver: luatex
+(/usr/local/texlive/2025basic/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+) (/usr/local/texlive/2025basic/texmf-dist/tex/latex/amsfonts/umsa.fd)
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/amsfonts/umsb.fd)
+! Missing $ inserted.
+<inserted text> 
+                $
+l.55 $f(x) = ^^L
+              rac{1}{2^x}$ ���とき、$f(0)$ の���を��めなさい���󿿿
+! Missing $ inserted.
+<inserted text> 
+                $
+l.55 $f(x) = ^^Lrac{1}{2^
+                       x}$ のとき、$f(0)$ の値を求めなさ���。����
+! Extra }, or forgotten $.
+l.55 $f(x) = ^^Lrac{1}{2^x}
+                         $ のとき、$f(0)$ ��値���求めなさい。󿿿
+! Missing } inserted.
+<inserted text> 
+                }
+l.57 \end{qbox}
+               
+
+
+[1{/usr/local/texlive/2025basic/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
+(/Users/tatsuru/math-app/temp_builds/87b2cb10-8f90-48fd-8370-ebcacd209487/main.
+aux))
+(see the transcript file for additional information)
+ 1021 words of node memory still in use:
+   10 hlist, 2 vlist, 5 rule, 2 glue, 4 kern, 1 glyph, 190 attribute, 54 glue_s
+pec, 28 attribute_list, 1 write, 13 user_defined nodes
+   avail lists: 1:16,2:2159,3:23,4:97,5:44,6:10,7:187,8:5,9:125
+</usr/local/texlive/2025basic/texmf-dist/fonts/opentype/public/haranoaji/Harano
+AjiMincho-Regular.otf></usr/local/texlive/2025basic/texmf-dist/fonts/opentype/p
+ublic/lm/lmroman10-regular.otf></usr/local/texlive/2025basic/texmf-dist/fonts/t
+ype1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2025basic/texmf-dist/fon
+ts/type1/public/amsfonts/cm/cmmi7.pfb></usr/local/texlive/2025basic/texmf-dist/
+fonts/type1/public/amsfonts/cm/cmr10.pfb>
+Output written on main.pdf (1 page, 29969 bytes).
+Transcript written on main.log.
+
+Content: $f(x) = rac{1}{2^x}$ のとき、$f(0)$ の値を求めなさい。
+Answer: $f(0) = rac{1}{2^0} = 1$
+[2026-02-11T11:21:10.204Z] Problem rejected: COMPILE_FAILED - LaTeX compilation failed with code 1.
+Stderr: 
+Stdout: This is LuaHBTeX, Version 1.21.0 (TeX Live 2025) 
+ restricted system commands enabled.
+
+(/Users/tatsuru/math-app/temp_builds/2f3fd052-5fc7-4dca-b0a2-fab83e06d6ec/main.
+tex
+LaTeX2e <2024-11-01> patch level 2
+L3 programming layer <2025-01-18>
+ (/usr/local/texlive/2025basic/texmf-dist/tex/latex/base/article.cls
+Document Class: article 2024/06/29 v1.4n Standard LaTeX document class
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/base/size10.clo))
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/luatexja.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/luatexja-core.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/infwarerr/infwarerr.sty)
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexbase/luatexbase.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/ctablestack/ctablestack.sty
+)) (/usr/local/texlive/2025basic/texmf-dist/tex/generic/ltxcmds/ltxcmds.sty)
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pdftexcmds/pdftexcmds.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/iftex/iftex.sty))
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/xkeyval/xkeyval.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/xkeyval/xkeyval.tex
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/xkeyval/xkvutils.tex
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/xkeyval/keyval.tex))))
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/etoolbox/etoolbox.sty)
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/ltj-base.sty)
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/ltj-latex.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/patches/lltjfont.s
+ty (/usr/local/texlive/2025basic/texmf-dist/tex/latex/base/tuenc.def))
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/patches/lltjdefs.s
+ty
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/jfm-ujisv.lua)
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/jfm-ujis.lua))
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/patches/lltjcore-2
+41201.sty (/usr/local/texlive/2025basic/texmf-dist/tex/latex/l3kernel/expl3.sty
+
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/l3backend/l3backend-luatex.d
+ef)))
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/patches/lltjp-atbe
+gshi.sty)
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/patches/lltjp-geom
+etry.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/iftex/ifluatex.sty))))
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/luatexja-compat.st
+y)) (/usr/local/texlive/2025basic/texmf-dist/tex/latex/geometry/geometry.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/iftex/ifvtex.sty))
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/amsmath/amsmath.sty
+For additional information on amsmath, use the `?' option.
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/amsmath/amstext.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/amsmath/amsgen.sty))
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/amsmath/amsbsy.sty)
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/amsmath/amsopn.sty))
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/amsfonts/amssymb.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/amsfonts/amsfonts.sty))
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/tools/multicol.sty
+
+Package multicol Warning: May not work with the twocolumn option on input line 
+140.
+
+) (/usr/local/texlive/2025basic/texmf-dist/tex/latex/needspace/needspace.sty)
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/xcolor/xcolor.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/graphics-cfg/color.cfg)
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/graphics-def/luatex.def)
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/graphics/mathcolor.ltx))
+No file main.aux.
+*geometry* driver: auto-detecting
+*geometry* detected driver: luatex
+(/usr/local/texlive/2025basic/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+) (/usr/local/texlive/2025basic/texmf-dist/tex/latex/amsfonts/umsa.fd)
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/amsfonts/umsb.fd)
+! Missing $ inserted.
+<inserted text> 
+                $
+l.55 $^^L
+       rac{1}{3^x} = ^^Lrac{1}{27}$ のとき、$x$ を���め���さ��。���
+! Missing $ inserted.
+<inserted text> 
+                $
+l.55 $^^Lrac{1}{3^
+                x} = ^^Lrac{1}{27}$ ��と���、$x$ を求めなさい。󿿿
+! Extra }, or forgotten $.
+l.55 $^^Lrac{1}{3^x}
+                   = ^^Lrac{1}{27}$ ��とき、$x$ を求めなさい。��
+! Missing $ inserted.
+<inserted text> 
+                $
+l.55 $^^Lrac{1}{3^x} = ^^L
+                      rac{1}{27}$ ��と��、$x$ を���め���さ���。����
+! Missing $ inserted.
+<inserted text> 
+                $
+l.56 \answerbox{3cm}{}
+                      
+! Missing } inserted.
+<inserted text> 
+                }
+l.57 \end{qbox}
+               
+
+
+[1{/usr/local/texlive/2025basic/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
+(/Users/tatsuru/math-app/temp_builds/2f3fd052-5fc7-4dca-b0a2-fab83e06d6ec/main.
+aux))
+(see the transcript file for additional information)
+ 1021 words of node memory still in use:
+   10 hlist, 2 vlist, 5 rule, 2 glue, 4 kern, 1 glyph, 190 attribute, 54 glue_s
+pec, 28 attribute_list, 1 write, 13 user_defined nodes
+   avail lists: 1:11,2:1808,3:19,4:99,5:40,6:12,7:161,8:7,9:125
+</usr/local/texlive/2025basic/texmf-dist/fonts/opentype/public/haranoaji/Harano
+AjiMincho-Regular.otf></usr/local/texlive/2025basic/texmf-dist/fonts/opentype/p
+ublic/lm/lmroman10-regular.otf></usr/local/texlive/2025basic/texmf-dist/fonts/t
+ype1/public/amsfonts/cm/cmmi7.pfb></usr/local/texlive/2025basic/texmf-dist/font
+s/type1/public/amsfonts/cm/cmr10.pfb>
+Output written on main.pdf (1 page, 22200 bytes).
+Transcript written on main.log.
+
+Content: $rac{1}{3^x} = rac{1}{27}$ のとき、$x$ を求めなさい。
+Answer: $x = 3$
+[2026-02-11T11:21:15.897Z] Problem rejected: COMPILE_FAILED - LaTeX compilation failed with code 1.
+Stderr: 
+Stdout: This is LuaHBTeX, Version 1.21.0 (TeX Live 2025) 
+ restricted system commands enabled.
+
+(/Users/tatsuru/math-app/temp_builds/cbe52a18-f7ea-466e-8c8d-eaf00958c495/main.
+tex
+LaTeX2e <2024-11-01> patch level 2
+L3 programming layer <2025-01-18>
+ (/usr/local/texlive/2025basic/texmf-dist/tex/latex/base/article.cls
+Document Class: article 2024/06/29 v1.4n Standard LaTeX document class
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/base/size10.clo))
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/luatexja.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/luatexja-core.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/infwarerr/infwarerr.sty)
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexbase/luatexbase.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/ctablestack/ctablestack.sty
+)) (/usr/local/texlive/2025basic/texmf-dist/tex/generic/ltxcmds/ltxcmds.sty)
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pdftexcmds/pdftexcmds.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/iftex/iftex.sty))
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/xkeyval/xkeyval.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/xkeyval/xkeyval.tex
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/xkeyval/xkvutils.tex
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/xkeyval/keyval.tex))))
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/etoolbox/etoolbox.sty)
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/ltj-base.sty)
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/ltj-latex.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/patches/lltjfont.s
+ty (/usr/local/texlive/2025basic/texmf-dist/tex/latex/base/tuenc.def))
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/patches/lltjdefs.s
+ty
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/jfm-ujisv.lua)
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/jfm-ujis.lua))
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/patches/lltjcore-2
+41201.sty (/usr/local/texlive/2025basic/texmf-dist/tex/latex/l3kernel/expl3.sty
+
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/l3backend/l3backend-luatex.d
+ef)))
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/patches/lltjp-atbe
+gshi.sty)
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/patches/lltjp-geom
+etry.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/iftex/ifluatex.sty))))
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/luatexja-compat.st
+y)) (/usr/local/texlive/2025basic/texmf-dist/tex/latex/geometry/geometry.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/iftex/ifvtex.sty))
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/amsmath/amsmath.sty
+For additional information on amsmath, use the `?' option.
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/amsmath/amstext.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/amsmath/amsgen.sty))
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/amsmath/amsbsy.sty)
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/amsmath/amsopn.sty))
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/amsfonts/amssymb.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/amsfonts/amsfonts.sty))
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/tools/multicol.sty
+
+Package multicol Warning: May not work with the twocolumn option on input line 
+140.
+
+) (/usr/local/texlive/2025basic/texmf-dist/tex/latex/needspace/needspace.sty)
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/xcolor/xcolor.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/graphics-cfg/color.cfg)
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/graphics-def/luatex.def)
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/graphics/mathcolor.ltx))
+No file main.aux.
+*geometry* driver: auto-detecting
+*geometry* detected driver: luatex
+(/usr/local/texlive/2025basic/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+) (/usr/local/texlive/2025basic/texmf-dist/tex/latex/amsfonts/umsa.fd)
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/amsfonts/umsb.fd)
+! Missing $ inserted.
+<inserted text> 
+                $
+l.55 $4^x = ^^L
+             rac{1}{64}$ ��とき���$x$ ���求��なさい。����
+! Missing $ inserted.
+<inserted text> 
+                $
+l.56 \answerbox{3cm}{}
+                      
+
+
+[1{/usr/local/texlive/2025basic/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
+(/Users/tatsuru/math-app/temp_builds/cbe52a18-f7ea-466e-8c8d-eaf00958c495/main.
+aux))
+(see the transcript file for additional information)
+ 1021 words of node memory still in use:
+   10 hlist, 2 vlist, 5 rule, 2 glue, 4 kern, 1 glyph, 190 attribute, 54 glue_s
+pec, 28 attribute_list, 1 write, 13 user_defined nodes
+   avail lists: 1:14,2:1661,3:17,4:97,5:40,6:11,7:139,8:8,9:119
+</usr/local/texlive/2025basic/texmf-dist/fonts/opentype/public/haranoaji/Harano
+AjiMincho-Regular.otf></usr/local/texlive/2025basic/texmf-dist/fonts/opentype/p
+ublic/lm/lmroman10-regular.otf></usr/local/texlive/2025basic/texmf-dist/fonts/t
+ype1/public/amsfonts/cm/cmmi7.pfb></usr/local/texlive/2025basic/texmf-dist/font
+s/type1/public/amsfonts/cm/cmr10.pfb>
+Output written on main.pdf (1 page, 22209 bytes).
+Transcript written on main.log.
+
+Content: $4^x = rac{1}{64}$ のとき、$x$ を求めなさい。
+Answer: $x = -3$
+[2026-02-11T11:21:17.670Z] Problem rejected: COMPILE_FAILED - LaTeX compilation failed with code 1.
+Stderr: 
+Stdout: This is LuaHBTeX, Version 1.21.0 (TeX Live 2025) 
+ restricted system commands enabled.
+
+(/Users/tatsuru/math-app/temp_builds/d155eadc-012f-4bc1-b112-8efeaf6655f5/main.
+tex
+LaTeX2e <2024-11-01> patch level 2
+L3 programming layer <2025-01-18>
+ (/usr/local/texlive/2025basic/texmf-dist/tex/latex/base/article.cls
+Document Class: article 2024/06/29 v1.4n Standard LaTeX document class
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/base/size10.clo))
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/luatexja.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/luatexja-core.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/infwarerr/infwarerr.sty)
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexbase/luatexbase.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/ctablestack/ctablestack.sty
+)) (/usr/local/texlive/2025basic/texmf-dist/tex/generic/ltxcmds/ltxcmds.sty)
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pdftexcmds/pdftexcmds.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/iftex/iftex.sty))
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/xkeyval/xkeyval.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/xkeyval/xkeyval.tex
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/xkeyval/xkvutils.tex
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/xkeyval/keyval.tex))))
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/etoolbox/etoolbox.sty)
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/ltj-base.sty)
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/ltj-latex.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/patches/lltjfont.s
+ty (/usr/local/texlive/2025basic/texmf-dist/tex/latex/base/tuenc.def))
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/patches/lltjdefs.s
+ty
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/jfm-ujisv.lua)
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/jfm-ujis.lua))
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/patches/lltjcore-2
+41201.sty (/usr/local/texlive/2025basic/texmf-dist/tex/latex/l3kernel/expl3.sty
+
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/l3backend/l3backend-luatex.d
+ef)))
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/patches/lltjp-atbe
+gshi.sty)
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/patches/lltjp-geom
+etry.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/iftex/ifluatex.sty))))
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/luatexja-compat.st
+y)) (/usr/local/texlive/2025basic/texmf-dist/tex/latex/geometry/geometry.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/iftex/ifvtex.sty))
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/amsmath/amsmath.sty
+For additional information on amsmath, use the `?' option.
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/amsmath/amstext.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/amsmath/amsgen.sty))
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/amsmath/amsbsy.sty)
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/amsmath/amsopn.sty))
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/amsfonts/amssymb.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/amsfonts/amsfonts.sty))
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/tools/multicol.sty
+
+Package multicol Warning: May not work with the twocolumn option on input line 
+140.
+
+) (/usr/local/texlive/2025basic/texmf-dist/tex/latex/needspace/needspace.sty)
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/xcolor/xcolor.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/graphics-cfg/color.cfg)
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/graphics-def/luatex.def)
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/graphics/mathcolor.ltx))
+No file main.aux.
+*geometry* driver: auto-detecting
+*geometry* detected driver: luatex
+(/usr/local/texlive/2025basic/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+) (/usr/local/texlive/2025basic/texmf-dist/tex/latex/amsfonts/umsa.fd)
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/amsfonts/umsb.fd)
+! Missing $ inserted.
+<inserted text> 
+                $
+l.56 \answeredbox{$x = ^^Lrac{5}{2}$}
+                                   
+! Missing $ inserted.
+<inserted text> 
+                $
+l.56 \answeredbox{$x = ^^Lrac{5}{2}$}
+                                   
+
+
+[1{/usr/local/texlive/2025basic/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
+(/Users/tatsuru/math-app/temp_builds/d155eadc-012f-4bc1-b112-8efeaf6655f5/main.
+aux))
+(see the transcript file for additional information)
+ 1075 words of node memory still in use:
+   10 hlist, 2 vlist, 5 rule, 2 glue, 4 kern, 1 glyph, 214 attribute, 54 glue_s
+pec, 31 attribute_list, 1 write, 13 user_defined nodes
+   avail lists: 1:16,2:1682,3:19,4:99,5:40,6:10,7:143,8:2,9:93,11:2
+</usr/local/texlive/2025basic/texmf-dist/fonts/opentype/public/lm/lmroman10-bol
+d.otf></usr/local/texlive/2025basic/texmf-dist/fonts/opentype/public/haranoaji/
+HaranoAjiGothic-Medium.otf></usr/local/texlive/2025basic/texmf-dist/fonts/opent
+ype/public/lm/lmroman10-regular.otf></usr/local/texlive/2025basic/texmf-dist/fo
+nts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2025basic/texmf-dis
+t/fonts/type1/public/amsfonts/cm/cmr10.pfb>
+Output written on main.pdf (1 page, 21819 bytes).
+Transcript written on main.log.
+
+Content: $2^{2x} = 32$ のとき、$x$ を求めなさい。
+Answer: $x = rac{5}{2}$

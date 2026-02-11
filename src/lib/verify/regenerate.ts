@@ -4,6 +4,14 @@ import { sanitizeLatex } from './latex_sanitize';
 import { checkCompilation } from './compile_check';
 import { checkMath } from './math_check';
 import { FailureCode, VerificationResult } from './failure_codes';
+import fs from 'fs';
+import path from 'path';
+
+function logToDebugFile(message: string) {
+    const logPath = path.resolve(process.cwd(), 'debug_generation.log');
+    const timestamp = new Date().toISOString();
+    fs.appendFileSync(logPath, `[${timestamp}] ${message}\n`);
+}
 
 export interface ValidatedProblem extends AIProblemItem {
     verification_log?: VerificationResult[];
@@ -103,6 +111,7 @@ Difficulty: ${difficulty}
                     } else {
                         lastError = `Rejected: ${validation.code} - ${validation.reason}`;
                         console.warn(`Problem rejected: ${validation.code} - ${validation.reason} \nContent: ${p.stem_latex}`);
+                        logToDebugFile(`Problem rejected: ${validation.code} - ${validation.reason}\nContent: ${p.stem_latex}\nAnswer: ${p.answer_latex}`);
                     }
                 }
                 
@@ -113,6 +122,7 @@ Difficulty: ${difficulty}
             } catch (e: any) {
                 lastError = e.message;
                 console.error("AI Generation failed", e);
+                logToDebugFile(`AI Generation Attempt Failed: ${e.message}\nStack: ${e.stack}`);
             }
         }
         
