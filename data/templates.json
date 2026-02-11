@@ -1,7 +1,7 @@
 [
   {
     "id": "t1_1",
-    "unit_id": "u1",
+    "unit_id": "m1_shiki",
     "difficulty": "L1",
     "stem": "$${a} + ${b}$",
     "answer": "$${ans}$",
@@ -9,7 +9,7 @@
   },
   {
     "id": "t1_2",
-    "unit_id": "u1",
+    "unit_id": "m1_shiki",
     "difficulty": "L1",
     "stem": "$${a} - ${b}$",
     "answer": "$${ans}$",
@@ -17,7 +17,7 @@
   },
   {
     "id": "t1_3",
-    "unit_id": "u1",
+    "unit_id": "m1_shiki",
     "difficulty": "L2",
     "stem": "$${a} \\times ${b}$",
     "answer": "$${ans}$",
@@ -25,7 +25,7 @@
   },
   {
     "id": "t1_4",
-    "unit_id": "u1",
+    "unit_id": "m1_shiki",
     "difficulty": "L2",
     "stem": "$${a} \\div ${b}$",
     "answer": "$${ans}$",
@@ -33,7 +33,7 @@
   },
   {
     "id": "t1_5",
-    "unit_id": "u1",
+    "unit_id": "m1_shiki",
     "difficulty": "L3",
     "stem": "$${a} - (${b} - ${c})$",
     "answer": "$${ans}$",
@@ -41,7 +41,7 @@
   },
   {
     "id": "t2_1",
-    "unit_id": "u2",
+    "unit_id": "m1_shiki",
     "difficulty": "L1",
     "stem": "次の式を計算せよ: $${a}x + ${b}x$",
     "answer": "$${ans}x$",
@@ -49,7 +49,7 @@
   },
   {
     "id": "t2_2",
-    "unit_id": "u2",
+    "unit_id": "m1_shiki",
     "difficulty": "L1",
     "stem": "$${a}x - ${b}x$",
     "answer": "$${ans}x$",
@@ -57,7 +57,7 @@
   },
   {
     "id": "t2_3",
-    "unit_id": "u2",
+    "unit_id": "m1_shiki",
     "difficulty": "L2",
     "stem": "$${a}(x + ${b})$",
     "answer": "$${a}x + ${ab}$",
@@ -65,7 +65,7 @@
   },
   {
     "id": "t2_4",
-    "unit_id": "u2",
+    "unit_id": "m1_shiki",
     "difficulty": "L2",
     "stem": "$${a}(x - ${b})$",
     "answer": "$${a}x - ${ab}$",
@@ -73,7 +73,7 @@
   },
   {
     "id": "t2_5",
-    "unit_id": "u2",
+    "unit_id": "m1_shiki",
     "difficulty": "L3",
     "stem": "$${a}x + ${b}y - ${c}x$",
     "answer": "$${ans_x}x + ${b}y$",
@@ -81,7 +81,7 @@
   },
   {
     "id": "t3_1",
-    "unit_id": "u3",
+    "unit_id": "m1_shiki",
     "difficulty": "L1",
     "stem": "$a^{${n}} \\times a^{${m}}$",
     "answer": "$a^{${nm}}$",
@@ -89,7 +89,7 @@
   },
   {
     "id": "t3_2",
-    "unit_id": "u3",
+    "unit_id": "m1_shiki",
     "difficulty": "L1",
     "stem": "$(a^{${n}})^{${m}}$",
     "answer": "$a^{${nm_mul}}$",
@@ -97,7 +97,7 @@
   },
   {
     "id": "t3_3",
-    "unit_id": "u3",
+    "unit_id": "m1_shiki",
     "difficulty": "L2",
     "stem": "$a^{${n}} \\div a^{${m}}$",
     "answer": "$a^{${n_m}}$",
@@ -105,7 +105,7 @@
   },
   {
     "id": "t3_4",
-    "unit_id": "u3",
+    "unit_id": "m1_shiki",
     "difficulty": "L2",
     "stem": "$a^{${n}} \\times a^{${m}} \\times a^{${k}}$",
     "answer": "$a^{${nmk}}$",
@@ -113,7 +113,7 @@
   },
   {
     "id": "t3_5",
-    "unit_id": "u3",
+    "unit_id": "m1_shiki",
     "difficulty": "L3",
     "stem": "$(ab)^{${n}} \\times (a^{${m}})$",
     "answer": "$a^{${n_m}}b^{${n}}$",
@@ -121,7 +121,7 @@
   },
   {
     "id": "t4_1",
-    "unit_id": "u4",
+    "unit_id": "m1_shiki",
     "difficulty": "L1",
     "stem": "$\\sqrt{${sq}}$",
     "answer": "$${ans}$",
@@ -129,7 +129,7 @@
   },
   {
     "id": "t4_2",
-    "unit_id": "u4",
+    "unit_id": "m1_shiki",
     "difficulty": "L1",
     "stem": "$-\\sqrt{${sq}}$",
     "answer": "$-${ans}$",
@@ -137,7 +137,7 @@
   },
   {
     "id": "t4_3",
-    "unit_id": "u4",
+    "unit_id": "m1_shiki",
     "difficulty": "L2",
     "stem": "$\\sqrt{${a}} \\times \\sqrt{${b}}$",
     "answer": "$\\sqrt{${ab}}$",
@@ -145,7 +145,7 @@
   },
   {
     "id": "t4_4",
-    "unit_id": "u4",
+    "unit_id": "m1_shiki",
     "difficulty": "L2",
     "stem": "$\\sqrt{${ab}} \\div \\sqrt{${b}}$",
     "answer": "$\\sqrt{${a}}$",
@@ -153,7 +153,7 @@
   },
   {
     "id": "t4_5",
-    "unit_id": "u4",
+    "unit_id": "m1_shiki",
     "difficulty": "L3",
     "stem": "$\\sqrt{${a}}^2 + \\sqrt{${b}}^2$",
     "answer": "$${a_b}$",
@@ -161,7 +161,7 @@
   },
   {
     "id": "t5_1",
-    "unit_id": "u5",
+    "unit_id": "m1_shiki",
     "difficulty": "L1",
     "stem": "$(x + ${a})(x + ${b})$",
     "answer": "$x^2 + ${sum}x + ${prod}$",
@@ -169,7 +169,7 @@
   },
   {
     "id": "t5_2",
-    "unit_id": "u5",
+    "unit_id": "m1_shiki",
     "difficulty": "L1",
     "stem": "$(x - ${a})(x - ${b})$",
     "answer": "$x^2 - ${sum}x + ${prod}$",
@@ -177,7 +177,7 @@
   },
   {
     "id": "t5_3",
-    "unit_id": "u5",
+    "unit_id": "m1_shiki",
     "difficulty": "L2",
     "stem": "$(x + ${a})^2$",
     "answer": "$x^2 + ${2a}x + ${sq}$",
@@ -185,7 +185,7 @@
   },
   {
     "id": "t5_4",
-    "unit_id": "u5",
+    "unit_id": "m1_shiki",
     "difficulty": "L2",
     "stem": "$(x - ${a})^2$",
     "answer": "$x^2 - ${2a}x + ${sq}$",
@@ -193,7 +193,7 @@
   },
   {
     "id": "t5_5",
-    "unit_id": "u5",
+    "unit_id": "m1_shiki",
     "difficulty": "L3",
     "stem": "$(x + ${a})(x - ${a})$",
     "answer": "$x^2 - ${sq}$",
@@ -201,7 +201,7 @@
   },
   {
     "id": "t6_1",
-    "unit_id": "u6",
+    "unit_id": "m1_shiki",
     "difficulty": "L1",
     "stem": "$x^2 + ${sum}x + ${prod}$",
     "answer": "$(x + ${a})(x + ${b})$",
@@ -209,7 +209,7 @@
   },
   {
     "id": "t6_2",
-    "unit_id": "u6",
+    "unit_id": "m1_shiki",
     "difficulty": "L1",
     "stem": "$x^2 - ${sum}x + ${prod}$",
     "answer": "$(x - ${a})(x - ${b})$",
@@ -217,7 +217,7 @@
   },
   {
     "id": "t6_3",
-    "unit_id": "u6",
+    "unit_id": "m1_shiki",
     "difficulty": "L2",
     "stem": "$x^2 + ${2a}x + ${sq}$",
     "answer": "$(x + ${a})^2$",
@@ -225,7 +225,7 @@
   },
   {
     "id": "t6_4",
-    "unit_id": "u6",
+    "unit_id": "m1_shiki",
     "difficulty": "L2",
     "stem": "$x^2 - ${2a}x + ${sq}$",
     "answer": "$(x - ${a})^2$",
@@ -233,7 +233,7 @@
   },
   {
     "id": "t6_5",
-    "unit_id": "u6",
+    "unit_id": "m1_shiki",
     "difficulty": "L3",
     "stem": "$x^2 - ${sq}$",
     "answer": "$(x + ${a})(x - ${a})$",
@@ -241,7 +241,7 @@
   },
   {
     "id": "t7_1",
-    "unit_id": "u7",
+    "unit_id": "m1_shiki",
     "difficulty": "L1",
     "stem": "$x + ${a} = ${b}$",
     "answer": "$x = ${b_a}$",
@@ -249,7 +249,7 @@
   },
   {
     "id": "t7_2",
-    "unit_id": "u7",
+    "unit_id": "m1_shiki",
     "difficulty": "L1",
     "stem": "$x - ${a} = ${b}$",
     "answer": "$x = ${b_plus_a}$",
@@ -257,7 +257,7 @@
   },
   {
     "id": "t7_3",
-    "unit_id": "u7",
+    "unit_id": "m1_shiki",
     "difficulty": "L2",
     "stem": "$${a}x = ${b}$",
     "answer": "$x = ${b_div_a}$",
@@ -265,7 +265,7 @@
   },
   {
     "id": "t7_4",
-    "unit_id": "u7",
+    "unit_id": "m1_shiki",
     "difficulty": "L2",
     "stem": "$${a}x + ${b} = ${c}$",
     "answer": "$x = ${ans}$",
@@ -273,7 +273,7 @@
   },
   {
     "id": "t7_5",
-    "unit_id": "u7",
+    "unit_id": "m1_shiki",
     "difficulty": "L3",
     "stem": "$${a}x + ${b} = ${c}x + ${d}$",
     "answer": "$x = ${ans}$",
@@ -281,7 +281,7 @@
   },
   {
     "id": "t8_1",
-    "unit_id": "u8",
+    "unit_id": "m1_2ji_func",
     "difficulty": "L1",
     "stem": "$x^2 = ${sq}$",
     "answer": "$x = \\pm ${a}$",
@@ -289,7 +289,7 @@
   },
   {
     "id": "t8_2",
-    "unit_id": "u8",
+    "unit_id": "m1_2ji_func",
     "difficulty": "L1",
     "stem": "$x^2 - ${sq} = 0$",
     "answer": "$x = \\pm ${a}$",
@@ -297,7 +297,7 @@
   },
   {
     "id": "t8_3",
-    "unit_id": "u8",
+    "unit_id": "m1_2ji_func",
     "difficulty": "L2",
     "stem": "$(x - ${a})^2 = ${b}$",
     "answer": "$x = ${a} \\pm \\sqrt{${b}}$",
@@ -305,7 +305,7 @@
   },
   {
     "id": "t8_4",
-    "unit_id": "u8",
+    "unit_id": "m1_2ji_func",
     "difficulty": "L2",
     "stem": "$x^2 + ${sum}x + ${prod} = 0$",
     "answer": "$x = -${a}, -${b}$",
@@ -313,7 +313,7 @@
   },
   {
     "id": "t8_5",
-    "unit_id": "u8",
+    "unit_id": "m1_2ji_func",
     "difficulty": "L3",
     "stem": "$x^2 + ${odd}x + ${c} = 0$",
     "answer": "$\\frac{-${odd} \\pm \\sqrt{D}}{2}$",

@@ -11,6 +11,7 @@ interface AIProblem {
     answer_latex: string;
     explanation_latex: string;
     difficulty: string;
+    hints?: string[];
 }
 
 export default function AiCreation() {
@@ -26,6 +27,7 @@ export default function AiCreation() {
     const [intent, setIntent] = useState('');
     const [pdfUrl, setPdfUrl] = useState<string | null>(null);
     const [showPreview, setShowPreview] = useState(false);
+    const [teachingAssistantMode, setTeachingAssistantMode] = useState(false);
     
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -64,7 +66,7 @@ export default function AiCreation() {
         setResults([]);
         setIntent('');
         setPdfUrl(null);
-        setProgress('AIがリクエストを解析中...');
+        setProgress('問題を作成中...');
 
         try {
             const formData = new FormData();
@@ -151,9 +153,13 @@ export default function AiCreation() {
                         unit_title: 'AI生成問題'
                     })),
                     units: ['ai_prompt'],
-                    difficulties: ['L1', 'L2', 'L3'],
+                    difficulties: Array.from(new Set(problems.map(p => p.difficulty))),
                     count: problems.length,
-                    options: { stumblingBlock: false, moreWorkSpace: false }
+                    options: { 
+                        stumblingBlock: false, 
+                        moreWorkSpace: false,
+                        teachingAssistant: teachingAssistantMode 
+                    }
                 })
             });
 
@@ -266,6 +272,21 @@ export default function AiCreation() {
                                         className={styles.numberInput}
                                     />
                                 </div>
+
+                                <div className={styles.teachingAssistantToggle} style={{ marginTop: '1rem' }}>
+                                    <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', fontSize: '0.9rem' }}>
+                                        <input 
+                                            type="checkbox" 
+                                            checked={teachingAssistantMode} 
+                                            onChange={(e) => setTeachingAssistantMode(e.target.checked)}
+                                            style={{ marginRight: '0.5rem', width: '16px', height: '16px' }} 
+                                        />
+                                        ティーチングアシスタントモード
+                                    </label>
+                                    <p style={{ fontSize: '0.8rem', color: '#888', marginLeft: '1.6rem', marginTop: '0.2rem' }}>
+                                        解説に加え、各問題のヒントステップを掲載した講師用ページを追加します。
+                                    </p>
+                                </div>
                             </div>
 
                             <button 
@@ -362,7 +383,7 @@ export default function AiCreation() {
                         </div>
                         <h3>{progress || '処理中...'}</h3>
                         <p style={{ fontSize: '0.8rem', color: '#666', marginTop: '1rem' }}>
-                            AIが内容を理解し、数学的に正しい問題を生成しています。<br />
+AIが問題を生成・検証し、PDFを作成しています。
                             数分かかる場合があります。
                         </p>
                     </div>

@@ -136,4 +136,18 @@ Difficulty: ${problem.difficulty}
         feedbackSchema
     );
   }
+
+
+  async generateEvaluation(systemPrompt: string, userPrompt: string): Promise<{ score: number; reason: string; pass: boolean }> {
+    const evalSchema = require('./schemas/evaluation_result.strict.json');
+    return this.callOpenAIWithMessages<{ score: number; reason: string; pass: boolean }>(
+        this.modelFeedback, // reuse feedback model (gpt-4o) which is good for logical tasks
+        [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: userPrompt }
+        ],
+        "evaluation_result",
+        evalSchema
+    );
+  }
 }

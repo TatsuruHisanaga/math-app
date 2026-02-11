@@ -1,0 +1,92 @@
+{
+  "timestamp": "2025-12-29T07:08:01.676Z",
+  "total": 3,
+  "passed": 2,
+  "results": [
+    {
+      "id": "exp_func_graph",
+      "prompt": "指数関数のグラフに関する問題を作成して",
+      "unit": "m2_shisu_taisu",
+      "expected_difficulty": "L2",
+      "criteria": [
+        "グラフの描画または読み取りを含むこと",
+        "対数関数を使用しないこと"
+      ],
+      "output": {
+        "stem_latex": "指数関数 $f(x) = 2^x$ のグラフについて、以下の問いに答えなさい。\\\n(a) $x$ が増加すると、$f(x)$ はどのように変化しますか？\\\n(b) $f(x)$ のグラフは $y$ 軸に対して対称ですか？",
+        "answer_latex": "\\text{(a) } f(x) = 2^x\\text{ は増加関数であり、}x\\text{ が増加すると }f(x)\\text{ も増加します。}\\\n\\text{(b) } f(x) = 2^x\\text{ は }y\\text{ 軸に対して対称ではありません。}",
+        "explanation_latex": "(a) 指数関数 $f(x) = 2^x$ の場合、底が 2 で正の数なので、増加関数となります。つまり、$x$ が増加すると $f(x)$ も増加します。\\\\\n(b) $f(x) = 2^x$ のグラフは $y$ 軸に対して対称ではありません。なぜなら、$f(-x) = 2^{-x} = \\frac{1}{2^x}$ となり、$f(x)$ とは異なるからです。",
+        "unit_id": "m2_shisu_taisu",
+        "difficulty": "L2",
+        "hints": [
+          "指数関数の性質を考えてみましょう。",
+          "$f(x) = 2^x$ はどのような挙動を示すかを考えてみてください。",
+          "グラフの対称性について考える際は、$f(-x)$ を考えてみましょう。"
+        ]
+      },
+      "evaluation": {
+        "score": 5,
+        "reason": "The generated output perfectly meets the specific criteria. It includes both graph interpretation and avoids using logarithms. The questions about the behavior of the exponential function and its symmetry provide a complete and relevant problem set.",
+        "pass": true
+      },
+      "duration": 6834
+    },
+    {
+      "id": "log_calc_basic",
+      "prompt": "対数の基本的な計算問題（底の変換を含む）",
+      "unit": "m2_shisu_taisu",
+      "expected_difficulty": "L1",
+      "criteria": [
+        "底の変換公式を使用する問題が含まれていること",
+        "計算結果が整数または簡単な分数になること"
+      ],
+      "output": {
+        "stem_latex": "次の式を計算せよ：\n\n$$\\log_5{25}$$",
+        "answer_latex": "2",
+        "explanation_latex": "\\(\\log_5{25}\\) は、5を何乗すると25になるかを求める問題です。25は5の2乗に等しいので、答えは2です。",
+        "unit_id": "m2_shisu_taisu",
+        "difficulty": "L1",
+        "hints": [
+          "25は5のべき乗で表せます。",
+          "25=5^2です。",
+          "したがって、\\(\\log_5{25} = 2\\) です。"
+        ]
+      },
+      "evaluation": {
+        "score": 2,
+        "reason": "The problem lacks the use of the change of base formula, which is a specific requirement of the prompt. The problem provided only involves basic logarithmic evaluation without conversion between bases.",
+        "pass": false
+      },
+      "duration": 4640
+    },
+    {
+      "id": "multi_topic_mix",
+      "prompt": "2次関数の最大・最小と、場合の数の融合問題",
+      "unit": "m1_2ji_func",
+      "expected_difficulty": "L3",
+      "criteria": [
+        "2次関数の知識が必要であること",
+        "場合の数（確率）の知識が必要であること",
+        "融合問題として自然であること"
+      ],
+      "output": {
+        "stem_latex": "2次関数 $f(x) = -2x^2 + 4x + 1$ について、$x$ の整数値が3つあるとき、$f(x)$ の最大値を求めなさい。また、その整数値の組み合わせ数を求めなさい。",
+        "answer_latex": "最大値は $f(1) = 3$、組み合わせ数は $\\binom{3}{3} = 1$",
+        "explanation_latex": "2次関数 $f(x) = -2x^2 + 4x + 1$ の頂点の $x$ 座標は $x = -\\frac{b}{2a} = -\\frac{4}{2(-2)} = 1$ なので、$x=1$ のときに最大値をとります。したがって、最大値は $f(1) = -2(1)^2 + 4(1) + 1 = 3$ です。\\n\\n次に、$x$ の整数値が3つあるとき、その組み合わせを考えます。最大値をとる $x=1$ を中心に、$x$ の取りうる範囲は $x = \\{0, 1, 2\\}$ です。\\n\\nこの場合、整数値の組み合わせは $\\{0, 1, 2\\}$ のみで、その組み合わせ数は $\\binom{3}{3} = 1$ です。",
+        "unit_id": "m1_2ji_func",
+        "difficulty": "L3",
+        "hints": [
+          "2次関数の頂点を求めて、その付近での整数値を考えます。",
+          "3つの整数値がどの範囲にあるかを考えて、組み合わせを導き出します。",
+          "最大値をとる整数を中心に、左右に1つずつ整数を選ぶ方法を考えます。"
+        ]
+      },
+      "evaluation": {
+        "score": 4,
+        "reason": "The generated output successfully incorporates both quadratic functions and combinatorics, addressing the fusion problem naturally. However, there is a slight ambiguity regarding the specific requirement of '3つの整数値'. The connection between finding the maximum value and combinatorial considerations could be clearer.",
+        "pass": true
+      },
+      "duration": 12027
+    }
+  ]
+}

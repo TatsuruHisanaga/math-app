@@ -1,0 +1,33 @@
+[
+  {
+    "id": "exp_func_graph",
+    "prompt": "指数関数のグラフに関する問題を作成して",
+    "unit": "m2_shisu_taisu",
+    "expected_difficulty": "L2",
+    "criteria": [
+      "グラフの描画または読み取りを含むこと",
+      "対数関数を使用しないこと"
+    ]
+  },
+  {
+    "id": "log_calc_basic",
+    "prompt": "対数の基本的な計算問題（底の変換を含む）",
+    "unit": "m2_shisu_taisu",
+    "expected_difficulty": "L1",
+    "criteria": [
+      "底の変換公式を使用する問題が含まれていること",
+      "計算結果が整数または簡単な分数になること"
+    ]
+  },
+  {
+    "id": "multi_topic_mix",
+    "prompt": "2次関数の最大・最小と、場合の数の融合問題",
+    "unit": "m1_2ji_func",
+    "expected_difficulty": "L3",
+    "criteria": [
+      "2次関数の知識が必要であること",
+      "場合の数（確率）の知識が必要であること",
+      "融合問題として自然であること"
+    ]
+  }
+]

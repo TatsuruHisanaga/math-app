@@ -7,12 +7,15 @@ import Link from 'next/link';
 import LatexRenderer from '@/components/LatexRenderer'; // Import LatexRenderer
 
 // Type definitions matching backend
-type Unit = { id: string; title_ja: string };
+type SubUnit = { id: string; title: string };
+type Unit = { id: string; title: string; subUnits?: SubUnit[] };
 type UnitMap = { units: Record<string, Unit> };
 
 export default function Home() {
   const [units, setUnits] = useState<Unit[]>([]);
   const [selectedUnits, setSelectedUnits] = useState<string[]>([]);
+  const [selectedSubUnits, setSelectedSubUnits] = useState<Record<string, string[]>>({});
+  const [generatedProblems, setGeneratedProblems] = useState<any[]>([]); // New state
   const [difficulty, setDifficulty] = useState<string[]>(['L1']);
   const [count, setCount] = useState<number>(10);
   const [options, setOptions] = useState({
@@ -43,7 +46,23 @@ export default function Home() {
     {
       subject: '数学A',
       units: [
-        { id: 'ma_baai', title: '場合の数と確率' },
+        { 
+            id: 'ma_baai', 
+            title: '場合の数と確率',
+            subUnits: [
+                { id: 'ma_baai_1', title: '集合の要素の個数' },
+                { id: 'ma_baai_2', title: '場合の数（和・積の法則）' },
+                { id: 'ma_baai_3', title: '順列(P)・階乗(!)' },
+                { id: 'ma_baai_4', title: '円順列・重複順列' },
+                { id: 'ma_baai_5', title: '組合せ(C)' },
+                { id: 'ma_baai_6', title: '同じものを含む順列' },
+                { id: 'ma_baai_7', title: '重複組合せ(H)' },
+                { id: 'ma_baai_8', title: '確率の定義・基本性質' },
+                { id: 'ma_baai_9', title: '独立試行・反復試行' },
+                { id: 'ma_baai_10', title: '条件付き確率・乗法定理' },
+                { id: 'ma_baai_11', title: '期待値' }
+            ]
+        },
         { id: 'ma_seishitsu', title: '整数の性質' },
         { id: 'ma_zukei', title: '図形の性質' },
       ]
@@ -102,6 +121,7 @@ export default function Home() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           units: selectedUnits,
+          unitDetails: selectedSubUnits,
           difficulty: difficulty[0] || 'L1',
           count,
           aiModel,
@@ -138,6 +158,7 @@ export default function Home() {
               } else if (data.type === 'complete') {
                 collectedProblems = data.problems;
                 collectedIntent = data.intent;
+                setGeneratedProblems(data.problems); // Store for rendering
               } else if (data.type === 'error') {
                 throw new Error(data.message);
               }
@@ -266,16 +287,68 @@ export default function Home() {
         setTimeout(() => document.body.removeChild(a), 100);
   };
 
+  /* Sub-unit toggle logic */
   const toggleUnit = (id: string) => {
-    setSelectedUnits(prev =>
-      prev.includes(id) ? prev.filter(u => u !== id) : [...prev, id]
-    );
+    setSelectedUnits(prev => {
+      const isSelected = prev.includes(id);
+      if (isSelected) {
+        // Deselecting: Remove from units and clear sub-units
+        const next = prev.filter(u => u !== id);
+        setSelectedSubUnits(prevSub => {
+            const copy = { ...prevSub };
+            delete copy[id];
+            return copy;
+        });
+        return next;
+      } else {
+        // Selecting: Add to units, but DO NOT select sub-units by default (empty = implied all/generic)
+        // We initialize with empty array to allow manual selection
+        return [...prev, id];
+      }
+    });
+  };
+
+  const toggleSubUnit = (unitId: string, subTitle: string) => {
+      setSelectedSubUnits(prev => {
+          const current = prev[unitId] || [];
+          const exists = current.includes(subTitle);
+          let next;
+          if (exists) {
+              next = current.filter(t => t !== subTitle);
+          } else {
+              next = [...current, subTitle];
+          }
+          return { ...prev, [unitId]: next };
+      });
   };
 
   const toggleDifficulty = (d: string) => {
     setDifficulty(prev =>
       prev.includes(d) ? prev.filter(x => x !== d) : [...prev, d]
     );
+  };
+
+  /* Tabbed Selection Implementation */
+  const [activeTab, setActiveTab] = useState('1A'); // '1A' | '2B' | '3C'
+
+  const TAB_GROUPS: Record<string, string[]> = {
+      '1A': ['数学I', '数学A'],
+      '2B': ['数学II', '数学B'],
+      '3C': ['数学III', '数学C']
+  };
+
+  const visibleCurriculum = CURRICULUM.filter(cat => TAB_GROUPS[activeTab].includes(cat.subject));
+
+  /* Helper for bulk selection */
+  const handleSelectAll = (catUnits: Unit[]) => {
+      const ids = catUnits.map(u => u.id);
+      const isAllSelected = ids.every(id => selectedUnits.includes(id));
+      
+      if (isAllSelected) {
+          setSelectedUnits(prev => prev.filter(id => !ids.includes(id)));
+      } else {
+          setSelectedUnits(prev => Array.from(new Set([...prev, ...ids])));
+      }
   };
 
   return (
@@ -296,24 +369,130 @@ export default function Home() {
         </div>
 
         <section className={styles.section}>
-          <h2>1. 単元選択</h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            {CURRICULUM.map(cat => (
-              <div key={cat.subject}>
-                <h3 style={{ marginBottom: '0.5rem', color: '#666', fontSize: '0.9rem' }}>{cat.subject}</h3>
-                <div className={styles.grid}>
-                  {cat.units.map(u => (
-                    <button
-                      key={u.id}
-                      className={`${styles.card} ${selectedUnits.includes(u.id) ? styles.active : ''}`}
-                      onClick={() => toggleUnit(u.id)}
-                    >
-                      {u.title}
-                    </button>
-                  ))}
-                </div>
+          <h2>
+              1. 単元選択
+              <div style={{ display: 'inline-flex', flexWrap: 'wrap', gap: '0.5rem', marginLeft: '1rem', verticalAlign: 'middle' }}>
+                  {selectedUnits.length === 0 && <span style={{fontSize: '0.9rem', color: '#999', fontWeight: 'normal'}}>（未選択）</span>}
+                  {selectedUnits.map(id => {
+                      const unit = ALL_UNITS.find(u => u.id === id);
+                      return (
+                          <span key={id} style={{ 
+                              fontSize: '0.8rem', 
+                              padding: '2px 8px', 
+                              borderRadius: '12px', 
+                              background: '#333', 
+                              color: '#fff',
+                              fontWeight: 'normal' 
+                          }}>
+                              {unit?.title || id}
+                              <span 
+                                  onClick={(e) => { e.stopPropagation(); toggleUnit(id); }}
+                                  style={{ marginLeft: '6px', cursor: 'pointer', opacity: 0.8 }}
+                              >
+                                  ×
+                              </span>
+                          </span>
+                      );
+                  })}
               </div>
-            ))}
+          </h2>
+
+          <div className={styles.toggleGroup} style={{ marginBottom: '1.5rem', background: 'white', border: '1px solid #ddd' }}>
+              {Object.keys(TAB_GROUPS).map(tabKey => (
+                  <div 
+                      key={tabKey}
+                      className={`${styles.toggleButton} ${activeTab === tabKey ? styles.active : ''}`}
+                      onClick={() => setActiveTab(tabKey)}
+                  >
+                      {TAB_GROUPS[tabKey].join('・')}
+                  </div>
+              ))}
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            {visibleCurriculum.map(cat => {
+              const isAllSelected = cat.units.every(u => selectedUnits.includes(u.id));
+              return (
+                <div key={cat.subject}>
+                    <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
+                        <h3 style={{ margin: 0, color: '#666', fontSize: '0.9rem', marginRight: '1rem' }}>{cat.subject}</h3>
+                        <button
+                            onClick={() => handleSelectAll(cat.units)}
+                            style={{
+                                fontSize: '0.75rem',
+                                padding: '2px 8px',
+                                border: '1px solid #ddd',
+                                background: isAllSelected ? '#eee' : '#fff',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                color: '#555'
+                            }}
+                        >
+                            {isAllSelected ? 'すべて解除' : 'すべて選択'}
+                        </button>
+                    </div>
+                    <div className={styles.grid}>
+                    {cat.units.map(u => (
+                        <button
+                        key={u.id}
+                        className={`${styles.card} ${selectedUnits.includes(u.id) ? styles.active : ''}`}
+                        onClick={() => toggleUnit(u.id)}
+                        style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', height: 'auto' }}
+                        >
+                            <span style={{ fontSize: '1rem' }}>{u.title}</span>
+                            
+                            {/* Sub-unit selection */}
+                            {selectedUnits.includes(u.id) && u.subUnits && (
+                                <div 
+                                    onClick={e => e.stopPropagation()} 
+                                    style={{ 
+                                        marginTop: '1rem', 
+                                        width: '100%',
+                                        textAlign: 'left'
+                                    }}
+                                >
+                                    <div style={{fontSize: '0.75rem', fontWeight: 'bold', marginBottom:'8px', color: '#888'}}>
+                                        絞り込み (任意):
+                                    </div>
+                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                                        {u.subUnits.map(sub => {
+                                            const isChecked = (selectedSubUnits[u.id] || []).includes(sub.title);
+                                            return (
+                                                <button
+                                                    key={sub.id}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation(); // Prevent unit toggle
+                                                        toggleSubUnit(u.id, sub.title);
+                                                    }}
+                                                    style={{
+                                                        fontSize: '0.75rem',
+                                                        padding: '4px 12px',
+                                                        borderRadius: '20px',
+                                                        border: isChecked ? '1px solid #FFB300' : '1px solid #eee',
+                                                        background: isChecked ? '#FFF8E1' : '#f9f9f9',
+                                                        color: isChecked ? '#B45309' : '#666',
+                                                        fontWeight: isChecked ? '600' : 'normal',
+                                                        cursor: 'pointer',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: '4px',
+                                                        transition: 'all 0.15s ease'
+                                                    }}
+                                                >
+                                                    {isChecked && <span>✓</span>}
+                                                    {sub.title}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            )}
+                        </button>
+                    ))}
+                    </div>
+                </div>
+              );
+            })}
           </div>
         </section>
 
@@ -396,7 +575,8 @@ export default function Home() {
                         fontSize: '0.95rem',
                         minHeight: '80px',
                         fontFamily: 'inherit',
-                        resize: 'vertical'
+                        resize: 'vertical',
+                        boxSizing: 'border-box'
                     }}
                 />
             </div>
@@ -444,12 +624,67 @@ export default function Home() {
                 </div>
 
                 {showPreview && (
-                    <div style={{ width: '100%', height: '600px', border: '1px solid #ddd', borderRadius: '8px', overflow: 'hidden' }}>
+                    <div style={{ width: '100%', height: '600px', border: '1px solid #ddd', borderRadius: '8px', overflow: 'hidden', marginBottom: '2rem' }}>
                         <iframe 
                             src={`${pdfUrl}#toolbar=0`} 
                             style={{ width: '100%', height: '100%', border: 'none' }}
                             title="PDF Preview"
                         />
+                    </div>
+                )}
+
+                {/* Generated Problems List */}
+                {generatedProblems.length > 0 && (
+                    <div style={{ marginTop: '2rem', borderTop: '2px dashed #FFB300', paddingTop: '2rem' }}>
+                        <h3 style={{ textAlign: 'center', marginBottom: '1.5rem', color: '#B45309' }}>📖 生成された問題一覧</h3>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                            {generatedProblems.map((p, idx) => (
+                                <div key={idx} style={{ background: 'white', padding: '1.5rem', borderRadius: '12px', border: '1px solid #eee', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
+                                    <div style={{ fontWeight: 'bold', marginBottom: '0.5rem', color: '#555', borderBottom: '1px solid #eee', paddingBottom: '0.5rem' }}>
+                                        問{idx + 1}
+                                    </div>
+                                    <div style={{ marginBottom: '1rem', fontSize: '1.1rem' }}>
+                                        <LatexRenderer content={p.stem_latex} />
+                                    </div>
+
+                                    <details style={{ background: '#f9f9f9', padding: '1rem', borderRadius: '8px', cursor: 'pointer' }}>
+                                        <summary style={{ fontWeight: 'bold', color: '#666' }}>解答・解説を表示</summary>
+                                        <div style={{ marginTop: '1rem' }}>
+                                            <div style={{ fontWeight: 'bold', color: '#d97706', marginBottom: '0.5rem' }}>【解答】</div>
+                                            <div style={{ marginBottom: '1rem' }}>
+                                                <LatexRenderer content={p.answer_latex} />
+                                            </div>
+                                            
+                                            {p.explanation_latex && (
+                                                <>
+                                                    <div style={{ fontWeight: 'bold', color: '#555', marginBottom: '0.5rem' }}>【解説】</div>
+                                                    <div style={{ whiteSpace: 'pre-wrap' }}>
+                                                        <LatexRenderer content={p.explanation_latex} />
+                                                    </div>
+                                                </>
+                                            )}
+
+                                            {p.teaching_point_latex && (
+                                                <div style={{ 
+                                                    marginTop: '1.5rem', 
+                                                    background: '#e3f2fd', 
+                                                    border: '1px solid #90caf9', 
+                                                    padding: '1rem', 
+                                                    borderRadius: '8px',
+                                                    color: '#0d47a1'
+                                                }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', fontWeight: 'bold', marginBottom: '0.5rem' }}>
+                                                        <span style={{ fontSize: '1.2rem', marginRight: '0.5rem' }}>💡</span>
+                                                        生徒への指導ポイント
+                                                    </div>
+                                                    <LatexRenderer content={p.teaching_point_latex} />
+                                                </div>
+                                            )}
+                                        </div>
+                                    </details>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 )}
             </div>

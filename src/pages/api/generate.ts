@@ -51,7 +51,7 @@ export default async function handler(
     const gen = getGenerator();
     
     // Resolve Difficulty Labels for Header
-    const diffLabels = { 'L1': '基礎', 'L2': '標準', 'L3': '発展' };
+    const diffLabels = { 'L1': '基礎', 'L2': '標準', 'L3': '応用', 'L4': '難関', 'L5': '最難関' };
     const displayDiffs = (difficulties as string[]).map(d => diffLabels[d as keyof typeof diffLabels] || d).join(', ');
     const displayUnits = (units as string[]).map(id => gen.getUnitTitle(id)).join(', ');
 
@@ -70,14 +70,28 @@ export default async function handler(
 
     // 2. Build LaTeX Content
     // Header for Problem Page - MUST ESCAPE UNDERSCORES IN IDs
+    // 2. Build LaTeX Content
+    // Header for Problem Page
     const header = `
-\\begin{center}
-{\\Large \\textbf{数学演習プリント}} \\\\
-\\vspace{0.5em}
-{\\small 単元: ${escapeLatex(displayUnits)} \\quad 難易度: ${escapeLatex(displayDiffs)}} \\\\
-\\rule{\\linewidth}{0.4pt}
-\\end{center}
-\\vspace{1em}
+\\twocolumn[{
+  \\vspace{0.5em}
+  % Header Container
+  \\noindent
+  \\begin{minipage}[b]{0.6\\linewidth}
+    {\\LARGE \\textbf{数学演習プリント}} \\\\[0.4em]
+    {\\small \\color{darkgray} \\textbf{単元:} ${escapeLatex(displayUnits)} \\quad \\textbf{難易度:} ${escapeLatex(displayDiffs)}}
+  \\end{minipage}
+  \\hfill
+  \\begin{minipage}[b]{0.38\\linewidth}
+    \\begin{flushright}
+      \\small
+      \\textbf{日付}: \\underline{\\hspace{2.5cm}} \\quad \\textbf{氏名}: \\underline{\\hspace{2.5cm}}
+    \\end{flushright}
+  \\end{minipage}
+  \\par\\vspace{1em}
+  \\hrule height 0.5pt
+  \\vspace{2em}
+}]
 `;
 
     // Generate Problem Part (Empty Answer Box)
@@ -117,12 +131,43 @@ ${explanationBlock}
         `;
     });
 
+    // Generate Teaching Assistant Page if requested
+    let instructorBody = '';
+    if (options.teachingAssistant) {
+        instructorBody = '\\newpage\\section*{講師用ガイド（ヒント・指導案）}\\vspace{1em}';
+        questions.forEach((q, idx) => {
+             const qNum = `（${idx + 1}）`;
+             
+             let hintsBlock = '';
+             if (q.hints && Array.isArray(q.hints) && q.hints.length > 0) {
+                 hintsBlock = '\\par\\vspace{0.5em}\\textbf{学習ヒント}:\\begin{itemize}';
+                 q.hints.forEach((h: string, hIdx: number) => {
+                     hintsBlock += `\\item \\textbf{ヒント ${hIdx + 1}}: ${h}`;
+                 });
+                 hintsBlock += '\\end{itemize}';
+             }
+
+             instructorBody += `
+\\begin{needspace}{5cm}
+\\begin{qbox}
+\\textbf{${qNum}} ${q.stem_latex}
+\\par\\vspace{0.5em}
+${hintsBlock}
+\\par\\vspace{0.5em}
+\\textbf{解説}:\\par ${q.explanation_latex || 'なし'}
+\\end{qbox}
+\\end{needspace}
+             `;
+        });
+    }
+
     // 3. Combine into single LaTeX document
     // Problems first, then a page break, then Answers.
     // Adding a header or title for the Answer section might be nice.
     const fullBody = `
 ${problemBody}
 ${answerBody}
+${instructorBody}
     `;
 
     const latexSource = builder.getLayoutTemplate(fullBody);
