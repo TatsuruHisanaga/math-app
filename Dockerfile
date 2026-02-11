@@ -33,4 +33,4 @@ COPY --from=builder /app/package.json ./package.json
 
 EXPOSE 8080
 
-CMD ["npm", "start"]
+CMD ["sh", "-c", "npm start -- -p ${PORT}"]
