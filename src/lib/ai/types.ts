@@ -3,12 +3,14 @@ export type Difficulty = 'L1' | 'L2' | 'L3';
 export interface AIProblemItem {
   stem_latex: string;
   answer_latex: string;
+  explanation_latex: string;
   unit_id: string;
   difficulty: Difficulty;
 }
 
 export interface AIProblemSet {
   problems: AIProblemItem[];
+  intent: string;
 }
 
 export interface AIFeedbackItem {

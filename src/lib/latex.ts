@@ -37,7 +37,7 @@ export class PDFBuilder {
       // latexmk is missing in BasicTeX by default sometimes. 
       // Switch to direct lualatex execution.
       // We run it twice to ensure references/page numbers are correct (though for this MVP once might suffice, safety first).
-      const cmd = '/Library/TeX/texbin/lualatex'; 
+      const cmd = 'lualatex'; 
       const args = [
         '--interaction=nonstopmode',
         `--output-directory=${jobDir}`,
@@ -46,10 +46,14 @@ export class PDFBuilder {
 
       // Note: We might need to add /Library/TeX/texbin to PATH for the spawn process
       // if it's not already there.
+      // Use environment PATH or a sensible default for Linux/Docker
       const env = { ...process.env };
-      // Append standard TeX paths just in case
-      const texPath = '/Library/TeX/texbin:/usr/local/bin:/opt/homebrew/bin';
-      env.PATH = `${texPath}:${env.PATH || ''}`;
+      // On many Linux setups, lualatex is in /usr/bin or /usr/local/bin which are usually in PATH.
+      // We only append specific paths if we are on macOS for local dev convenience.
+      if (process.platform === 'darwin') {
+        const texPath = '/Library/TeX/texbin:/usr/local/bin:/opt/homebrew/bin';
+        env.PATH = `${texPath}:${env.PATH || ''}`;
+      }
 
       // Timeout after 120 seconds to prevent infinite hangs (first run cache can be slow)
       const processNode = spawn(cmd, args, { env });
@@ -96,18 +100,23 @@ export class PDFBuilder {
      // Basic wrapper
      return `
 \\documentclass[a4paper,10pt,twocolumn]{article}
-\\usepackage{luatexja}
+\\usepackage[ipaex]{luatexja-preset}
 \\usepackage[top=10mm,bottom=10mm,left=10mm,right=10mm]{geometry}
 \\usepackage{amsmath,amssymb}
 \\usepackage{multicol}
 \\usepackage{needspace}
+\\usepackage{xcolor}
+\\pagestyle{empty}
+
+% Internal padding for fbox
+\\setlength{\\fboxsep}{8pt}
 
 % Clean box layout matching the reference image style
 % Single frame, question number and text inside, empty space below.
 \\newsavebox{\\myqbox}
 \\newenvironment{qbox}{%
   \\begin{lrbox}{\\myqbox}%
-  % Subtract framesep and rule to fit exactly in column
+  % Subtract framesep and rule to fit exactly in column. fboxsep is now 8pt.
   \\begin{minipage}{\\dimexpr\\linewidth-2\\fboxsep-2\\fboxrule\\relax}
   \\setlength{\\parskip}{5pt}
 }{%
@@ -118,9 +127,26 @@ export class PDFBuilder {
   \\par\\vspace{1em} % Space between questions
 }
 
-% Answer Box is just vertical space now, no border
-\\newcommand{\\answerbox}[1]{
-  \\vspace{#1}
+% Answer Box (Empty) - For Problem Sheet
+% Removed label as per user request
+\\newcommand{\\answerbox}[2]{
+  \\par\\vspace{0.2em}
+  \\begin{minipage}[t][#1][t]{\\dimexpr\\linewidth-1em\\relax}
+    \\mbox{}
+  \\end{minipage}
+}
+
+% Answer Box (Filled) - For Answer Sheet
+% Dynamic height and calculated width to ensure wrapping within the box
+\\newcommand{\\answeredbox}[1]{
+  \\par\\vspace{0.2em}
+  \\noindent\\textbf{答:}\\ 
+  \\begin{minipage}[t]{\\dimexpr\\linewidth-3em\\relax}
+    \\raggedright
+    \\color{red}
+    \\normalsize #1
+  \\end{minipage}
+  \\par
 }
 
 \\begin{document}

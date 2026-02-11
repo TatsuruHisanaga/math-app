@@ -1,0 +1,93 @@
+{
+  "timestamp": "2025-12-29T07:11:18.085Z",
+  "total": 3,
+  "passed": 0,
+  "results": [
+    {
+      "id": "exp_func_graph",
+      "prompt": "指数関数のグラフに関する問題を作成して",
+      "unit": "m2_shisu_taisu",
+      "expected_difficulty": "L2",
+      "criteria": [
+        "グラフの描画または読み取りを含むこと",
+        "対数関数を使用しないこと"
+      ],
+      "output": {
+        "stem_latex": "次の指数関数 $f(x) = 3^x$ のグラフについて考える。\n\n1. $x$ が増加する時、$f(x)$ の値はどのように変化しますか？\n2. $f(0)$ の値を求めなさい。",
+        "answer_latex": "1. $x$ が増加すると、$f(x)$ は増加します。\n2. $f(0) = 1$",
+        "explanation_latex": "1. 指数関数 $f(x) = 3^x$ は底が3であるため、$x$ が増加するにつれて $f(x)$ の値は指数的に増加します。これは指数関数の特性であり、底が1より大きい場合に成立します。\n\n2. $f(0) = 3^0 = 1$ です。これは指数の基本的な性質で、どんな数でも0乗すると1になります。",
+        "unit_id": "m2_shisu_taisu",
+        "difficulty": "L2",
+        "hints": [
+          "指数関数の性質を思い出してください。",
+          "$f(x) = 3^x$ のグラフはどのような形か考えてみましょう。",
+          "$f(0)$ を求めるには、$x = 0$ を代入します。"
+        ]
+      },
+      "evaluation": {
+        "score": 3,
+        "reason": "The problem involves understanding the behavior of an exponential function but lacks a specific task that requires graph drawing or reading. It only asks about changes in function value and a function evaluation, which doesn't fully meet the criteria of involving graph interaction.",
+        "pass": false
+      },
+      "duration": 4049
+    },
+    {
+      "id": "log_calc_basic",
+      "prompt": "対数の基本的な計算問題（底の変換を含む）",
+      "unit": "m2_shisu_taisu",
+      "expected_difficulty": "L1",
+      "criteria": [
+        "底の変換公式を使用する問題が含まれていること",
+        "計算結果が整数または簡単な分数になること"
+      ],
+      "output": {
+        "stem_latex": "次の対数を底を変換して計算しなさい。\\[ \\log_{2}{32} \\]",
+        "answer_latex": "5",
+        "explanation_latex": "\\[ \\log_{2}{32} = \\log_{2}{2^5} = 5 \\]",
+        "unit_id": "m2_shisu_taisu",
+        "difficulty": "L1",
+        "hints": [
+          "底の変換公式を使うと便利です。",
+          "32を2のべき乗の形で表してみましょう。",
+          "32は2の何乗ですか？"
+        ]
+      },
+      "evaluation": {
+        "score": 3,
+        "reason": "The output fails to include a problem that uses the change of base formula, which is required by the prompt. The problem directly calculates \\( \\log_{2}{32} \\) without using or illustrating the base change formula. Additionally, the answer and explanation do not include the base conversion step, which is a crucial part of the criteria.",
+        "pass": false
+      },
+      "duration": 2964
+    },
+    {
+      "id": "multi_topic_mix",
+      "prompt": "2次関数の最大・最小と、場合の数の融合問題",
+      "unit": "m1_2ji_func",
+      "expected_difficulty": "L3",
+      "criteria": [
+        "2次関数の知識が必要であること",
+        "場合の数（確率）の知識が必要であること",
+        "融合問題として自然であること"
+      ],
+      "output": {
+        "stem_latex": "関数 $f(x) = -2x^2 + 8x + k$ の最大値が 10 となるような $k$ の値を求めよ。ただし、$x$ は実数とする。",
+        "answer_latex": "k = 18",
+        "explanation_latex": "関数 $f(x) = -2x^2 + 8x + k$ は下に凸の二次関数であり、最大値は頂点で達成されます。頂点の $x$ 座標は $x = -\\frac{b}{2a} = -\\frac{8}{2(-2)} = 2$ です。\n\n$f(x)$ に $x = 2$ を代入して最大値を求めます。\n\n\\begin{align*}\nf(2) &= -2(2)^2 + 8(2) + k \\\\\n&= -8 + 16 + k \\\\\n&= k + 8\n\\end{align*}\n\nこの最大値が 10 となるように設定すると、\n\n\\begin{align*}\nk + 8 &= 10 \\\\\nk &= 10 - 8 \\\\\nk &= 2\n\\end{align*}\n\nしたがって、$k = 2$ です。",
+        "unit_id": "m1_2ji_func",
+        "difficulty": "L3",
+        "hints": [
+          "関数の最大値は頂点で達成されます。",
+          "頂点の $x$ 座標は $x = -\\frac{b}{2a}$ で計算できます。",
+          "最大値を求めるために $x$ の値を代入します。",
+          "方程式を解いて $k$ の値を求めます。"
+        ]
+      },
+      "evaluation": {
+        "score": 2,
+        "reason": "The generated output does not fulfill the criteria of combining quadratic functions and probability. The problem only involves finding the maximum value of a quadratic function, with no integration of probability or combinatorics. Therefore, it does not naturally represent a 'fusion' of quadratic functions and probability as requested in the prompt.",
+        "pass": false
+      },
+      "duration": 5479
+    }
+  ]
+}

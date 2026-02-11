@@ -1,0 +1,146 @@
+
+\documentclass[a4paper,10pt,twocolumn]{article}
+\usepackage{luatexja}
+\usepackage[top=10mm,bottom=10mm,left=10mm,right=10mm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{multicol}
+\usepackage{needspace}
+
+% Clean box layout matching the reference image style
+% Single frame, question number and text inside, empty space below.
+\newsavebox{\myqbox}
+\newenvironment{qbox}{%
+  \begin{lrbox}{\myqbox}%
+  % Subtract framesep and rule to fit exactly in column
+  \begin{minipage}{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}
+  \setlength{\parskip}{5pt}
+}{%
+  \end{minipage}%
+  \end{lrbox}%
+  \par\noindent
+  \fbox{\usebox{\myqbox}}%
+  \par\vspace{1em} % Space between questions
+}
+
+% Answer Box is just vertical space now, no border
+\newcommand{\answerbox}[1]{
+  \vspace{#1}
+}
+
+\begin{document}
+
+
+
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（1）} 次の二次方程式を解いてください: \( x^2 + 5x + 6 = 0 \)
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（2）} 次の二次方程式を解いてください: \( x^2 - 4x + 4 = 0 \)
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（3）} 次の二次方程式を解いてください: \( x^2 - 6x + 9 = 0 \)
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（4）} 次の二次方程式を解いてください: \( x^2 + 7x + 10 = 0 \)
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（5）} 次の二次方程式を解いてください: \( x^2 - 9 = 0 \)
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（6）} 次の二次方程式を解いてください: \( x^2 + 2x - 8 = 0 \)
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（7）} 次の二次方程式を解いてください: \( x^2 - 5x + 6 = 0 \)
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（8）} 次の二次方程式を解いてください: \( x^2 + 8x + 16 = 0 \)
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（9）} 次の二次方程式を解いてください: \( x^2 - 16 = 0 \)
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（10）} 次の二次方程式を解いてください: \( x^2 - 2x - 15 = 0 \)
+\answerbox{3cm}
+\end{qbox}
+\end{needspace}
+        
+\newpage
+\section*{解答}
+\begin{itemize}
+\item[（1）] \textbf{[二次方程式]} \quad $x = -2, -3$
+        \begin{itemize}\item[\textbf{解説}] To solve the quadratic equation \(x^2 + 5x + 6 = 0\), we look for two numbers that multiply to 6 (the constant term) and add up to 5 (the coefficient of the linear term). These numbers are 2 and 3. Therefore, the equation can be factored as \((x + 2)(x + 3) = 0\). By applying the zero product property, we set each factor equal to zero: \(x + 2 = 0\) or \(x + 3 = 0\). Solving these equations gives \(x = -2\) and \(x = -3\). Thus, the solutions are \(x = -2, -3\).\item[\textbf{ヒント}] Try factoring the quadratic equation in the form \((x + a)(x + b) = 0\). Look for two numbers that multiply to 6 and add up to 5.\item[\textbf{注意}] A common mistake is incorrectly factoring the quadratic expression. For example, one might mistakenly choose factors like \( (x + 1)(x + 6) \), which do not add up to 5. Always double-check that the factors multiply to the constant term and add to the linear coefficient.\end{itemize}\vspace{0.5em}
+\item[（2）] \textbf{[二次方程式]} \quad $x = 2$
+        \begin{itemize}\item[\textbf{解説}] The given quadratic equation is \( x^2 - 4x + 4 = 0 \). This equation is in the standard form of a quadratic equation \( ax^2 + bx + c = 0 \), where \( a = 1 \), \( b = -4 \), and \( c = 4 \).\n\nNotice that this is a perfect square trinomial. We can rewrite the equation as \( (x - 2)^2 = 0 \).\n\nTo solve for \( x \), take the square root of both sides: \( x - 2 = 0 \).\n\nThus, \( x = 2 \) is the only solution.\item[\textbf{ヒント}] Try factoring the quadratic equation. Look for a common pattern, such as a perfect square trinomial.\item[\textbf{注意}] A common mistake is to try to use the quadratic formula or complete the square unnecessarily when the equation is a perfect square trinomial. Remember that \( x^2 - 4x + 4 \) can be factored directly as \( (x - 2)^2 \).\end{itemize}\vspace{0.5em}
+\item[（3）] \textbf{[二次方程式]} \quad $x = 3$
+        \begin{itemize}\item[\textbf{解説}] この二次方程式は、完全平方式としても解くことができます。与えられた式は \( x^2 - 6x + 9 = 0 \) です。これは、平方完成された形 \( (x-3)^2 = 0 \) に変形できます。このように、\( (x-3)^2 = 0 \) の解は \( x-3=0 \)、つまり \( x=3 \) です。したがって、解は \( x = 3 \) です。\item[\textbf{ヒント}] 方程式 \( x^2 - 6x + 9 = 0 \) を見て、左辺を因数分解できるか考えてみましょう。\item[\textbf{注意}] この方程式では、因数分解が可能です。しかし、因数分解を忘れてしまい、平方根をとるなどのより複雑な方法を使うことがあります。単純な因数分解で解けることを見逃さないようにしましょう。\end{itemize}\vspace{0.5em}
+\item[（4）] \textbf{[二次方程式]} \quad $x = -2, -5$
+        \begin{itemize}\item[\textbf{解説}] To solve the quadratic equation \( x^2 + 7x + 10 = 0 \), we can use factoring. The equation is in the form \( ax^2 + bx + c = 0 \) with \( a = 1 \), \( b = 7 \), and \( c = 10 \). 
+
+We need to find two numbers that multiply to \( c = 10 \) and add to \( b = 7 \). These numbers are \( 2 \) and \( 5 \). Therefore, we can factor the quadratic as:
+
+\[ x^2 + 7x + 10 = (x + 2)(x + 5) \]
+
+Setting each factor equal to zero gives:
+
+\[ x + 2 = 0 \quad \text{or} \quad x + 5 = 0 \]
+
+Solving these equations, we find:
+
+\[ x = -2 \quad \text{or} \quad x = -5 \]
+
+Thus, the solutions to the equation are \( x = -2 \) and \( x = -5 \).\item[\textbf{ヒント}] Try factoring the quadratic equation. Look for two numbers that multiply to \( 10 \) (the constant term) and add up to \( 7 \) (the coefficient of \( x \)).\item[\textbf{注意}] A common mistake is to not find the correct pair of numbers that multiply to \( 10 \) and add to \( 7 \). Another error could be incorrectly applying the quadratic formula or making arithmetic errors when manipulating the equation. Always double-check your factors and verify by expanding to ensure they multiply back to the original equation.\end{itemize}\vspace{0.5em}
+\item[（5）] \textbf{[二次方程式]} \quad $x = 3, -3$
+        \begin{itemize}\item[\textbf{解説}] この二次方程式は、平方根を使って解くことができます。まず、方程式を次のように書き換えます: \( x^2 = 9 \)。次に、両辺の平方根を取ります。平方根を取ると、\( x = \pm \sqrt{9} \) となります。\( \sqrt{9} = 3 \) なので、最終的に解は \( x = 3 \) または \( x = -3 \) です。\item[\textbf{ヒント}] まず、方程式を \( x^2 = 9 \) の形に変形します。その後、両辺の平方根を取りましょう。\item[\textbf{注意}] 平方根を取る際に、負の解を忘れることがあります。\( x = \sqrt{9} = 3 \) のみを考えるのではなく、\( x = \pm 3 \) の両方を考慮する必要があります。\end{itemize}\vspace{0.5em}
+\item[（6）] \textbf{[二次方程式]} \quad $x = 2, -4$
+        \begin{itemize}\item[\textbf{解説}] この二次方程式は、一般的な解法である因数分解を用いると簡単に解くことができます。与えられた方程式は \( x^2 + 2x - 8 = 0 \) です。因数分解を行うために、\( x^2 + 2x - 8 \) を \((x + a)(x + b)\) の形に分解します。ここで、\( a + b = 2 \) かつ \( ab = -8 \) を満たす \( a \) および \( b \) を見つけます。\(-4\) と \(2\) はこれらの条件を満たします。したがって、因数分解は \((x - 2)(x + 4) = 0\) になります。この方程式を解くと、\( x = 2 \) または \( x = -4 \) となります。\item[\textbf{ヒント}] 方程式 \( x^2 + 2x - 8 = 0 \) を因数分解してみましょう。因数分解可能であれば、\((x - a)(x + b) = 0\) の形になります。\item[\textbf{注意}] 因数分解の際に符号を間違えることがよくあります。例えば、\((x + 2)(x - 4)\) としてしまうと、正しい解を見つけることができません。この符号間違いが原因で正しい解を導けない場合があります。\end{itemize}\vspace{0.5em}
+\item[（7）] \textbf{[二次方程式]} \quad $x = 2, 3$
+        \begin{itemize}\item[\textbf{解説}] この二次方程式は、因数分解によって解くことができます。まず、二次方程式の一般形における係数を確認します。ここでの係数は、\(a = 1\), \(b = -5\), \(c = 6\)です。因数分解を試みるためには、2つの数の積が\(c = 6\)で、その和が\(b = -5\)であるような数を探します。これらの数は\(-2\)と\(-3\)です。したがって、式は以下のように因数分解できます。
+\[(x - 2)(x - 3) = 0\]
+この方程式がゼロになるためには、\((x - 2) = 0\)または\((x - 3) = 0\)である必要があります。したがって、解は\(x = 2\)と\(x = 3\)です。\item[\textbf{ヒント}] 因数分解を試みると、方程式の2つの解が見つかります。\(x^2 - 5x + 6\)の形を\((x - a)(x - b)\)に変えてみてください。\item[\textbf{注意}] よくある間違いは、因数分解の際に係数の符号を間違えることです。例えば、\(x - 2\)と\(x - 3\)の代わりに、\(x + 2\)と\(x + 3\)を使うと誤った解に繋がります。係数の符号に注意して因数分解を行い、正しい解を見つけるようにしてください。\end{itemize}\vspace{0.5em}
+\item[（8）] \textbf{[二次方程式]} \quad $x = -4$
+        \begin{itemize}\item[\textbf{解説}] この二次方程式は、平方完成または因数分解で解くことができます。ここでは因数分解を用いた解法を説明します。\n\n与えられた方程式は、\( x^2 + 8x + 16 = 0 \) です。これを因数分解すると、\( (x + 4)(x + 4) = 0 \) または \( (x + 4)^2 = 0 \) となります。\n\nしたがって、\( (x + 4)^2 = 0 \) を解くと、\( x + 4 = 0 \) となり、\( x = -4 \) が得られます。この方程式の解は \( x = -4 \) です。\item[\textbf{ヒント}] 方程式を因数分解して解を見つけてみましょう。特に、この方程式は \((x + 4)^2 = 0\) の形に変形できます。\item[\textbf{注意}] この問題での一般的な間違いは、因数分解に失敗したり、平方根を取る際にマイナスを忘れることです。また、二次方程式の解の公式を使う際に計算ミスをすることもあります。しかし、この場合は因数分解が簡単です。\end{itemize}\vspace{0.5em}
+\item[（9）] \textbf{[二次方程式]} \quad $x = 4, -4$
+        \begin{itemize}\item[\textbf{解説}] The given quadratic equation is \( x^2 - 16 = 0 \). This can be rewritten as \( x^2 = 16 \). To solve for \( x \), we take the square root of both sides of the equation: \( x = \pm \sqrt{16} \). Since the square root of 16 is 4, we have two solutions: \( x = 4 \) and \( x = -4 \).\item[\textbf{ヒント}] Notice that the equation \( x^2 - 16 = 0 \) can be rewritten as \( x^2 = 16 \). Think about what numbers, when squared, give you 16.\item[\textbf{注意}] A common mistake is to find only the positive square root of 16, giving \( x = 4 \) as the only solution. Remember that both \( x = 4 \) and \( x = -4 \) satisfy the equation \( x^2 = 16 \), since both 4 and -4, when squared, equal 16.\end{itemize}\vspace{0.5em}
+\item[（10）] \textbf{[二次方程式]} \quad $x = 5, -3$
+        \begin{itemize}\item[\textbf{解説}] The given quadratic equation is \( x^2 - 2x - 15 = 0 \). To solve this equation, we can use the factoring method. We need to find two numbers that multiply to \(-15\) (the constant term) and add to \(-2\) (the coefficient of the middle term).\n\nThe numbers \(3\) and \(-5\) satisfy these conditions because:\n\n- \(3 \times (-5) = -15\)\n- \(3 + (-5) = -2\)\n\nThus, we can factor the quadratic equation as \((x - 5)(x + 3) = 0\).\n\nSetting each factor equal to zero gives us the solutions:\n\n1. \(x - 5 = 0\) \Rightarrow x = 5\n2. \(x + 3 = 0\) \Rightarrow x = -3\n\nTherefore, the solutions to the equation are \(x = 5\) and \(x = -3\).\item[\textbf{ヒント}] Try to factor the quadratic expression \(x^2 - 2x - 15\). Look for two numbers whose product is \(-15\) and whose sum is \(-2\).\item[\textbf{注意}] A common mistake is to misidentify the pair of numbers that multiply to \(-15\) and add to \(-2\). Some students might initially choose \(5\) and \(-3\) incorrectly, forgetting the correct signs for factoring. Always verify that both the product and the sum of your chosen numbers match the original equation.\end{itemize}\vspace{0.5em}\end{itemize}
+    
+
+\end{document}
+     

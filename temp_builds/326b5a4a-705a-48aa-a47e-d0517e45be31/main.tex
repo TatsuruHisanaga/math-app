@@ -1,0 +1,218 @@
+
+\documentclass[a4paper,10pt,twocolumn]{article}
+\usepackage{luatexja}
+\usepackage[top=10mm,bottom=10mm,left=10mm,right=10mm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{multicol}
+\usepackage{needspace}
+\usepackage{xcolor}
+\pagestyle{empty}
+
+% Internal padding for fbox
+\setlength{\fboxsep}{8pt}
+
+% Clean box layout matching the reference image style
+% Single frame, question number and text inside, empty space below.
+\newsavebox{\myqbox}
+\newenvironment{qbox}{%
+  \begin{lrbox}{\myqbox}%
+  % Subtract framesep and rule to fit exactly in column. fboxsep is now 8pt.
+  \begin{minipage}{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}
+  \setlength{\parskip}{5pt}
+}{%
+  \end{minipage}%
+  \end{lrbox}%
+  \par\noindent
+  \fbox{\usebox{\myqbox}}%
+  \par\vspace{1em} % Space between questions
+}
+
+% Answer Box (Empty) - For Problem Sheet
+% Removed label as per user request
+\newcommand{\answerbox}[2]{
+  \par\vspace{0.2em}
+  \begin{minipage}[t][#1][t]{\dimexpr\linewidth-1em\relax}
+    \mbox{}
+  \end{minipage}
+}
+
+% Answer Box (Filled) - For Answer Sheet
+% Dynamic height and calculated width to ensure wrapping within the box
+\newcommand{\answeredbox}[1]{
+  \par\vspace{0.2em}
+  \noindent\textbf{答:}\ 
+  \begin{minipage}[t]{\dimexpr\linewidth-3em\relax}
+    \raggedright
+    \color{red}
+    \normalsize #1
+  \end{minipage}
+  \par
+}
+
+\begin{document}
+
+
+
+\begin{center}
+{\Large \textbf{数学演習プリント}} \\
+\vspace{0.5em}
+{\small 単元: ma_baai, ma_seishitsu \quad 難易度: 基礎, 標準, 発展} \\
+\rule{\linewidth}{0.4pt}
+\end{center}
+\vspace{1em}
+
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（1）} 次の数列の一般項を求めなさい。$1, 3, 5, 7, 9, 	ext{...}$
+\answerbox{3cm}{}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（2）} 次の数列の一般項を求めなさい。$2, 4, 8, 16, 32, 	ext{...}$
+\answerbox{3cm}{}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（3）} 次の数列の一般項を求めなさい。$5, 10, 15, 20, 25, 	ext{...}$
+\answerbox{3cm}{}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（4）} 次の数列の一般項を求めなさい。$3, 6, 12, 24, 48, 	ext{...}$
+\answerbox{3cm}{}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（5）} 次の数列の一般項を求めなさい。$7, 14, 21, 28, 35, 	ext{...}$
+\answerbox{3cm}{}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（6）} 次の数列の一般項を求めなさい。$1, 4, 9, 16, 25, 	ext{...}$
+\answerbox{3cm}{}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（7）} 次の数列の一般項を求めなさい。$8, 16, 24, 32, 40, 	ext{...}$
+\answerbox{3cm}{}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（8）} 次の数列の一般項を求めなさい。$10, 20, 40, 80, 160, 	ext{...}$
+\answerbox{3cm}{}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（9）} 次の数列の一般項を求めなさい。$6, 12, 18, 24, 30, 	ext{...}$
+\answerbox{3cm}{}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（10）} 次の数列の一般項を求めなさい。$1, 8, 27, 64, 125, 	ext{...}$
+\answerbox{3cm}{}
+\end{qbox}
+\end{needspace}
+        
+\newpage\section*{解答}\vspace{1em}
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（1）} 次の数列の一般項を求めなさい。$1, 3, 5, 7, 9, 	ext{...}$
+\answeredbox{$$a_n = 2n - 1$$}
+\par\vspace{0.5em}\noindent\small{\textbf{解説}:\par 与えられた数列は奇数の数列です。初項が $1$ で、それ以降は $2$ ずつ増加しています。したがって、一般項は $a_n = 2n - 1$ です。}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（2）} 次の数列の一般項を求めなさい。$2, 4, 8, 16, 32, 	ext{...}$
+\answeredbox{$$a_n = 2^n$$}
+\par\vspace{0.5em}\noindent\small{\textbf{解説}:\par 与えられた数列は各項が前の項に $2$ を掛けた数列です。したがって、一般項は $a_n = 2^n$ です。}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（3）} 次の数列の一般項を求めなさい。$5, 10, 15, 20, 25, 	ext{...}$
+\answeredbox{$$a_n = 5n$$}
+\par\vspace{0.5em}\noindent\small{\textbf{解説}:\par この数列は初項が $5$ で、公差が $5$ の等差数列です。したがって、一般項は $a_n = 5n$ です。}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（4）} 次の数列の一般項を求めなさい。$3, 6, 12, 24, 48, 	ext{...}$
+\answeredbox{$$a_n = 3 	imes 2^{n-1}$$}
+\par\vspace{0.5em}\noindent\small{\textbf{解説}:\par 数列は初項 $3$ から始まり、各項が前の項の $2$ 倍になっています。したがって、一般項は $a_n = 3 	imes 2^{n-1}$ です。}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（5）} 次の数列の一般項を求めなさい。$7, 14, 21, 28, 35, 	ext{...}$
+\answeredbox{$$a_n = 7n$$}
+\par\vspace{0.5em}\noindent\small{\textbf{解説}:\par この数列は初項が $7$ で、公差が $7$ の等差数列です。したがって、一般項は $a_n = 7n$ です。}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（6）} 次の数列の一般項を求めなさい。$1, 4, 9, 16, 25, 	ext{...}$
+\answeredbox{$$a_n = n^2$$}
+\par\vspace{0.5em}\noindent\small{\textbf{解説}:\par この数列は各項が自然数の平方です。したがって、一般項は $a_n = n^2$ です。}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（7）} 次の数列の一般項を求めなさい。$8, 16, 24, 32, 40, 	ext{...}$
+\answeredbox{$$a_n = 8n$$}
+\par\vspace{0.5em}\noindent\small{\textbf{解説}:\par この数列は初項が $8$ で、公差が $8$ の等差数列です。したがって、一般項は $a_n = 8n$ です。}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（8）} 次の数列の一般項を求めなさい。$10, 20, 40, 80, 160, 	ext{...}$
+\answeredbox{$$a_n = 10 	imes 2^{n-1}$$}
+\par\vspace{0.5em}\noindent\small{\textbf{解説}:\par 数列は初項 $10$ から始まり、各項が前の項の $2$ 倍になっています。したがって、一般項は $a_n = 10 	imes 2^{n-1}$ です。}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（9）} 次の数列の一般項を求めなさい。$6, 12, 18, 24, 30, 	ext{...}$
+\answeredbox{$$a_n = 6n$$}
+\par\vspace{0.5em}\noindent\small{\textbf{解説}:\par この数列は初項が $6$ で、公差が $6$ の等差数列です。したがって、一般項は $a_n = 6n$ です。}
+\end{qbox}
+\end{needspace}
+        
+\begin{needspace}{4cm}
+\begin{qbox}
+\textbf{（10）} 次の数列の一般項を求めなさい。$1, 8, 27, 64, 125, 	ext{...}$
+\answeredbox{$$a_n = n^3$$}
+\par\vspace{0.5em}\noindent\small{\textbf{解説}:\par この数列は各項が自然数の立方です。したがって、一般項は $a_n = n^3$ です。}
+\end{qbox}
+\end{needspace}
+        
+    
+
+\end{document}
+     

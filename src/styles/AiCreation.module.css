@@ -1,0 +1,389 @@
+.container {
+  padding: 0 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+}
+
+.main {
+  min-height: 100vh;
+  padding: 2rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 1rem;
+}
+
+.backLink {
+    text-decoration: none;
+    color: #666;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.backLink:hover {
+    color: #333;
+}
+
+.chatContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.04);
+    padding: 2.5rem;
+    border: 1px solid #f0f0f0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.inputArea {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.textarea {
+    width: 100%;
+    min-height: 150px;
+    padding: 1.25rem;
+    border-radius: 16px;
+    border: 2px solid #f0f0f0;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    resize: vertical;
+    outline: none;
+    transition: all 0.2s ease;
+    background: #fafafa;
+    box-sizing: border-box;
+}
+
+.textarea:focus {
+    border-color: #FFB300;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(255, 179, 0, 0.1);
+}
+
+.controlsRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    background: #f8f8f8;
+    padding: 1.25rem;
+    border-radius: 16px;
+}
+
+.leftControls {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.fileControls {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.fileInput {
+    display: none;
+}
+
+.fileLabel {
+    padding: 0.7rem 1.2rem;
+    background: #fff;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 500;
+    border: 1px solid #ddd;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.fileLabel:hover {
+    background: #f0f0f0;
+    border-color: #ccc;
+    transform: translateY(-1px);
+}
+
+.problemCount {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 0.95rem;
+    color: #444;
+    padding-left: 1rem;
+    border-left: 2px solid #eee;
+}
+
+.countToggle {
+    display: flex;
+    background: #eee;
+    padding: 3px;
+    border-radius: 10px;
+    gap: 2px;
+}
+
+.toggleOption {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.toggleOptionActive {
+    background: #fff;
+    color: #333;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.numberInput {
+    width: 50px;
+    padding: 0.5rem;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    text-align: center;
+    font-weight: bold;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.numberInput:focus {
+    border-color: #FFB300;
+}
+
+.numberInput:disabled {
+    background: #eee;
+    color: #aaa;
+    border-color: #ddd;
+}
+
+.resultList {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.problemCard {
+    background: white;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+}
+
+.problemHeader {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #f9f9f9;
+    padding-bottom: 0.5rem;
+}
+
+.latexBox {
+    background: #fcfcfc;
+    padding: 1rem;
+    border-radius: 8px;
+    font-family: monospace;
+    font-size: 0.9rem;
+    white-space: pre-wrap;
+    border-left: 4px solid #FFB300;
+}
+
+.label {
+    font-weight: bold;
+    font-size: 0.8rem;
+    color: #666;
+    margin-bottom: 0.4rem;
+    display: block;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    width: 100%;
+}
+
+.header h1 {
+    font-size: 1.8rem;
+    color: #333;
+    margin: 0;
+    font-weight: 800;
+}
+
+.backLink {
+    text-decoration: none;
+    color: #666;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.backLink:hover {
+    color: #FFB300;
+}
+
+.resultContainer {
+    margin-top: 3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.intentBox {
+    background: #FFF9C4;
+    padding: 2rem;
+    border-radius: 16px;
+    border-left: 6px solid #FBC02D;
+}
+
+.intentBox h3 {
+    margin: 0 0 0.8rem 0;
+    font-size: 1.1rem;
+    color: #444;
+}
+
+.intentBox p {
+    margin: 0;
+    line-height: 1.7;
+    color: #555;
+    font-size: 1rem;
+}
+
+.resultHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.resultList {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 1.5rem;
+}
+
+.problemCard {
+    background: #fff;
+    border: 1px solid #eee;
+    padding: 1.5rem;
+    border-radius: 14px;
+    position: relative;
+    transition: transform 0.2s;
+}
+
+.problemCard:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.problemNumber {
+    font-weight: 800;
+    color: #FFB300;
+    font-size: 0.8rem;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.problemDifficulty {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    font-size: 0.75rem;
+    background: #f0f0f0;
+    padding: 2px 8px;
+    border-radius: 4px;
+    color: #666;
+}
+
+.latexPreview {
+    background: #fafafa;
+    padding: 1rem;
+    border-radius: 8px;
+    font-family: 'Times New Roman', serif;
+    margin: 0.5rem 0;
+    overflow-x: auto;
+}
+
+.answerDetails {
+    margin-top: 1rem;
+    border-top: 1px dashed #eee;
+    padding-top: 1rem;
+}
+
+.answerDetails summary {
+    font-size: 0.85rem;
+    color: #2196F3;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.answerContent {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: #E3F2FD;
+    border-radius: 10px;
+    font-size: 0.9rem;
+}
+
+.pdfPreviewContainer {
+    width: 100%;
+    height: 600px;
+    background: #525659;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+    box-shadow: inset 0 2px 10px rgba(0,0,0,0.2);
+}
+
+.pdfIframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.secondaryButton {
+    background: #f0f0f0;
+    color: #444;
+    border: 1px solid #ddd;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.secondaryButton:hover {
+    background: #e5e5e5;
+    transform: translateY(-1px);
+}

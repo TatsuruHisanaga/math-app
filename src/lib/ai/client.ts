@@ -16,10 +16,54 @@ export class AIClient {
     this.modelFeedback = process.env.AI_MODEL_FEEDBACK || 'gpt-4o-2024-08-06';
   }
 
-  private async callOpenAI<T>(
+
+
+  async generateProblems(topic: string, count: number, difficulty: string, modelOverride?: string): Promise<AIProblemSet> {
+    const systemPrompt = `You are a skilled mathematics teacher creating exercise problems for Japanese students.
+Generate ${count} math problems based on the unit topic and difficulty provided.
+IMPORTANT: You MUST STRICTLY adhere to the provided unit topic(s). DO NOT generate problems outside the specified scope.
+Output MUST be a valid JSON object strictly matching the schema.
+- 'stem_latex': The problem text in LaTeX. Use Japanese for text. IMPORTANT: All math expressions (e.g. equations, variables like x) MUST be wrapped in $...$ (inline math) or $$...$$ (display math). DO NOT include the answer in this field.
+- 'answer_latex': The descriptive answer in LaTeX. Include intermediate steps/derivations. Example: "$(x+1)(x+2) = 0 \\rightarrow x = -1, -2$". Wrappers $...$ required. Do NOT include "Answer:" prefix.
+- 'explanation_latex': Detailed explanation. Wrap all math in $...$.
+- 'difficulty': One of L1, L2, L3.
+`;
+
+    const userPrompt = `Unit: ${topic}
+Count: ${count}
+Difficulty: ${difficulty}
+`;
+
+    return this.generateProblemsFromPrompt(systemPrompt, userPrompt, modelOverride);
+  }
+
+  /**
+   * Generates problems from a flexibe prompt, supporting images/multi-modal content.
+   */
+  async generateProblemsFromPrompt(
+    systemPrompt: string, 
+    userPrompt: string | any[], 
+    modelOverride?: string
+  ): Promise<AIProblemSet> {
+    let model = modelOverride || this.modelProblem;
+
+    // Use a unified internal method that handles the actual call
+    return this.callOpenAIWithMessages<AIProblemSet>(
+        model,
+        [
+            { role: 'system', content: systemPrompt },
+            typeof userPrompt === 'string' 
+                ? { role: 'user', content: userPrompt }
+                : { role: 'user', content: userPrompt }
+        ],
+        "problem_set",
+        problemSchema
+    );
+  }
+
+  private async callOpenAIWithMessages<T>(
     model: string,
-    systemPrompt: string,
-    userPrompt: string,
+    messages: any[],
     schemaName: string,
     schema: any
   ): Promise<T> {
@@ -31,10 +75,7 @@ export class AIClient {
       },
       body: JSON.stringify({
         model: model,
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt }
-        ],
+        messages: messages,
         response_format: {
           type: 'json_schema',
           json_schema: {
@@ -55,31 +96,24 @@ export class AIClient {
     const data = await response.json();
     const content = data.choices[0].message.content;
     
-    // With strict schema, this should be valid JSON matching the type
     return JSON.parse(content) as T;
   }
 
-  async generateProblems(topic: string, count: number, difficulty: string): Promise<AIProblemSet> {
-    const systemPrompt = `You are a skilled mathematics teacher creating exercise problems for Japanese students.
-Generate ${count} math problems based on the unit topic and difficulty provided.
-Output MUST be a valid JSON object strictly matching the schema.
-- 'stem_latex': The problem text in LaTeX. Use Japanese for text.
-- 'answer_latex': The answer text in LaTeX.
-- 'difficulty': One of L1, L2, L3.
-`;
-    // TODO: Add more detailed instruction on LaTeX format if needed (e.g. "Use \\dfrac not \\frac")
-
-    const userPrompt = `Unit: ${topic}
-Count: ${count}
-Difficulty: ${difficulty}
-`;
-
-    return this.callOpenAI<AIProblemSet>(
-        this.modelProblem,
-        systemPrompt,
-        userPrompt,
-        "problem_set",
-        problemSchema
+  private async callOpenAI<T>(
+    model: string,
+    systemPrompt: string,
+    userPrompt: string,
+    schemaName: string,
+    schema: any
+  ): Promise<T> {
+    return this.callOpenAIWithMessages<T>(
+        model,
+        [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: userPrompt }
+        ],
+        schemaName,
+        schema
     );
   }
 
@@ -100,6 +134,20 @@ Difficulty: ${problem.difficulty}
         userPrompt,
         "feedback_set",
         feedbackSchema
+    );
+  }
+
+
+  async generateEvaluation(systemPrompt: string, userPrompt: string): Promise<{ score: number; reason: string; pass: boolean }> {
+    const evalSchema = require('./schemas/evaluation_result.strict.json');
+    return this.callOpenAIWithMessages<{ score: number; reason: string; pass: boolean }>(
+        this.modelFeedback, // reuse feedback model (gpt-4o) which is good for logical tasks
+        [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: userPrompt }
+        ],
+        "evaluation_result",
+        evalSchema
     );
   }
 }

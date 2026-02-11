@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 
 // Types
-export type Difficulty = 'L1' | 'L2' | 'L3';
+export type Difficulty = 'L1' | 'L2' | 'L3' | 'L4' | 'L5';
 
 export interface QuestionTemplate {
   id: string;

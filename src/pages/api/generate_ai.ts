@@ -1,21 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import fs from 'fs';
 import path from 'path';
-import { QuestionGenerator } from '@/lib/generator';
 import { AIClient } from '@/lib/ai/client';
 import { GenerationPipeline } from '@/lib/verify/regenerate';
-
-// Singleton generator access (copied from generate.ts pattern)
-let generator: QuestionGenerator | null = null;
-const getGenerator = () => {
-    if (!generator) {
-        const dataDir = path.resolve(process.cwd(), 'data');
-        generator = new QuestionGenerator(
-            path.join(dataDir, 'unit_map.json'),
-            path.join(dataDir, 'templates.json')
-        );
-    }
-    return generator;
-}
 
 export default async function handler(
   req: NextApiRequest,
@@ -27,33 +14,109 @@ export default async function handler(
 
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
+      const logPath = path.resolve(process.cwd(), 'debug_generation.log');
+      const timestamp = new Date().toISOString();
+      // Ensure fs and path are imported (they are at top of file)
+      // But verify if fs/path imports are available at this scope - yes they are global imports.
+      // Wait, I need to make sure I don't break if fs isn't imported yet, but it is.
+      try {
+        require('fs').appendFileSync(logPath, `[${timestamp}] Config Error: Missing API Key\n`);
+      } catch (e) { /* ignore */ }
       return res.status(500).json({ message: 'Server configuration error: Missing API Key' });
   }
 
   try {
     const { 
         units, // string[] unit IDs
+        unitDetails, // Record<string, string[]> - Sub-topic titles
         difficulty, // string
-        count // number
+        count, // number
+        aiModel // string (optional)
     } = req.body;
 
     if (!units || !count || !difficulty) {
         return res.status(400).json({ message: 'Missing required fields' });
     }
 
-    const gen = getGenerator();
-    // Resolve unit IDs to titles
-    const unitTitles = (units as string[]).map(id => gen.getUnitTitle(id)).join(', ');
+    // Resolve unit IDs to titles directly from JSON to avoid stale singleton
+    const unitMapPath = path.resolve(process.cwd(), 'data/unit_map.json');
+    const unitMapData = JSON.parse(fs.readFileSync(unitMapPath, 'utf-8'));
+    
+    // Construct refined unit titles with sub-topics
+    const unitTitles = (units as string[]).map(id => {
+        const baseTitle = unitMapData.units[id]?.title_ja || id;
+        const details = unitDetails?.[id];
+        if (details && Array.isArray(details) && details.length > 0) {
+            return `${baseTitle} (重点トピック: ${details.join(', ')})`;
+        }
+        return baseTitle;
+    }).join(', ');
+    
+    console.log('API request units:', units);
+    console.log('Resolved titles for AI:', unitTitles);
 
     const client = new AIClient(apiKey);
     const pipeline = new GenerationPipeline(client);
 
-    const problems = await pipeline.generateVerified(unitTitles, typeof count === 'string' ? parseInt(count) : count, difficulty);
+    // Set headers for streaming
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    res.flushHeaders();
 
-    res.status(200).json({ problems });
+    // Custom callback to stream progress
+    const onProgress = (count: number, total: number) => {
+        res.write(`data: ${JSON.stringify({ type: 'progress', count, total })}\n\n`);
+    };
+
+    // We need to modify pipeline to accept a callback or check how we can hook into it.
+    // For now, let's just make pipeline return intermediate results or modify it.
+    // Actually, let's modify the pipeline class or just inline the logic if it's not too complex.
+    // Since I can't easily change the pipeline signature across files without multiple edits, 
+    // I will use a slight workaround: Assume pipeline.generateVerified can be monitored? 
+    // No, I'll update GenerationPipeline to accept a callback in the next step. 
+    // But for this file, I'll assume it accepts it.
+    
+    // WAIT: I need to update GenerationPipeline first.
+    // let's revert to standard JSON for a moment if I can't stream easily? 
+    // No, I must implement it.
+    
+    // Use an extended version of generateVerified momentarily code-injected here or update the class.
+    // I will update the class `src/lib/verify/regenerate.ts` in the next tool call.
+    // Here I will call it assuming the signature update.
+    
+    const targetCount = typeof count === 'string' ? parseInt(count) : count;
+    
+    // We request slightly more from AI to account for verification failures, 
+    // but the pipeline loop needs the exact target count to stop.
+    // The previous implementation of generateVerified inside GenerationPipeline handles buffering internally 
+    // based on 'needed' count.
+    
+    const { problems, intent } = await pipeline.generateVerified(
+        unitTitles, 
+        targetCount, 
+        difficulty || 'L1', 
+        aiModel, // Custom model override
+        (current: number, total: number) => {
+             res.write(`data: ${JSON.stringify({ type: 'progress', count: current, total })}\n\n`);
+        },
+        req.body.additionalRequest
+    );
+
+    res.write(`data: ${JSON.stringify({ type: 'complete', problems, intent })}\n\n`);
+    res.end();
 
   } catch (error: any) {
     console.error('AI Generation Error:', error);
-    res.status(500).json({ message: 'AI generation failed', error: error.message });
+    const logPath = path.resolve(process.cwd(), 'debug_generation.log');
+    const timestamp = new Date().toISOString();
+    fs.appendFileSync(logPath, `[${timestamp}] API Error (generate_ai): ${error.message}\nStack: ${error.stack}\n`);
+    // If headers sent, we can't send status 500 JSON.
+    if (!res.headersSent) {
+        res.status(500).json({ message: 'AI generation failed', error: error.message });
+    } else {
+        res.write(`data: ${JSON.stringify({ type: 'error', message: error.message })}\n\n`);
+        res.end();
+    }
   }
 }
