@@ -100,7 +100,7 @@ export class PDFBuilder {
      // Basic wrapper
      return `
 \\documentclass[a4paper,10pt,twocolumn]{article}
-\\usepackage{luatexja}
+\\usepackage[ipaex]{luatexja-preset}
 \\usepackage[top=10mm,bottom=10mm,left=10mm,right=10mm]{geometry}
 \\usepackage{amsmath,amssymb}
 \\usepackage{multicol}

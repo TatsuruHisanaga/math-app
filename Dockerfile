@@ -17,7 +17,7 @@ RUN apt-get update && apt-get install -y \
     texlive-lang-japanese \
     texlive-latex-extra \
     texlive-fonts-recommended \
-    fonts-haranoaji \
+    fonts-ipaexfont \
     && rm -rf /var/lib/apt/lists/*
 
 ENV NODE_ENV=production
