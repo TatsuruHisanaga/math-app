@@ -43,11 +43,13 @@ export default async function handler(
     const unitMapData = JSON.parse(fs.readFileSync(unitMapPath, 'utf-8'));
     
     // Construct refined unit titles with sub-topics
+    // Construct refined unit titles with sub-topics
     const unitTitles = (units as string[]).map(id => {
         const baseTitle = unitMapData.units[id]?.title_ja || id;
         const details = unitDetails?.[id];
         if (details && Array.isArray(details) && details.length > 0) {
-            return `${baseTitle} (重点トピック: ${details.join(', ')})`;
+            // Modified: Return ONLY the sub-topics details, do not prepend baseTitle
+            return `${details.join(', ')}`;
         }
         return baseTitle;
     }).join(', ');

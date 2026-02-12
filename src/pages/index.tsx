@@ -584,22 +584,16 @@ export default function Home() {
         setTimeout(() => document.body.removeChild(a), 100);
   };
 
-  /* Sub-unit toggle logic */
+  /* New state for expanded units (UI only) */
+  const [expandedUnits, setExpandedUnits] = useState<string[]>([]);
+
+  /* Sub-unit toggle logic - UPDATED: Only toggles expansion */
   const toggleUnit = (id: string) => {
-    setSelectedUnits(prev => {
-      const isSelected = prev.includes(id);
-      if (isSelected) {
-        // Deselecting: Remove from units and clear sub-units
-        const next = prev.filter(u => u !== id);
-        setSelectedTopics(prevSub => {
-            const copy = { ...prevSub };
-            delete copy[id];
-            return copy;
-        });
-        return next;
+    setExpandedUnits(prev => {
+      const isExpanded = prev.includes(id);
+      if (isExpanded) {
+        return prev.filter(u => u !== id);
       } else {
-        // Selecting: Add to units, but DO NOT select sub-units by default (empty = implied all/generic)
-        // We initialize with empty array to allow manual selection
         return [...prev, id];
       }
     });
@@ -615,6 +609,21 @@ export default function Home() {
           } else {
               next = [...current, topicTitle];
           }
+          
+          // Sync with selectedUnits
+          const nextTopics = next;
+          setSelectedUnits(prevUnits => {
+              const unitExists = prevUnits.includes(unitId);
+              if (nextTopics.length > 0 && !unitExists) {
+                  return [...prevUnits, unitId];
+              } else if (nextTopics.length === 0 && unitExists) {
+                 // Check if other sub-units for this unit have topics? 
+                 // The `selectedTopics` struct is flat by unitId, so `next` covers ALL topics for this unitId.
+                 return prevUnits.filter(u => u !== unitId);
+              }
+              return prevUnits;
+          });
+
           return { ...prev, [unitId]: next };
       });
   };
@@ -622,6 +631,7 @@ export default function Home() {
   const toggleSubUnitAllTopics = (unitId: string, sub: SubUnit) => {
       if (!sub.topics) return;
       const topicTitles = sub.topics.map(t => t.title);
+      
       setSelectedTopics(prev => {
           const current = prev[unitId] || [];
           const isAllSelected = topicTitles.every(t => current.includes(t));
@@ -635,6 +645,19 @@ export default function Home() {
               const toAdd = topicTitles.filter(t => !current.includes(t));
               next = [...current, ...toAdd];
           }
+
+          // Sync with selectedUnits
+          const nextTopics = next;
+          setSelectedUnits(prevUnits => {
+              const unitExists = prevUnits.includes(unitId);
+              if (nextTopics.length > 0 && !unitExists) {
+                  return [...prevUnits, unitId];
+              } else if (nextTopics.length === 0 && unitExists) {
+                 return prevUnits.filter(u => u !== unitId);
+              }
+              return prevUnits;
+          });
+
           return { ...prev, [unitId]: next };
       });
   };
@@ -752,14 +775,14 @@ export default function Home() {
                     {cat.units.map(u => (
                         <button
                         key={u.id}
-                        className={`${styles.card} ${selectedUnits.includes(u.id) ? styles.active : ''}`}
+                        className={`${styles.card} ${expandedUnits.includes(u.id) ? '' : ''}`} // Modified: No active style for parent
                         onClick={() => toggleUnit(u.id)}
                         style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', height: 'auto' }}
                         >
                             <span style={{ fontSize: '1rem' }}>{u.title}</span>
                             
                             {/* Sub-unit / Topic selection */}
-                            {selectedUnits.includes(u.id) && u.subUnits && (
+                            {expandedUnits.includes(u.id) && u.subUnits && (
                                 <div 
                                     onClick={e => e.stopPropagation()} 
                                     style={{ 
