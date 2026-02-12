@@ -27,6 +27,11 @@ Output MUST be a valid JSON object strictly matching the schema.
 - 'answer_latex': The descriptive answer in LaTeX. Include intermediate steps/derivations. Example: "$(x+1)(x+2) = 0 \\rightarrow x = -1, -2$". Wrappers $...$ required. Do NOT include "Answer:" prefix.
 - 'explanation_latex': Detailed explanation. Wrap all math in $...$.
 - 'difficulty': One of L1, L2, L3.
+- 'graph': (Optional) Populate this only if the problem involves a function, geometry, or requires visualization.
+  - 'type': 'function' (for y=f(x)), 'point' (for specific coordinates), 'segment', or 'polygon'.
+  - 'expression': For 'function', provide the math expression in JS syntax (e.g. "x^2", "Math.sin(x)").
+  - 'points': Array of {x, y, label, color} for points of interest.
+  - 'xMin', 'xMax', 'yMin', 'yMax': Suggested view range.
 `;
 
     const userPrompt = `Unit: ${topic}

@@ -106,6 +106,7 @@ export class PDFBuilder {
 \\usepackage{multicol}
 \\usepackage{needspace}
 \\usepackage{xcolor}
+\\usepackage{tikz}
 \\pagestyle{empty}
 
 % Internal padding for fbox

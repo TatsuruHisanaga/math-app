@@ -6,6 +6,7 @@ import { PDFBuilder } from '@/lib/latex';
 import { v4 as uuidv4 } from 'uuid';
 import { exec } from 'child_process';
 import util from 'util';
+import { generateTikZ } from '@/lib/graph-to-tikz';
 
 const execAsync = util.promisify(exec);
 
@@ -101,10 +102,13 @@ export default async function handler(
         const qNum = `（${idx + 1}）`; 
         const workHeight = options.moreWorkSpace ? '6cm' : '3cm';
 
+        const graphLatex = q.graph ? `\\par\\vspace{0.5em}\\centering${generateTikZ(q.graph)}` : '';
+
         problemBody += `
 \\begin{needspace}{4cm}
 \\begin{qbox}
 \\textbf{${qNum}} ${q.stem_latex}
+${graphLatex}
 \\answerbox{${workHeight}}{}
 \\end{qbox}
 \\end{needspace}
@@ -121,10 +125,13 @@ export default async function handler(
              explanationBlock = `\\par\\vspace{0.5em}\\noindent\\small{\\textbf{解説}:\\par ${q.explanation_latex}}`;
         }
 
+        const graphLatex = q.graph ? `\\par\\vspace{0.5em}\\centering${generateTikZ(q.graph)}` : '';
+
         answerBody += `
 \\begin{needspace}{4cm}
 \\begin{qbox}
 \\textbf{${qNum}} ${q.stem_latex}
+${graphLatex}
 \\answeredbox{${q.answer_latex}}
 ${explanationBlock}
 \\end{qbox}

@@ -5,6 +5,9 @@ import confetti from 'canvas-confetti';
 import { saveAs } from 'file-saver';
 import Link from 'next/link';
 import LatexRenderer from '@/components/LatexRenderer'; // Import LatexRenderer
+import dynamic from 'next/dynamic';
+
+const MathGraph = dynamic(() => import('@/components/MathGraph'), { ssr: false });
 
 // Type definitions matching backend
 type Topic = { id: string; title: string };
@@ -1000,6 +1003,7 @@ export default function Home() {
                                     <div style={{ marginBottom: '1rem', fontSize: '1.1rem' }}>
                                         <LatexRenderer content={p.stem_latex} />
                                     </div>
+                                    {p.graph && <MathGraph data={p.graph} />}
 
                                     <details style={{ background: '#f9f9f9', padding: '1rem', borderRadius: '8px', cursor: 'pointer' }}>
                                         <summary style={{ fontWeight: 'bold', color: '#666' }}>解答・解説を表示</summary>

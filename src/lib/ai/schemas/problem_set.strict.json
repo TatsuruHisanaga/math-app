@@ -33,6 +33,106 @@
             "items": {
               "type": "string"
             }
+          },
+          "graph": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "function",
+                  "point",
+                  "segment",
+                  "polygon"
+                ]
+              },
+              "expression": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "k": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "xMin": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "xMax": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "yMin": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "yMax": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "points": {
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "x": {
+                      "type": "number"
+                    },
+                    "y": {
+                      "type": "number"
+                    },
+                    "label": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "color": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "x",
+                    "y",
+                    "label",
+                    "color"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "type",
+              "expression",
+              "k",
+              "xMin",
+              "xMax",
+              "yMin",
+              "yMax",
+              "points"
+            ],
+            "additionalProperties": false
           }
         },
         "required": [
@@ -41,7 +141,8 @@
           "explanation_latex",
           "unit_id",
           "difficulty",
-          "hints"
+          "hints",
+          "graph"
         ],
         "additionalProperties": false
       }
