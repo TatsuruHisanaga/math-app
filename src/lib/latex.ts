@@ -113,6 +113,7 @@ export class PDFBuilder {
 \\usepackage{multicol}
 \\usepackage{needspace}
 \\usepackage{xcolor}
+\\usepackage{enumitem} % Added for list customization
 \\pagestyle{empty}
 
 % Internal padding for fbox
@@ -128,7 +129,10 @@ export class PDFBuilder {
       \\vspace{0.5em}
       \\centering
       \\begin{minipage}{0.95\\linewidth}
+        \\linespread{1.3}\\selectfont % Increase line spacing
         \\setlength{\\parskip}{0.5em}
+        % Customize itemize inside this box
+        \\setlist[itemize]{leftmargin=1.5em, itemsep=0.5em, parsep=0pt, topsep=0pt}
 }{%
       \\end{minipage}
       \\vspace{0.5em}

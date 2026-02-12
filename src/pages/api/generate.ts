@@ -134,7 +134,10 @@ ${explanationBlock}
 
     // Append Point Review if available
     if (req.body.pointReview) {
+        console.log('PDF API: Received Point Review:', req.body.pointReview.length);
         answerBody += builder.getPointReview(req.body.pointReview);
+    } else {
+        console.log('PDF API: No Point Review received');
     }
 
     // Generate Teaching Assistant Page if requested

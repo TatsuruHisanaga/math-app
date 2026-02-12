@@ -42,7 +42,7 @@ Output MUST be a valid JSON object strictly matching the schema.
 - 'stem_latex': The problem text in LaTeX. Use Japanese for text. IMPORTANT: All math expressions (e.g. equations, variables like x) MUST be wrapped in $...$ (inline math) or $$...$$ (display math). DO NOT include the answer in this field.
 - 'answer_latex': The descriptive answer in LaTeX. Include intermediate steps/derivations. Example: "$(x+1)(x+2) = 0 \\rightarrow x = -1, -2$". Wrappers $...$ required. Do NOT include "Answer:" prefix.
 - 'explanation_latex': Detailed explanation. Wrap all math in $...$.
-- 'point_review_latex': A summary of key formulas, theorems, and concepts used in this problem set, formatted in LaTeX. Japanese text with math in $...$.
+- 'point_review_latex': A summary of key formulas, theorems, and concepts used in this problem set, formatted as a LaTeX itemize environment (\\begin{itemize} ... \\end{itemize}). Each item should start with a bold topic name, e.g., \\item \\textbf{Topic}: Content. Japanese text with math in $...$.
 - 'difficulty': One of L1, L2, L3.
 - 'intent': A brief description of the generation intent in Japanese.
 `;

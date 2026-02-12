@@ -435,6 +435,7 @@ export default function Home() {
       let buffer = '';
       let collectedProblems: any[] = [];
       let collectedIntent = ''; // New variable to capture intent
+      let collectedPointReview = ''; // Captured review content
 
       while (true) {
         const { done, value } = await reader.read();
@@ -455,6 +456,8 @@ export default function Home() {
               } else if (data.type === 'complete') {
                 collectedProblems = data.problems;
                 collectedIntent = data.intent;
+                collectedPointReview = data.point_review_latex; // Capture data
+                console.log('Frontend received Point Review:', collectedPointReview?.length);
                 setGeneratedProblems(data.problems); // Store for rendering
               } else if (data.type === 'error') {
                 throw new Error(data.message);
@@ -484,6 +487,7 @@ export default function Home() {
           units: selectedUnits,
           difficulties: difficulty,
           count: collectedProblems.length,
+          pointReview: collectedPointReview, // Pass to PDF generator
           options
         })
       });

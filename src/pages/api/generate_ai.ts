@@ -105,6 +105,8 @@ export default async function handler(
         req.body.additionalRequest
     );
 
+    console.log('AI Generation Complete. Point Review Length:', point_review_latex?.length); // Debug Log
+
     res.write(`data: ${JSON.stringify({ type: 'complete', problems, intent, point_review_latex })}\n\n`);
     res.end();
 
