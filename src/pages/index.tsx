@@ -187,19 +187,153 @@ export default function Home() {
     {
       subject: '数学II',
       units: [
-        { id: 'm2_shiki_shomei', title: '式と証明' },
-        { id: 'm2_fuku_2ji', title: '複素数と方程式' },
-        { id: 'm2_zukei_hoteishiki', title: '図形と方程式' },
-        { id: 'm2_sankaku', title: '三角関数' },
-        { id: 'm2_shisu_taisu', title: '指数・対数関数' },
-        { id: 'm2_bibun_sekibun', title: '微分法・積分法' },
+        { 
+            id: 'm2_shiki_shomei', 
+            title: '式と証明',
+            subUnits: [
+                { id: 'm2_shiki_poly', title: '式と計算', topics: [
+                    { id: 'm2_shiki_poly_1', title: '3次式の展開・因数分解' },
+                    { id: 'm2_shiki_poly_2', title: '二項定理' },
+                    { id: 'm2_shiki_poly_3', title: '整式の割り算・分数式' }
+                ]},
+                { id: 'm2_shiki_proof', title: '等式・不等式の証明', topics: [
+                    { id: 'm2_shiki_proof_1', title: '恒等式' },
+                    { id: 'm2_shiki_proof_2', title: '等式の証明' },
+                    { id: 'm2_shiki_proof_3', title: '不等式の証明' }
+                ]}
+            ]
+        },
+        { 
+            id: 'm2_fuku_2ji', 
+            title: '複素数と方程式',
+            subUnits: [
+                { id: 'm2_fuku_comp', title: '複素数', topics: [
+                    { id: 'm2_fuku_comp_1', title: '複素数の演算' },
+                    { id: 'm2_fuku_comp_2', title: '負の数の平方根' }
+                ]},
+                { id: 'm2_fuku_eq', title: '2次方程式', topics: [
+                    { id: 'm2_fuku_eq_1', title: '解の判別式' },
+                    { id: 'm2_fuku_eq_2', title: '解と係数の関係' }
+                ]},
+                { id: 'm2_fuku_high', title: '高次方程式', topics: [
+                    { id: 'm2_fuku_high_1', title: '剰余の定理・因数定理' },
+                    { id: 'm2_fuku_high_2', title: '高次方程式の解法' }
+                ]}
+            ]
+        },
+        { 
+            id: 'm2_zukei_hoteishiki', 
+            title: '図形と方程式',
+            subUnits: [
+                { id: 'm2_zukei_line', title: '点と直線', topics: [
+                    { id: 'm2_zukei_line_1', title: '2点間の距離・内分外分' },
+                    { id: 'm2_zukei_line_2', title: '直線の方程式' },
+                    { id: 'm2_zukei_line_3', title: '点と直線の距離' }
+                ]},
+                { id: 'm2_zukei_circle', title: '円', topics: [
+                    { id: 'm2_zukei_circle_1', title: '円の方程式' },
+                    { id: 'm2_zukei_circle_2', title: '円と直線' },
+                    { id: 'm2_zukei_circle_3', title: '2つの円' }
+                ]},
+                { id: 'm2_zukei_region', title: '軌跡と領域', topics: [
+                    { id: 'm2_zukei_region_1', title: '軌跡' },
+                    { id: 'm2_zukei_region_2', title: '不等式の表す領域' }
+                ]}
+            ]
+        },
+        { 
+            id: 'm2_sankaku', 
+            title: '三角関数',
+            subUnits: [
+                { id: 'm2_sankaku_graph', title: '角とグラフ', topics: [
+                    { id: 'm2_sankaku_graph_1', title: '一般角・弧度法' },
+                    { id: 'm2_sankaku_graph_2', title: '三角関数のグラフ' }
+                ]},
+                { id: 'm2_sankaku_add', title: '加法定理', topics: [
+                    { id: 'm2_sankaku_add_1', title: '加法定理' },
+                    { id: 'm2_sankaku_add_2', title: '2倍角・半角の公式' },
+                    { id: 'm2_sankaku_add_3', title: '三角関数の合成' }
+                ]},
+                { id: 'm2_sankaku_eq', title: '方程式・不等式', topics: [
+                    { id: 'm2_sankaku_eq_1', title: '三角方程式・不等式' },
+                    { id: 'm2_sankaku_eq_2', title: '最大・最小' }
+                ]}
+            ]
+        },
+        { 
+            id: 'm2_shisu_taisu', 
+            title: '指数・対数関数',
+            subUnits: [
+                { id: 'm2_shisu', title: '指数関数', topics: [
+                    { id: 'm2_shisu_1', title: '指数の拡張' },
+                    { id: 'm2_shisu_2', title: '指数関数のグラフ' },
+                    { id: 'm2_shisu_3', title: '指数方程式・不等式' }
+                ]},
+                { id: 'm2_taisu', title: '対数関数', topics: [
+                    { id: 'm2_taisu_1', title: '対数の性質' },
+                    { id: 'm2_taisu_2', title: '対数関数のグラフ' },
+                    { id: 'm2_taisu_3', title: '対数方程式・不等式' },
+                    { id: 'm2_taisu_4', title: '常用対数' }
+                ]}
+            ]
+        },
+        { 
+            id: 'm2_bibun_sekibun', 
+            title: '微分法・積分法',
+            subUnits: [
+                { id: 'm2_bibun', title: '微分法', topics: [
+                    { id: 'm2_bibun_1', title: '微分係数・導関数' },
+                    { id: 'm2_bibun_2', title: '接線の方程式' },
+                    { id: 'm2_bibun_3', title: '関数の増減・極値' },
+                    { id: 'm2_bibun_4', title: '最大・最小' }
+                ]},
+                { id: 'm2_sekibun', title: '積分法', topics: [
+                    { id: 'm2_sekibun_1', title: '不定積分' },
+                    { id: 'm2_sekibun_2', title: '定積分' },
+                    { id: 'm2_sekibun_3', title: '定積分と面積' }
+                ]}
+            ]
+        },
       ]
     },
     {
       subject: '数学B',
       units: [
-        { id: 'mb_suiretsu', title: '数列' },
-        { id: 'mb_toukei', title: '統計的な推測' },
+        { 
+            id: 'mb_suiretsu', 
+            title: '数列',
+            subUnits: [
+                { id: 'mb_suiretsu_basic', title: '等差・等比数列', topics: [
+                    { id: 'mb_suiretsu_basic_1', title: '等差数列' },
+                    { id: 'mb_suiretsu_basic_2', title: '等比数列' }
+                ]},
+                { id: 'mb_suiretsu_various', title: 'いろいろな数列', topics: [
+                    { id: 'mb_suiretsu_various_1', title: 'Σの計算' },
+                    { id: 'mb_suiretsu_various_2', title: '階差数列' },
+                    { id: 'mb_suiretsu_various_3', title: '群数列' }
+                ]},
+                { id: 'mb_suiretsu_rec', title: '漸化式と帰納法', topics: [
+                    { id: 'mb_suiretsu_rec_1', title: '漸化式' },
+                    { id: 'mb_suiretsu_rec_2', title: '数学的帰納法' }
+                ]}
+            ]
+        },
+        { 
+            id: 'mb_toukei', 
+            title: '統計的な推測',
+            subUnits: [
+                { id: 'mb_toukei_dist', title: '確率分布', topics: [
+                    { id: 'mb_toukei_dist_1', title: '確率変数・期待値・分散' },
+                    { id: 'mb_toukei_dist_2', title: '二項分布' },
+                    { id: 'mb_toukei_dist_3', title: '正規分布' }
+                ]},
+                { id: 'mb_toukei_inf', title: '統計的推測', topics: [
+                    { id: 'mb_toukei_inf_1', title: '母集団と標本' },
+                    { id: 'mb_toukei_inf_2', title: '区間推定' },
+                    { id: 'mb_toukei_inf_3', title: '仮説検定' }
+                ]}
+            ]
+        },
       ]
     },
     {
@@ -212,9 +346,55 @@ export default function Home() {
     {
       subject: '数学III',
       units: [
-        { id: 'm3_kyukan', title: '極限' },
-        { id: 'm3_bibun', title: '微分法' },
-        { id: 'm3_sekibun', title: '積分法' },
+        { 
+            id: 'm3_kyukan', 
+            title: '極限',
+            subUnits: [
+                { id: 'm3_kyukan_seq', title: '数列の極限', topics: [
+                    { id: 'm3_kyukan_seq_1', title: '極限の計算' },
+                    { id: 'm3_kyukan_seq_2', title: '無限等比級数' }
+                ]},
+                { id: 'm3_kyukan_func', title: '関数の極限', topics: [
+                    { id: 'm3_kyukan_func_1', title: '関数の極限' },
+                    { id: 'm3_kyukan_func_2', title: '三角関数の極限' },
+                    { id: 'm3_kyukan_func_3', title: '関数の連続性' }
+                ]}
+            ]
+        },
+        { 
+            id: 'm3_bibun', 
+            title: '微分法',
+            subUnits: [
+                { id: 'm3_bibun_calc', title: '導関数', topics: [
+                    { id: 'm3_bibun_calc_1', title: '積・商・合成関数の微分' },
+                    { id: 'm3_bibun_calc_2', title: '逆関数の微分' },
+                    { id: 'm3_bibun_calc_3', title: '三角・指数・対数関数の微分' }
+                ]},
+                { id: 'm3_bibun_app', title: '微分の応用', topics: [
+                    { id: 'm3_bibun_app_1', title: '接線・法線' },
+                    { id: 'm3_bibun_app_2', title: '平均値の定理' },
+                    { id: 'm3_bibun_app_3', title: '関数の増減・極値・凹凸' },
+                    { id: 'm3_bibun_app_4', title: '速度・加速度' }
+                ]}
+            ]
+        },
+        { 
+            id: 'm3_sekibun', 
+            title: '積分法',
+            subUnits: [
+                { id: 'm3_sekibun_calc', title: '不定積分・定積分', topics: [
+                    { id: 'm3_sekibun_calc_1', title: '置換積分法' },
+                    { id: 'm3_sekibun_calc_2', title: '部分積分法' },
+                    { id: 'm3_sekibun_calc_3', title: 'いろいろな関数の積分' }
+                ]},
+                { id: 'm3_sekibun_app', title: '積分の応用', topics: [
+                    { id: 'm3_sekibun_app_1', title: '区分求積法' },
+                    { id: 'm3_sekibun_app_2', title: '面積' },
+                    { id: 'm3_sekibun_app_3', title: '体積' },
+                    { id: 'm3_sekibun_app_4', title: '曲線の長さ' }
+                ]}
+            ]
+        },
       ]
     }
   ];
