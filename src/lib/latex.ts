@@ -76,6 +76,20 @@ export class PDFBuilder {
 
       processNode.on('close', (code) => {
         clearTimeout(timeout);
+        
+        // Check if PDF exists regardless of exit code
+        if (fs.existsSync(pdfFile)) {
+          const pdfBuffer = fs.readFileSync(pdfFile);
+          // Cleanup
+          fs.rmSync(jobDir, { recursive: true, force: true });
+          
+          if (code !== 0) {
+              console.warn('LaTeX build finished with non-zero exit code, but PDF was generated.', stdout);
+          }
+          resolve(pdfBuffer);
+          return;
+        }
+
         if (code !== 0) {
           console.error('LaTeX build failed:', stdout); // Log header
           // Clean up somewhat
@@ -84,14 +98,7 @@ export class PDFBuilder {
           return;
         }
 
-        if (fs.existsSync(pdfFile)) {
-          const pdfBuffer = fs.readFileSync(pdfFile);
-          // Cleanup
-          fs.rmSync(jobDir, { recursive: true, force: true });
-          resolve(pdfBuffer);
-        } else {
-          reject(new Error('PDF file was not created despite exit code 0'));
-        }
+        reject(new Error('PDF file was not created despite exit code 0'));
       });
     });
   }
@@ -110,6 +117,43 @@ export class PDFBuilder {
 
 % Internal padding for fbox
 \\setlength{\\fboxsep}{8pt}
+
+% Point Review Box Style - Manual implementation using xcolor/boxes/lrbox for maximum compatibility
+\\newsavebox{\\pointboxcontent}
+\\newenvironment{pointbox}{%
+  \\par\\vspace{1em}
+  \\noindent
+  \\begin{lrbox}{\\pointboxcontent}%
+    \\begin{minipage}{\\dimexpr\\linewidth-1mm-2\\fboxrule\\relax}%
+      \\vspace{0.5em}
+      \\centering
+      \\begin{minipage}{0.95\\linewidth}
+        \\setlength{\\parskip}{0.5em}
+}{%
+      \\end{minipage}
+      \\vspace{0.5em}
+    \\end{minipage}%
+  \\end{lrbox}%
+  % Output the box
+  \\setlength{\\fboxsep}{0pt}%
+  \\setlength{\\fboxrule}{0.5mm}%
+  \\fcolorbox{black!70}{gray!5}{%
+    \\begin{minipage}{\\dimexpr\\linewidth-1mm\\relax}%
+      % Title Bar
+      \\colorbox{black!70}{%
+        \\begin{minipage}{\\dimexpr\\linewidth-6pt\\relax}%
+           \\vspace{3pt}
+           \\centering\\textcolor{white}{\\bfseries\\large ★ Point Review - 今日の重要ポイント ★}
+           \\vspace{3pt}
+        \\end{minipage}%
+      }%
+      \\par
+      % Content (captured in lrbox)
+      \\usebox{\\pointboxcontent}
+    \\end{minipage}%
+  }%
+  \\par\\vspace{1em}
+}
 
 % Clean box layout matching the reference image style
 % Single frame, question number and text inside, empty space below.
@@ -155,5 +199,15 @@ ${content}
 
 \\end{document}
      `;
+  }
+
+  public getPointReview(content: string): string {
+      if (!content) return '';
+      return `
+\\par\\vspace{2em}
+\\begin{pointbox}
+${content}
+\\end{pointbox}
+      `;
   }
 }

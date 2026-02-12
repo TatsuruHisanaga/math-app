@@ -132,6 +132,11 @@ ${explanationBlock}
         `;
     });
 
+    // Append Point Review if available
+    if (req.body.pointReview) {
+        answerBody += builder.getPointReview(req.body.pointReview);
+    }
+
     // Generate Teaching Assistant Page if requested
     let instructorBody = '';
     if (options.teachingAssistant) {

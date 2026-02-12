@@ -48,11 +48,16 @@
     },
     "intent": {
       "type": "string"
+    },
+    "point_review_latex": {
+      "type": "string",
+      "description": "A summary of key formulas, theorems, and concepts used in this problem set, formatted in LaTeX. Japanese text with math in $...$."
     }
   },
   "required": [
     "problems",
-    "intent"
+    "intent",
+    "point_review_latex"
   ],
   "additionalProperties": false
 }

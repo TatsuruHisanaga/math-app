@@ -32,7 +32,7 @@ export class GenerationPipeline {
         modelOverride?: string,
         onProgress?: (current: number, total: number) => void,
         otherRequests?: string
-    ): Promise<{ problems: ValidatedProblem[], intent: string }> {
+    ): Promise<{ problems: ValidatedProblem[], intent: string, point_review_latex: string }> {
         const systemPrompt = `You are a skilled mathematics teacher creating exercise problems for Japanese students.
 Generate ${count} math problems based on the unit topic and difficulty provided.
 IMPORTANT: You MUST generate EXACTLY ${count} problems. Do not generate fewer than requested.
@@ -42,6 +42,7 @@ Output MUST be a valid JSON object strictly matching the schema.
 - 'stem_latex': The problem text in LaTeX. Use Japanese for text. IMPORTANT: All math expressions (e.g. equations, variables like x) MUST be wrapped in $...$ (inline math) or $$...$$ (display math). DO NOT include the answer in this field.
 - 'answer_latex': The descriptive answer in LaTeX. Include intermediate steps/derivations. Example: "$(x+1)(x+2) = 0 \\rightarrow x = -1, -2$". Wrappers $...$ required. Do NOT include "Answer:" prefix.
 - 'explanation_latex': Detailed explanation. Wrap all math in $...$.
+- 'point_review_latex': A summary of key formulas, theorems, and concepts used in this problem set, formatted in LaTeX. Japanese text with math in $...$.
 - 'difficulty': One of L1, L2, L3.
 - 'intent': A brief description of the generation intent in Japanese.
 `;
@@ -65,12 +66,13 @@ Difficulty: ${difficulty}
         modelOverride?: string,
         onProgress?: (current: number, total: number) => void,
         stopAfterFirstAttempt: boolean = false
-    ): Promise<{ problems: ValidatedProblem[], intent: string }> {
+    ): Promise<{ problems: ValidatedProblem[], intent: string, point_review_latex: string }> {
         let validProblems: ValidatedProblem[] = [];
         let attempts = 0;
         let needed = targetCount;
         let lastError = "";
         let intent = "";
+        let point_review_latex = "";
 
         // Initial progress
         if (onProgress) onProgress(0, targetCount);
@@ -98,6 +100,9 @@ Difficulty: ${difficulty}
 
                 if (!intent && problemSet.intent) {
                     intent = problemSet.intent;
+                }
+                if (!point_review_latex && problemSet.point_review_latex) {
+                    point_review_latex = problemSet.point_review_latex;
                 }
 
                 for (const p of problemSet.problems) {
@@ -130,7 +135,7 @@ Difficulty: ${difficulty}
             throw new Error(`Failed to generate any valid problems after ${attempts} attempts. Last reason: ${lastError}`);
         }
         
-        return { problems: validProblems, intent };
+        return { problems: validProblems, intent, point_review_latex };
     }
 
     async verifyProblem(p: AIProblemItem): Promise<VerificationResult> {
