@@ -619,6 +619,26 @@ export default function Home() {
       });
   };
 
+  const toggleSubUnitAllTopics = (unitId: string, sub: SubUnit) => {
+      if (!sub.topics) return;
+      const topicTitles = sub.topics.map(t => t.title);
+      setSelectedTopics(prev => {
+          const current = prev[unitId] || [];
+          const isAllSelected = topicTitles.every(t => current.includes(t));
+          
+          let next;
+          if (isAllSelected) {
+              // Deselect all
+              next = current.filter(t => !topicTitles.includes(t));
+          } else {
+              // Select all (union)
+              const toAdd = topicTitles.filter(t => !current.includes(t));
+              next = [...current, ...toAdd];
+          }
+          return { ...prev, [unitId]: next };
+      });
+  };
+
   const toggleDifficulty = (d: string) => {
     setDifficulty(prev =>
       prev.includes(d) ? prev.filter(x => x !== d) : [...prev, d]
@@ -748,10 +768,43 @@ export default function Home() {
                                         textAlign: 'left'
                                     }}
                                 >
-                                    {u.subUnits.map(sub => (
+                                    {u.subUnits.map(sub => {
+                                        const topicTitles = sub.topics?.map(t => t.title) || [];
+                                        const currentSelected = selectedTopics[u.id] || [];
+                                        const isAllTopicsSelected = topicTitles.length > 0 && topicTitles.every(t => currentSelected.includes(t));
+
+                                        return (
                                         <div key={sub.id} style={{ marginBottom: '1rem' }}>
-                                            <div style={{fontSize: '0.8rem', fontWeight: 'bold', marginBottom:'6px', color: '#666', borderBottom: '1px solid #eee', paddingBottom: '2px'}}>
-                                                {sub.title}
+                                            <div style={{
+                                                fontSize: '0.8rem', 
+                                                fontWeight: 'bold', 
+                                                marginBottom:'6px', 
+                                                color: '#666', 
+                                                borderBottom: '1px solid #eee', 
+                                                paddingBottom: '2px',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'flex-start',
+                                                gap: '10px'
+                                            }}>
+                                                <span>{sub.title}</span>
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        toggleSubUnitAllTopics(u.id, sub);
+                                                    }}
+                                                    style={{
+                                                        fontSize: '0.7rem',
+                                                        padding: '1px 8px',
+                                                        border: '1px solid #ddd',
+                                                        background: isAllTopicsSelected ? '#eee' : '#fff',
+                                                        borderRadius: '4px',
+                                                        cursor: 'pointer',
+                                                        color: '#555'
+                                                    }}
+                                                >
+                                                    {isAllTopicsSelected ? '全解除' : 'すべて選択'}
+                                                </button>
                                             </div>
                                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
                                                 {sub.topics?.map(topic => {
@@ -784,7 +837,8 @@ export default function Home() {
                                                 })}
                                             </div>
                                         </div>
-                                    ))}
+                                    );
+                                    })}
                                 </div>
                             )}
                         </button>
