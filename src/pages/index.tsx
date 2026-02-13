@@ -5,6 +5,7 @@ import confetti from 'canvas-confetti';
 import { saveAs } from 'file-saver';
 import Link from 'next/link';
 import LatexRenderer from '@/components/LatexRenderer'; // Import LatexRenderer
+import ProblemEditList from '@/components/ProblemEditList'; // Import ProblemEditList
 
 // Type definitions matching backend
 type Topic = { id: string; title: string };
@@ -17,10 +18,12 @@ export default function Home() {
   const [selectedUnits, setSelectedUnits] = useState<string[]>([]);
   const [selectedTopics, setSelectedTopics] = useState<Record<string, string[]>>({});
   const [generatedProblems, setGeneratedProblems] = useState<any[]>([]); // New state
+  const [pointReview, setPointReview] = useState<string>(''); // New state for Point Review
   const [difficulty, setDifficulty] = useState<string[]>(['L1']);
+  /* Options */
   const [count, setCount] = useState<number>(10);
   const [options, setOptions] = useState({
-    stumblingBlock: false,
+    stumblingBlock: true, // Default to true as requested
     moreWorkSpace: false,
   });
   const [aiModel, setAiModel] = useState<'gpt-5.2' | 'gpt-5-mini'>('gpt-5.2');
@@ -463,8 +466,8 @@ export default function Home() {
                 collectedProblems = data.problems;
                 collectedIntent = data.intent;
                 collectedPointReview = data.point_review_latex; // Capture data
+                setPointReview(collectedPointReview); // Store in state for later use
                 console.log('Frontend received Point Review:', collectedPointReview?.length);
-                setGeneratedProblems(data.problems); // Store for rendering
               } else if (data.type === 'error') {
                 throw new Error(data.message);
               }
@@ -479,20 +482,25 @@ export default function Home() {
         throw new Error('生成された問題がありませんでした。');
       }
 
+      // Pre-process problems to include ID and Unit Title
+      const processedProblems = collectedProblems.map((p, idx) => ({
+        ...p,
+        id: `ai_${idx}`, // Assign a temporary ID
+        unit_title: ALL_UNITS.find(u => u.id === p.unit_id)?.title || p.unit_id
+      }));
+
+      setGeneratedProblems(processedProblems); // Store processed problems
+
       // 2. PDF Generation
       setProgress('PDFファイルを作成中...');
       const pdfRes = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          providedQuestions: collectedProblems.map((p, idx) => ({
-            ...p,
-            id: `ai_${idx}`,
-            unit_title: ALL_UNITS.find(u => u.id === p.unit_id)?.title || p.unit_id
-          })),
+          providedQuestions: processedProblems, // Use processed problems
           units: selectedUnits,
           difficulties: difficulty,
-          count: collectedProblems.length,
+          count: processedProblems.length,
           pointReview: collectedPointReview, // Pass to PDF generator
           options
         })
@@ -698,6 +706,70 @@ export default function Home() {
   const visibleCurriculum = CURRICULUM.filter(cat => TAB_GROUPS[activeTab].includes(cat.subject));
 
   /* Helper for bulk selection */
+  const handleDeleteProblem = (index: number) => {
+    if (confirm('この問題を削除しますか？\n（削除後は「PDFを更新する」ボタンを押してください）')) {
+      setGeneratedProblems(prev => prev.filter((_, i) => i !== index));
+    }
+  };
+
+  const handleUpdateProblem = (index: number, updated: any) => {
+    setGeneratedProblems(prev => prev.map((p, i) => i === index ? updated : p));
+  };
+
+  const handleRegeneratePDF = async () => {
+    if (generatedProblems.length === 0) {
+      setError('問題がありません');
+      return;
+    }
+
+    setLoading(true);
+    setProgress('PDFを更新中...');
+    setError('');
+
+    try {
+      const pdfRes = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          providedQuestions: generatedProblems,
+          units: selectedUnits,
+          difficulties: difficulty,
+          count: generatedProblems.length,
+          pointReview: pointReview,
+          options
+        })
+      });
+
+      if (!pdfRes.ok) throw new Error('PDF Creation failed');
+
+      const blob = await pdfRes.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      const unitNames = selectedUnits
+        .map(id => ALL_UNITS.find(u => u.id === id)?.title ?? id)
+        .join('_')
+        .replace(/[\s\.]+/g, '_');
+      a.download = `${unitNames}_${new Date().toISOString().slice(0, 10)}_updated.pdf`;
+      
+      setPdfUrl(url);
+      setShowPreview(true);
+      
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+      
+    } catch (e: any) {
+      setError(e.message || 'エラーが発生しました');
+    } finally {
+      setLoading(false);
+      setProgress('');
+    }
+  };
+
   const handleSelectAll = (catUnits: Unit[]) => {
       const ids = catUnits.map(u => u.id);
       const isAllSelected = ids.every(id => selectedUnits.includes(id));
@@ -798,87 +870,68 @@ export default function Home() {
                         style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', height: 'auto' }}
                         >
                             <span style={{ fontSize: '1rem' }}>{u.title}</span>
-                            
-                            {/* Sub-unit / Topic selection */}
+                            {/* Sub-units rendering */}
                             {expandedUnits.includes(u.id) && u.subUnits && (
-                                <div 
-                                    onClick={e => e.stopPropagation()} 
-                                    style={{ 
-                                        marginTop: '1rem', 
-                                        width: '100%',
-                                        textAlign: 'left'
-                                    }}
+                                <div style={{ 
+                                    marginTop: '0.5rem', 
+                                    width: '100%', 
+                                    display: 'flex', 
+                                    flexDirection: 'column', 
+                                    gap: '4px',
+                                    borderTop: '1px solid #eee',
+                                    paddingTop: '0.5rem'
+                                }}
+                                onClick={(e) => e.stopPropagation()} // Stop propagation to prevent closing parent
                                 >
                                     {u.subUnits.map(sub => {
-                                        const topicTitles = sub.topics?.map(t => t.title) || [];
-                                        const currentSelected = selectedTopics[u.id] || [];
-                                        const isAllTopicsSelected = topicTitles.length > 0 && topicTitles.every(t => currentSelected.includes(t));
+                                         // Check detailed topic selection
+                                         const currentTopics = selectedTopics[u.id] || [];
+                                         const allSubTopicTitles = sub.topics?.map(t => t.title) || [];
+                                         // If at least one topic is selected, we consider the sub-unit "active" visually, 
+                                         // or we can just rely on individual topic chips.
+                                         // Let's rely on individual chips.
+                                         const isSubFullySelected = allSubTopicTitles.length > 0 && allSubTopicTitles.every(t => currentTopics.includes(t));
 
-                                        return (
-                                        <div key={sub.id} style={{ marginBottom: '1rem' }}>
-                                            <div style={{
-                                                fontSize: '0.8rem', 
-                                                fontWeight: 'bold', 
-                                                marginBottom:'6px', 
-                                                color: '#666', 
-                                                borderBottom: '1px solid #eee', 
-                                                paddingBottom: '2px',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'flex-start',
-                                                gap: '10px'
-                                            }}>
-                                                <span>{sub.title}</span>
-                                                <button
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        toggleSubUnitAllTopics(u.id, sub);
-                                                    }}
-                                                    style={{
-                                                        fontSize: '0.7rem',
-                                                        padding: '1px 8px',
-                                                        border: '1px solid #ddd',
-                                                        background: isAllTopicsSelected ? '#eee' : '#fff',
-                                                        borderRadius: '4px',
+                                         return (
+                                            <div key={sub.id} style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                                                <div 
+                                                    onClick={() => toggleSubUnitAllTopics(u.id, sub)}
+                                                    style={{ 
+                                                        fontSize: '0.85rem', 
+                                                        color: isSubFullySelected ? '#0070f3' : '#666',
+                                                        fontWeight: 'bold',
                                                         cursor: 'pointer',
-                                                        color: '#555'
+                                                        padding: '2px 4px',
+                                                        marginBottom: '2px'
                                                     }}
                                                 >
-                                                    {isAllTopicsSelected ? '全解除' : 'すべて選択'}
-                                                </button>
+                                                    {sub.title}
+                                                </div>
+                                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', paddingLeft: '8px' }}>
+                                                    {sub.topics?.map(topic => {
+                                                        const isSelected = currentTopics.includes(topic.title);
+                                                        return (
+                                                            <span 
+                                                                key={topic.id}
+                                                                onClick={() => toggleTopic(u.id, topic.title)}
+                                                                style={{
+                                                                    fontSize: '0.75rem',
+                                                                    padding: '2px 6px',
+                                                                    borderRadius: '4px',
+                                                                    border: '1px solid',
+                                                                    borderColor: isSelected ? '#ffb74d' : '#ddd', // Orange border if selected
+                                                                    background: isSelected ? '#fff3e0' : '#f9f9f9', // Light orange bg if selected,
+                                                                    color: isSelected ? '#e65100' : '#888',
+                                                                    cursor: 'pointer'
+                                                                }}
+                                                            >
+                                                                {topic.title}
+                                                            </span>
+                                                        );
+                                                    })}
+                                                </div>
                                             </div>
-                                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                                                {sub.topics?.map(topic => {
-                                                    const isChecked = (selectedTopics[u.id] || []).includes(topic.title);
-                                                    return (
-                                                        <button
-                                                            key={topic.id}
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                toggleTopic(u.id, topic.title);
-                                                            }}
-                                                            style={{
-                                                                fontSize: '0.75rem',
-                                                                padding: '4px 10px',
-                                                                borderRadius: '16px',
-                                                                border: isChecked ? '1px solid #FFB300' : '1px solid #ddd',
-                                                                background: isChecked ? '#FFF8E1' : 'white',
-                                                                color: isChecked ? '#B45309' : '#555',
-                                                                cursor: 'pointer',
-                                                                display: 'flex',
-                                                                alignItems: 'center',
-                                                                gap: '4px',
-                                                                transition: 'all 0.1s'
-                                                            }}
-                                                        >
-                                                            {isChecked && <span style={{fontSize:'10px'}}>✓</span>}
-                                                            {topic.title}
-                                                        </button>
-                                                    );
-                                                })}
-                                            </div>
-                                        </div>
-                                    );
+                                         );
                                     })}
                                 </div>
                             )}
@@ -892,111 +945,112 @@ export default function Home() {
         </section>
 
         <section className={styles.section}>
-          <h2>2. 難易度 & 設定</h2>
-          <div className={styles.settingsGrid}>
-            {/* Difficulty */}
-            <div className={styles.controlGroup}>
-              <h3>難易度</h3>
-              <div className={styles.toggleGroup}>
-                {[
-                  { id: 'L1', label: '基礎' },
-                  { id: 'L2', label: '標準' },
-                  { id: 'L3', label: '発展' }
-                ].map(d => (
-                  <div
-                    key={d.id}
-                    className={`${styles.toggleButton} ${difficulty.includes(d.id) ? styles.active : ''}`}
-                    onClick={() => toggleDifficulty(d.id)}
-                  >
-                    {d.label}
-                  </div>
-                ))}
-              </div>
-            </div>
+          <h2>2. オプション設定</h2>
+          <div className={styles.optionsGrid}>
+            <label className={styles.checkboxLabel}>
+              <input
+                type="checkbox"
+                checked={options.moreWorkSpace}
+                onChange={(e) => setOptions({ ...options, moreWorkSpace: e.target.checked })}
+              />
+              広めの計算スペース
+            </label>
+          </div>
+          
+          <div style={{ marginTop: '1rem' }}>
+             <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.5rem' }}>問題数</label>
+             <input 
+               type="number" 
+               value={count} 
+               onChange={(e) => setCount(Math.max(1, parseInt(e.target.value) || 1))}
+               style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc', width: '80px' }}
+             />
+          </div>
 
-            {/* Count */}
-            <div className={styles.controlGroup}>
-              <h3>
-                問題数
-                <span style={{ color: '#FFB300', fontSize: '1.2rem', fontWeight: 'bold' }}>{count}</span>
-              </h3>
-              <div className={styles.sliderContainer}>
-                <span style={{ fontSize: '0.8rem', color: '#999', fontWeight: 'bold' }}>3</span>
-                <input
-                  type="range" min="3" max="30"
-                  value={count}
-                  onChange={(e) => setCount(Number(e.target.value))}
-                  className={styles.rangeInput}
-                />
-                <span style={{ fontSize: '0.8rem', color: '#999', fontWeight: 'bold' }}>30</span>
-              </div>
-            </div>
+          <div style={{ marginTop: '1rem' }}>
+             <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.5rem' }}>難易度</label>
+             <div style={{ display: 'flex', gap: '0.5rem' }}>
+                 {['L1', 'L2', 'L3', 'L4', 'L5'].map(d => (
+                     <button
+                        key={d}
+                        onClick={() => toggleDifficulty(d)}
+                        style={{
+                            padding: '0.5rem 1rem',
+                            borderRadius: '20px',
+                            border: '1px solid #ccc',
+                            background: difficulty.includes(d) ? '#0070f3' : '#fff',
+                            color: difficulty.includes(d) ? '#fff' : '#000',
+                            cursor: 'pointer'
+                        }}
+                     >
+                        {d === 'L1' ? '基礎' : d === 'L2' ? '標準' : d === 'L3' ? '発展' : d === 'L4' ? '難関' : '最難関'}
+                     </button>
+                 ))}
+             </div>
+          </div>
+          
+           <div style={{ marginTop: '1rem' }}>
+             <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.5rem' }}>AIモデル</label>
+             <select 
+               value={aiModel} 
+               onChange={(e) => setAiModel(e.target.value as any)}
+               style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc', width: '100%', maxWidth: '300px' }}
+             >
+               <option value="gpt-5.2">GPT-5.2 (推奨)</option>
+               <option value="gpt-5-mini">GPT-5-mini (高速)</option>
+             </select>
+          </div>
 
-            {/* AI Model */}
-            <div className={styles.controlGroup}>
-              <h3>AIモデル</h3>
-              <div className={styles.modelOptions}>
-                {[
-                  { id: 'gpt-5.2', name: '高品質 (gpt-5.2)', desc: '高い論理的思考で良問を作成' },
-                  { id: 'gpt-5-mini', name: '高速 (gpt-5-mini)', desc: '生成スピードを優先' }
-                ].map((m) => (
-                  <div
-                    key={m.id}
-                    className={`${styles.modelCard} ${aiModel === m.id ? styles.selected : ''}`}
-                    onClick={() => setAiModel(m.id as any)}
-                  >
-                    <div className={styles.radioCircle}></div>
-                    <div className={styles.modelInfo}>
-                      <span className={styles.modelName}>{m.name}</span>
-                      <span className={styles.modelDesc}>{m.desc}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Additional Request */}
-            <div className={styles.controlGroup} style={{ gridColumn: '1 / -1' }}>
-                <h3>その他要望</h3>
-                <textarea
-                    placeholder="例: 文章題を多めにしてください、計算過程を詳しく書いてください etc."
-                    value={additionalRequest}
-                    onChange={(e) => setAdditionalRequest(e.target.value)}
-                    style={{
-                        width: '100%',
-                        padding: '1rem',
-                        borderRadius: '12px',
-                        border: '2px solid #eaeaea',
-                        fontSize: '0.95rem',
-                        minHeight: '80px',
-                        fontFamily: 'inherit',
-                        resize: 'vertical',
-                        boxSizing: 'border-box'
-                    }}
-                />
-            </div>
+           <div style={{ marginTop: '1.5rem' }}>
+             <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.5rem' }}>
+                 追加のリクエスト <span style={{ fontWeight: 'normal', fontSize: '0.8rem', color: '#666' }}>（任意）</span>
+             </label>
+             <textarea
+               value={additionalRequest}
+               onChange={(e) => setAdditionalRequest(e.target.value)}
+               placeholder="例: 文章題を多めにしてほしい、計算問題を重点的に..."
+               style={{ 
+                   width: '100%', 
+                   height: '80px', 
+                   padding: '0.5rem', 
+                   borderRadius: '4px', 
+                   border: '1px solid #ccc',
+                   fontFamily: 'inherit'
+               }}
+             />
           </div>
         </section>
 
-        <div className={styles.actions}>
-            <button
-              className={styles.generateButton}
-              onClick={handleAutoGenerate}
-              disabled={loading || selectedUnits.length === 0}
-            >
-              {loading ? '作成中...' : 'プリントを作成'}
-            </button>
+        <div style={{ textAlign: 'center', marginTop: '2rem' }}>
+          <button
+            className={styles.generateButton}
+            onClick={handleAutoGenerate}
+            disabled={loading}
+          >
+            {loading ? '作成中...' : '問題を作成する'}
+          </button>
         </div>
 
         {/* Results Section */}
         {pdfUrl && (
-            <div className={styles.section} style={{ marginTop: '2rem', border: '2px solid #FFB300', background: '#fffcf5' }}>
-                <h2 style={{ borderBottom: 'none', textAlign: 'center', fontSize: '1.5rem', marginBottom: '1rem' }}>🎉 生成完了</h2>
+            <div style={{ marginTop: '3rem', borderTop: '1px solid #eee', paddingTop: '2rem' }}>
+                <h2 style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+                    <span style={{ fontSize: '1.5rem' }}>🎉</span> 作成完了！
+                </h2>
                 
                 {intent && (
-                    <div style={{ background: 'white', padding: '1.5rem', borderRadius: '12px', marginBottom: '1.5rem', border: '1px solid #eee' }}>
-                        <h3 style={{ margin: '0 0 1rem 0', color: '#555' }}>🎯 出題のねらい・構成</h3>
-                        <div style={{ whiteSpace: 'pre-wrap', lineHeight: '1.6' }}>
+                    <div style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'center' }}>
+                        <div style={{ 
+                            background: '#f0f9ff', 
+                            border: '1px solid #bae6fd', 
+                            borderRadius: '8px', 
+                            padding: '1rem', 
+                            maxWidth: '800px',
+                            width: '100%'
+                        }}>
+                             <div style={{ fontWeight: 'bold', marginBottom: '0.5rem', color: '#0284c7' }}>
+                                AIからのメッセージ:
+                            </div>
                             <LatexRenderer content={intent} />
                         </div>
                     </div>
@@ -1028,57 +1082,36 @@ export default function Home() {
                     </div>
                 )}
 
-                {/* Generated Problems List */}
+                {/* Editable Generated Problems List */}
                 {generatedProblems.length > 0 && (
                     <div style={{ marginTop: '2rem', borderTop: '2px dashed #FFB300', paddingTop: '2rem' }}>
-                        <h3 style={{ textAlign: 'center', marginBottom: '1.5rem', color: '#B45309' }}>📖 生成された問題一覧</h3>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                            {generatedProblems.map((p, idx) => (
-                                <div key={idx} style={{ background: 'white', padding: '1.5rem', borderRadius: '12px', border: '1px solid #eee', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
-                                    <div style={{ fontWeight: 'bold', marginBottom: '0.5rem', color: '#555', borderBottom: '1px solid #eee', paddingBottom: '0.5rem' }}>
-                                        問{idx + 1}
-                                    </div>
-                                    <div style={{ marginBottom: '1rem', fontSize: '1.1rem' }}>
-                                        <LatexRenderer content={p.stem_latex} />
-                                    </div>
-
-                                    <details style={{ background: '#f9f9f9', padding: '1rem', borderRadius: '8px', cursor: 'pointer' }}>
-                                        <summary style={{ fontWeight: 'bold', color: '#666' }}>解答・解説を表示</summary>
-                                        <div style={{ marginTop: '1rem' }}>
-                                            <div style={{ fontWeight: 'bold', color: '#d97706', marginBottom: '0.5rem' }}>【解答】</div>
-                                            <div style={{ marginBottom: '1rem' }}>
-                                                <LatexRenderer content={p.answer_latex} />
-                                            </div>
-                                            
-                                            {p.explanation_latex && (
-                                                <>
-                                                    <div style={{ fontWeight: 'bold', color: '#555', marginBottom: '0.5rem' }}>【解説】</div>
-                                                    <div style={{ whiteSpace: 'pre-wrap' }}>
-                                                        <LatexRenderer content={p.explanation_latex} />
-                                                    </div>
-                                                </>
-                                            )}
-
-                                            {p.teaching_point_latex && (
-                                                <div style={{ 
-                                                    marginTop: '1.5rem', 
-                                                    background: '#e3f2fd', 
-                                                    border: '1px solid #90caf9', 
-                                                    padding: '1rem', 
-                                                    borderRadius: '8px',
-                                                    color: '#0d47a1'
-                                                }}>
-                                                    <div style={{ display: 'flex', alignItems: 'center', fontWeight: 'bold', marginBottom: '0.5rem' }}>
-                                                        <span style={{ fontSize: '1.2rem', marginRight: '0.5rem' }}>💡</span>
-                                                        生徒への指導ポイント
-                                                    </div>
-                                                    <LatexRenderer content={p.teaching_point_latex} />
-                                                </div>
-                                            )}
-                                        </div>
-                                    </details>
-                                </div>
-                            ))}
+                        <ProblemEditList 
+                            problems={generatedProblems} 
+                            onDelete={handleDeleteProblem}
+                            onUpdate={handleUpdateProblem}
+                            onRequestPDFUpdate={handleRegeneratePDF}
+                        />
+                        
+                        <div style={{ textAlign: 'center', marginTop: '2rem' }}>
+                            <button
+                                onClick={handleRegeneratePDF}
+                                style={{
+                                    padding: '12px 24px',
+                                    fontSize: '1.1rem',
+                                    fontWeight: 'bold',
+                                    color: 'white',
+                                    background: '#FF9800',
+                                    border: 'none',
+                                    borderRadius: '8px',
+                                    cursor: 'pointer',
+                                    boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
+                                }}
+                            >
+                                🔄 PDFを更新する
+                            </button>
+                            <p style={{ marginTop: '0.5rem', fontSize: '0.9rem', color: '#666' }}>
+                                ※編集・削除を反映して新しいPDFを作成します
+                            </p>
                         </div>
                     </div>
                 )}
