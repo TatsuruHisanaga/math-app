@@ -84,7 +84,7 @@ Difficulty: ${difficulty}
             schema: schema
           }
         },
-        temperature: 0.7
+        temperature: 1.0
       })
     });
 

@@ -76,6 +76,20 @@ export class PDFBuilder {
 
       processNode.on('close', (code) => {
         clearTimeout(timeout);
+        
+        // Check if PDF exists regardless of exit code
+        if (fs.existsSync(pdfFile)) {
+          const pdfBuffer = fs.readFileSync(pdfFile);
+          // Cleanup
+          fs.rmSync(jobDir, { recursive: true, force: true });
+          
+          if (code !== 0) {
+              console.warn('LaTeX build finished with non-zero exit code, but PDF was generated.', stdout);
+          }
+          resolve(pdfBuffer);
+          return;
+        }
+
         if (code !== 0) {
           console.error('LaTeX build failed:', stdout); // Log header
           // Clean up somewhat
@@ -84,14 +98,7 @@ export class PDFBuilder {
           return;
         }
 
-        if (fs.existsSync(pdfFile)) {
-          const pdfBuffer = fs.readFileSync(pdfFile);
-          // Cleanup
-          fs.rmSync(jobDir, { recursive: true, force: true });
-          resolve(pdfBuffer);
-        } else {
-          reject(new Error('PDF file was not created despite exit code 0'));
-        }
+        reject(new Error('PDF file was not created despite exit code 0'));
       });
     });
   }
@@ -100,16 +107,60 @@ export class PDFBuilder {
      // Basic wrapper
      return `
 \\documentclass[a4paper,10pt,twocolumn]{article}
-\\usepackage[ipaex]{luatexja-preset}
+\\usepackage[haranoaji]{luatexja-preset}
 \\usepackage[top=10mm,bottom=10mm,left=10mm,right=10mm]{geometry}
 \\usepackage{amsmath,amssymb}
 \\usepackage{multicol}
 \\usepackage{needspace}
 \\usepackage{xcolor}
+\\usepackage{tikz} % Added for rounded corners
 \\pagestyle{empty}
 
 % Internal padding for fbox
 \\setlength{\\fboxsep}{8pt}
+
+% Point Review Box Style - Redesigned with TikZ for rounded corners and print-friendly look
+\\newsavebox{\\pointboxcontent}
+\\newenvironment{pointbox}{%
+  \\par\\vspace{1.5em}
+  \\noindent
+  \\begin{lrbox}{\\pointboxcontent}%
+    \\begin{minipage}{0.92\\linewidth}
+      \\linespread{1.3}\\selectfont
+      \\setlength{\\parskip}{0.5em}
+      % Customize itemize inside this box manually for compatibility
+      \\let\\olditemize\\itemize
+      \\renewcommand\\itemize{\\olditemize\\setlength\\itemsep{0.5em}\\setlength\\parskip{0pt}\\setlength\\parsep{0pt}}
+}{%
+    \\end{minipage}
+  \\end{lrbox}
+  \\begin{center}
+  \\begin{tikzpicture}
+    % Main box: Rounded corners, thick dark border, white background
+    \\node [
+      draw=black!80,
+      line width=1.5pt,
+      rectangle,
+      rounded corners=8pt,
+      inner sep=12pt,
+      inner ysep=15pt,
+      fill=white
+    ] (box) {\\usebox{\\pointboxcontent}};
+    
+    % Floating Header: Badge style on top border
+    \\node [
+      fill=black!80,
+      text=white,
+      rounded corners=4pt,
+      anchor=west,
+      xshift=15pt
+    ] at (box.north west) {
+       \\bfseries \\hspace{0.5em} ★ Point Review - 今回の重要ポイント ★ \\hspace{0.5em}
+    };
+  \\end{tikzpicture}
+  \\end{center}
+  \\par\\vspace{1em}
+}
 
 % Clean box layout matching the reference image style
 % Single frame, question number and text inside, empty space below.
@@ -155,5 +206,15 @@ ${content}
 
 \\end{document}
      `;
+  }
+
+  public getPointReview(content: string): string {
+      if (!content) return '';
+      return `
+\\par\\vspace{2em}
+\\begin{pointbox}
+${content}
+\\end{pointbox}
+      `;
   }
 }

@@ -43,11 +43,13 @@ export default async function handler(
     const unitMapData = JSON.parse(fs.readFileSync(unitMapPath, 'utf-8'));
     
     // Construct refined unit titles with sub-topics
+    // Construct refined unit titles with sub-topics
     const unitTitles = (units as string[]).map(id => {
         const baseTitle = unitMapData.units[id]?.title_ja || id;
         const details = unitDetails?.[id];
         if (details && Array.isArray(details) && details.length > 0) {
-            return `${baseTitle} (重点トピック: ${details.join(', ')})`;
+            // Modified: Return ONLY the sub-topics details, do not prepend baseTitle
+            return `${details.join(', ')}`;
         }
         return baseTitle;
     }).join(', ');
@@ -92,7 +94,7 @@ export default async function handler(
     // The previous implementation of generateVerified inside GenerationPipeline handles buffering internally 
     // based on 'needed' count.
     
-    const { problems, intent } = await pipeline.generateVerified(
+    const { problems, intent, point_review_latex } = await pipeline.generateVerified(
         unitTitles, 
         targetCount, 
         difficulty || 'L1', 
@@ -103,7 +105,9 @@ export default async function handler(
         req.body.additionalRequest
     );
 
-    res.write(`data: ${JSON.stringify({ type: 'complete', problems, intent })}\n\n`);
+    console.log('AI Generation Complete. Point Review Length:', point_review_latex?.length); // Debug Log
+
+    res.write(`data: ${JSON.stringify({ type: 'complete', problems, intent, point_review_latex })}\n\n`);
     res.end();
 
   } catch (error: any) {

@@ -5,24 +5,28 @@ import confetti from 'canvas-confetti';
 import { saveAs } from 'file-saver';
 import Link from 'next/link';
 import LatexRenderer from '@/components/LatexRenderer'; // Import LatexRenderer
+import ProblemEditList from '@/components/ProblemEditList'; // Import ProblemEditList
 
 // Type definitions matching backend
-type SubUnit = { id: string; title: string };
+type Topic = { id: string; title: string };
+type SubUnit = { id: string; title: string; topics?: Topic[] };
 type Unit = { id: string; title: string; subUnits?: SubUnit[] };
 type UnitMap = { units: Record<string, Unit> };
 
 export default function Home() {
   const [units, setUnits] = useState<Unit[]>([]);
   const [selectedUnits, setSelectedUnits] = useState<string[]>([]);
-  const [selectedSubUnits, setSelectedSubUnits] = useState<Record<string, string[]>>({});
+  const [selectedTopics, setSelectedTopics] = useState<Record<string, string[]>>({});
   const [generatedProblems, setGeneratedProblems] = useState<any[]>([]); // New state
+  const [pointReview, setPointReview] = useState<string>(''); // New state for Point Review
   const [difficulty, setDifficulty] = useState<string[]>(['L1']);
+  /* Options */
   const [count, setCount] = useState<number>(10);
   const [options, setOptions] = useState({
-    stumblingBlock: false,
+    stumblingBlock: true, // Default to true as requested
     moreWorkSpace: false,
   });
-  const [aiModel, setAiModel] = useState<'gpt-4o' | 'gpt-4o-mini'>('gpt-4o');
+  const [aiModel, setAiModel] = useState<'gpt-5.2' | 'gpt-5-mini'>('gpt-5.2');
   const [additionalRequest, setAdditionalRequest] = useState('');
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState('');
@@ -32,15 +36,84 @@ export default function Home() {
   const [showPreview, setShowPreview] = useState(true);
 
   // Expanded Unit List with categories
-  const CURRICULUM = [
+  const CURRICULUM: { subject: string; units: Unit[] }[] = [
     {
       subject: '数学I',
       units: [
-        { id: 'm1_shiki', title: '数と式' },
-        { id: 'm1_shugo', title: '集合と命題' },
-        { id: 'm1_2ji_func', title: '2次関数' },
-        { id: 'm1_trig', title: '図形と計量' },
-        { id: 'm1_data', title: 'データの分析' },
+        { 
+            id: 'm1_shiki', 
+            title: '数と式',
+            subUnits: [
+                { id: 'm1_shiki_poly', title: '整式の計算', topics: [
+                    { id: 'm1_shiki_poly_1', title: '加法・減法・乗法' },
+                    { id: 'm1_shiki_poly_2', title: '因数分解' }
+                ]},
+                { id: 'm1_shiki_real', title: '実数', topics: [
+                    { id: 'm1_shiki_real_1', title: '実数・根号計算' },
+                    { id: 'm1_shiki_real_2', title: '1次不等式' },
+                    { id: 'm1_shiki_real_3', title: '絶対値' }
+                ]}
+            ] 
+        },
+        { 
+            id: 'm1_shugo', 
+            title: '集合と命題',
+            subUnits: [
+                { id: 'm1_shugo_set', title: '集合', topics: [
+                    { id: 'm1_shugo_set_1', title: '集合の要素・包含' },
+                    { id: 'm1_shugo_set_2', title: '共通部分・和集合' }
+                ]},
+                { id: 'm1_shugo_prop', title: '命題', topics: [
+                    { id: 'm1_shugo_prop_1', title: '命題と条件' },
+                    { id: 'm1_shugo_prop_2', title: '必要・十分条件' },
+                    { id: 'm1_shugo_prop_3', title: '逆・裏・対偶' }
+                ]}
+            ]
+        },
+        { 
+            id: 'm1_2ji_func', 
+            title: '2次関数',
+            subUnits: [
+                { id: 'm1_2ji_graph', title: '2次関数のグラフ', topics: [
+                    { id: 'm1_2ji_graph_1', title: 'グラフと平行移動' },
+                    { id: 'm1_2ji_graph_2', title: '最大・最小' }
+                ]},
+                { id: 'm1_2ji_eq', title: '方程式・不等式', topics: [
+                    { id: 'm1_2ji_eq_1', title: '2次方程式' },
+                    { id: 'm1_2ji_eq_2', title: 'グラフとx軸の共有点' },
+                    { id: 'm1_2ji_eq_3', title: '2次不等式' }
+                ]}
+            ]
+        },
+        { 
+            id: 'm1_trig', 
+            title: '図形と計量',
+            subUnits: [
+                { id: 'm1_trig_ratio', title: '三角比', topics: [
+                    { id: 'm1_trig_ratio_1', title: '三角比の定義' },
+                    { id: 'm1_trig_ratio_2', title: '相互関係' },
+                    { id: 'm1_trig_ratio_3', title: '拡張（鈍角）' }
+                ]},
+                { id: 'm1_trig_app', title: '図形への応用', topics: [
+                    { id: 'm1_trig_app_1', title: '正弦・余弦定理' },
+                    { id: 'm1_trig_app_2', title: '面積・空間図形' }
+                ]}
+            ]
+        },
+        { 
+            id: 'm1_data', 
+            title: 'データの分析',
+            subUnits: [
+                { id: 'm1_data_stat', title: 'データの代表値', topics: [
+                    { id: 'm1_data_stat_1', title: '平均・中央・最頻値' },
+                    { id: 'm1_data_stat_2', title: '四分位数・箱ひげ図' }
+                ]},
+                { id: 'm1_data_var', title: '散らばりと相関', topics: [
+                    { id: 'm1_data_var_1', title: '分散・標準偏差' },
+                    { id: 'm1_data_var_2', title: '相関関係' }
+                ]}
+            ]
+        },
       ]
     },
     {
@@ -50,39 +123,220 @@ export default function Home() {
             id: 'ma_baai', 
             title: '場合の数と確率',
             subUnits: [
-                { id: 'ma_baai_1', title: '集合の要素の個数' },
-                { id: 'ma_baai_2', title: '場合の数（和・積の法則）' },
-                { id: 'ma_baai_3', title: '順列(P)・階乗(!)' },
-                { id: 'ma_baai_4', title: '円順列・重複順列' },
-                { id: 'ma_baai_5', title: '組合せ(C)' },
-                { id: 'ma_baai_6', title: '同じものを含む順列' },
-                { id: 'ma_baai_7', title: '重複組合せ(H)' },
-                { id: 'ma_baai_8', title: '確率の定義・基本性質' },
-                { id: 'ma_baai_9', title: '独立試行・反復試行' },
-                { id: 'ma_baai_10', title: '条件付き確率・乗法定理' },
-                { id: 'ma_baai_11', title: '期待値' }
+                { id: 'ma_baai_sett', title: '集合の要素の個数', topics: [
+                     { id: 'ma_baai_sett_1', title: '和集合・補集合' },
+                     { id: 'ma_baai_sett_2', title: '3つの集合' }
+                ]},
+                { id: 'ma_baai_count', title: '場合の数', topics: [
+                    { id: 'ma_baai_count_1', title: '和・積の法則' },
+                    { id: 'ma_baai_count_2', title: '樹形図・辞書式' }
+                ]},
+                { id: 'ma_baai_perm', title: '順列', topics: [
+                    { id: 'ma_baai_perm_1', title: '順列(P)・階乗' },
+                    { id: 'ma_baai_perm_2', title: '円順列・じゅず順列' },
+                    { id: 'ma_baai_perm_3', title: '重複順列' },
+                    { id: 'ma_baai_perm_4', title: '同じものを含む順列' }
+                ]},
+                { id: 'ma_baai_comb', title: '組合せ', topics: [
+                    { id: 'ma_baai_comb_1', title: '組合せ(C)' },
+                    { id: 'ma_baai_comb_2', title: '組分け' },
+                    { id: 'ma_baai_comb_3', title: '重複組合せ(H)' }
+                ]},
+                { id: 'ma_baai_prob', title: '確率', topics: [
+                    { id: 'ma_baai_prob_1', title: '定義・基本性質' },
+                    { id: 'ma_baai_prob_2', title: '和事象・排反事象' },
+                    { id: 'ma_baai_prob_3', title: '余事象' },
+                    { id: 'ma_baai_prob_4', title: '独立試行' },
+                    { id: 'ma_baai_prob_5', title: '反復試行' },
+                    { id: 'ma_baai_prob_6', title: '条件付き確率' },
+                    { id: 'ma_baai_prob_7', title: '期待値' }
+                ]}
             ]
         },
-        { id: 'ma_seishitsu', title: '整数の性質' },
-        { id: 'ma_zukei', title: '図形の性質' },
+        { 
+            id: 'ma_seishitsu', 
+            title: '整数の性質',
+            subUnits: [
+                { id: 'ma_seishitsu_div', title: '約数と倍数', topics: [
+                    { id: 'ma_seishitsu_div_1', title: '約数・倍数' },
+                    { id: 'ma_seishitsu_div_2', title: '最大公約数・最小公倍数' }
+                ]},
+                { id: 'ma_seishitsu_euclid', title: 'ユークリッド', topics: [
+                    { id: 'ma_seishitsu_euclid_1', title: '互除法' },
+                    { id: 'ma_seishitsu_euclid_2', title: '不定方程式' }
+                ]},
+                { id: 'ma_seishitsu_n', title: '記数法', topics: [
+                    { id: 'ma_seishitsu_n_1', title: 'n進法' }
+                ]}
+            ]
+        },
+        { 
+            id: 'ma_zukei', 
+            title: '図形の性質',
+            subUnits: [
+                { id: 'ma_zukei_tri', title: '三角形の性質', topics: [
+                    { id: 'ma_zukei_tri_1', title: '五心(重心・外心etc)' },
+                    { id: 'ma_zukei_tri_2', title: 'チェバ・メネラウス' }
+                ]},
+                { id: 'ma_zukei_circ', title: '円の性質', topics: [
+                    { id: 'ma_zukei_circ_1', title: '円に内接する四角形' },
+                    { id: 'ma_zukei_circ_2', title: '方べき・接弦定理' },
+                    { id: 'ma_zukei_circ_3', title: '2円の位置関係' }
+                ]}
+            ]
+        },
       ]
     },
     {
       subject: '数学II',
       units: [
-        { id: 'm2_shiki_shomei', title: '式と証明' },
-        { id: 'm2_fuku_2ji', title: '複素数と方程式' },
-        { id: 'm2_zukei_hoteishiki', title: '図形と方程式' },
-        { id: 'm2_sankaku', title: '三角関数' },
-        { id: 'm2_shisu_taisu', title: '指数・対数関数' },
-        { id: 'm2_bibun_sekibun', title: '微分法・積分法' },
+        { 
+            id: 'm2_shiki_shomei', 
+            title: '式と証明',
+            subUnits: [
+                { id: 'm2_shiki_poly', title: '式と計算', topics: [
+                    { id: 'm2_shiki_poly_1', title: '3次式の展開・因数分解' },
+                    { id: 'm2_shiki_poly_2', title: '二項定理' },
+                    { id: 'm2_shiki_poly_3', title: '整式の割り算・分数式' }
+                ]},
+                { id: 'm2_shiki_proof', title: '等式・不等式の証明', topics: [
+                    { id: 'm2_shiki_proof_1', title: '恒等式' },
+                    { id: 'm2_shiki_proof_2', title: '等式の証明' },
+                    { id: 'm2_shiki_proof_3', title: '不等式の証明' }
+                ]}
+            ]
+        },
+        { 
+            id: 'm2_fuku_2ji', 
+            title: '複素数と方程式',
+            subUnits: [
+                { id: 'm2_fuku_comp', title: '複素数', topics: [
+                    { id: 'm2_fuku_comp_1', title: '複素数の演算' },
+                    { id: 'm2_fuku_comp_2', title: '負の数の平方根' }
+                ]},
+                { id: 'm2_fuku_eq', title: '2次方程式', topics: [
+                    { id: 'm2_fuku_eq_1', title: '解の判別式' },
+                    { id: 'm2_fuku_eq_2', title: '解と係数の関係' }
+                ]},
+                { id: 'm2_fuku_high', title: '高次方程式', topics: [
+                    { id: 'm2_fuku_high_1', title: '剰余の定理・因数定理' },
+                    { id: 'm2_fuku_high_2', title: '高次方程式の解法' }
+                ]}
+            ]
+        },
+        { 
+            id: 'm2_zukei_hoteishiki', 
+            title: '図形と方程式',
+            subUnits: [
+                { id: 'm2_zukei_line', title: '点と直線', topics: [
+                    { id: 'm2_zukei_line_1', title: '2点間の距離・内分外分' },
+                    { id: 'm2_zukei_line_2', title: '直線の方程式' },
+                    { id: 'm2_zukei_line_3', title: '点と直線の距離' }
+                ]},
+                { id: 'm2_zukei_circle', title: '円', topics: [
+                    { id: 'm2_zukei_circle_1', title: '円の方程式' },
+                    { id: 'm2_zukei_circle_2', title: '円と直線' },
+                    { id: 'm2_zukei_circle_3', title: '2つの円' }
+                ]},
+                { id: 'm2_zukei_region', title: '軌跡と領域', topics: [
+                    { id: 'm2_zukei_region_1', title: '軌跡' },
+                    { id: 'm2_zukei_region_2', title: '不等式の表す領域' }
+                ]}
+            ]
+        },
+        { 
+            id: 'm2_sankaku', 
+            title: '三角関数',
+            subUnits: [
+                { id: 'm2_sankaku_graph', title: '角とグラフ', topics: [
+                    { id: 'm2_sankaku_graph_1', title: '一般角・弧度法' },
+                    { id: 'm2_sankaku_graph_2', title: '三角関数のグラフ' }
+                ]},
+                { id: 'm2_sankaku_add', title: '加法定理', topics: [
+                    { id: 'm2_sankaku_add_1', title: '加法定理' },
+                    { id: 'm2_sankaku_add_2', title: '2倍角・半角の公式' },
+                    { id: 'm2_sankaku_add_3', title: '三角関数の合成' }
+                ]},
+                { id: 'm2_sankaku_eq', title: '方程式・不等式', topics: [
+                    { id: 'm2_sankaku_eq_1', title: '三角方程式・不等式' },
+                    { id: 'm2_sankaku_eq_2', title: '最大・最小' }
+                ]}
+            ]
+        },
+        { 
+            id: 'm2_shisu_taisu', 
+            title: '指数・対数関数',
+            subUnits: [
+                { id: 'm2_shisu', title: '指数関数', topics: [
+                    { id: 'm2_shisu_1', title: '指数の拡張' },
+                    { id: 'm2_shisu_2', title: '指数関数のグラフ' },
+                    { id: 'm2_shisu_3', title: '指数方程式・不等式' }
+                ]},
+                { id: 'm2_taisu', title: '対数関数', topics: [
+                    { id: 'm2_taisu_1', title: '対数の性質' },
+                    { id: 'm2_taisu_2', title: '対数関数のグラフ' },
+                    { id: 'm2_taisu_3', title: '対数方程式・不等式' },
+                    { id: 'm2_taisu_4', title: '常用対数' }
+                ]}
+            ]
+        },
+        { 
+            id: 'm2_bibun_sekibun', 
+            title: '微分法・積分法',
+            subUnits: [
+                { id: 'm2_bibun', title: '微分法', topics: [
+                    { id: 'm2_bibun_1', title: '微分係数・導関数' },
+                    { id: 'm2_bibun_2', title: '接線の方程式' },
+                    { id: 'm2_bibun_3', title: '関数の増減・極値' },
+                    { id: 'm2_bibun_4', title: '最大・最小' }
+                ]},
+                { id: 'm2_sekibun', title: '積分法', topics: [
+                    { id: 'm2_sekibun_1', title: '不定積分' },
+                    { id: 'm2_sekibun_2', title: '定積分' },
+                    { id: 'm2_sekibun_3', title: '定積分と面積' }
+                ]}
+            ]
+        },
       ]
     },
     {
       subject: '数学B',
       units: [
-        { id: 'mb_suiretsu', title: '数列' },
-        { id: 'mb_toukei', title: '統計的な推測' },
+        { 
+            id: 'mb_suiretsu', 
+            title: '数列',
+            subUnits: [
+                { id: 'mb_suiretsu_basic', title: '等差・等比数列', topics: [
+                    { id: 'mb_suiretsu_basic_1', title: '等差数列' },
+                    { id: 'mb_suiretsu_basic_2', title: '等比数列' }
+                ]},
+                { id: 'mb_suiretsu_various', title: 'いろいろな数列', topics: [
+                    { id: 'mb_suiretsu_various_1', title: 'Σの計算' },
+                    { id: 'mb_suiretsu_various_2', title: '階差数列' },
+                    { id: 'mb_suiretsu_various_3', title: '群数列' }
+                ]},
+                { id: 'mb_suiretsu_rec', title: '漸化式と帰納法', topics: [
+                    { id: 'mb_suiretsu_rec_1', title: '漸化式' },
+                    { id: 'mb_suiretsu_rec_2', title: '数学的帰納法' }
+                ]}
+            ]
+        },
+        { 
+            id: 'mb_toukei', 
+            title: '統計的な推測',
+            subUnits: [
+                { id: 'mb_toukei_dist', title: '確率分布', topics: [
+                    { id: 'mb_toukei_dist_1', title: '確率変数・期待値・分散' },
+                    { id: 'mb_toukei_dist_2', title: '二項分布' },
+                    { id: 'mb_toukei_dist_3', title: '正規分布' }
+                ]},
+                { id: 'mb_toukei_inf', title: '統計的推測', topics: [
+                    { id: 'mb_toukei_inf_1', title: '母集団と標本' },
+                    { id: 'mb_toukei_inf_2', title: '区間推定' },
+                    { id: 'mb_toukei_inf_3', title: '仮説検定' }
+                ]}
+            ]
+        },
       ]
     },
     {
@@ -95,9 +349,55 @@ export default function Home() {
     {
       subject: '数学III',
       units: [
-        { id: 'm3_kyukan', title: '極限' },
-        { id: 'm3_bibun', title: '微分法' },
-        { id: 'm3_sekibun', title: '積分法' },
+        { 
+            id: 'm3_kyukan', 
+            title: '極限',
+            subUnits: [
+                { id: 'm3_kyukan_seq', title: '数列の極限', topics: [
+                    { id: 'm3_kyukan_seq_1', title: '極限の計算' },
+                    { id: 'm3_kyukan_seq_2', title: '無限等比級数' }
+                ]},
+                { id: 'm3_kyukan_func', title: '関数の極限', topics: [
+                    { id: 'm3_kyukan_func_1', title: '関数の極限' },
+                    { id: 'm3_kyukan_func_2', title: '三角関数の極限' },
+                    { id: 'm3_kyukan_func_3', title: '関数の連続性' }
+                ]}
+            ]
+        },
+        { 
+            id: 'm3_bibun', 
+            title: '微分法',
+            subUnits: [
+                { id: 'm3_bibun_calc', title: '導関数', topics: [
+                    { id: 'm3_bibun_calc_1', title: '積・商・合成関数の微分' },
+                    { id: 'm3_bibun_calc_2', title: '逆関数の微分' },
+                    { id: 'm3_bibun_calc_3', title: '三角・指数・対数関数の微分' }
+                ]},
+                { id: 'm3_bibun_app', title: '微分の応用', topics: [
+                    { id: 'm3_bibun_app_1', title: '接線・法線' },
+                    { id: 'm3_bibun_app_2', title: '平均値の定理' },
+                    { id: 'm3_bibun_app_3', title: '関数の増減・極値・凹凸' },
+                    { id: 'm3_bibun_app_4', title: '速度・加速度' }
+                ]}
+            ]
+        },
+        { 
+            id: 'm3_sekibun', 
+            title: '積分法',
+            subUnits: [
+                { id: 'm3_sekibun_calc', title: '不定積分・定積分', topics: [
+                    { id: 'm3_sekibun_calc_1', title: '置換積分法' },
+                    { id: 'm3_sekibun_calc_2', title: '部分積分法' },
+                    { id: 'm3_sekibun_calc_3', title: 'いろいろな関数の積分' }
+                ]},
+                { id: 'm3_sekibun_app', title: '積分の応用', topics: [
+                    { id: 'm3_sekibun_app_1', title: '区分求積法' },
+                    { id: 'm3_sekibun_app_2', title: '面積' },
+                    { id: 'm3_sekibun_app_3', title: '体積' },
+                    { id: 'm3_sekibun_app_4', title: '曲線の長さ' }
+                ]}
+            ]
+        },
       ]
     }
   ];
@@ -110,6 +410,12 @@ export default function Home() {
       setError('単元を選択してください');
       return;
     }
+
+    // Request notification permission if not already granted/denied
+    if ('Notification' in window && Notification.permission === 'default') {
+      await Notification.requestPermission();
+    }
+
     setLoading(true);
     setProgress('問題を作成中...');
     setError('');
@@ -121,7 +427,7 @@ export default function Home() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           units: selectedUnits,
-          unitDetails: selectedSubUnits,
+          unitDetails: selectedTopics,
           difficulty: difficulty[0] || 'L1',
           count,
           aiModel,
@@ -138,6 +444,7 @@ export default function Home() {
       let buffer = '';
       let collectedProblems: any[] = [];
       let collectedIntent = ''; // New variable to capture intent
+      let collectedPointReview = ''; // Captured review content
 
       while (true) {
         const { done, value } = await reader.read();
@@ -158,7 +465,9 @@ export default function Home() {
               } else if (data.type === 'complete') {
                 collectedProblems = data.problems;
                 collectedIntent = data.intent;
-                setGeneratedProblems(data.problems); // Store for rendering
+                collectedPointReview = data.point_review_latex; // Capture data
+                setPointReview(collectedPointReview); // Store in state for later use
+                console.log('Frontend received Point Review:', collectedPointReview?.length);
               } else if (data.type === 'error') {
                 throw new Error(data.message);
               }
@@ -173,20 +482,26 @@ export default function Home() {
         throw new Error('生成された問題がありませんでした。');
       }
 
+      // Pre-process problems to include ID and Unit Title
+      const processedProblems = collectedProblems.map((p, idx) => ({
+        ...p,
+        id: `ai_${idx}`, // Assign a temporary ID
+        unit_title: ALL_UNITS.find(u => u.id === p.unit_id)?.title || p.unit_id
+      }));
+
+      setGeneratedProblems(processedProblems); // Store processed problems
+
       // 2. PDF Generation
       setProgress('PDFファイルを作成中...');
       const pdfRes = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          providedQuestions: collectedProblems.map((p, idx) => ({
-            ...p,
-            id: `ai_${idx}`,
-            unit_title: ALL_UNITS.find(u => u.id === p.unit_id)?.title || p.unit_id
-          })),
+          providedQuestions: processedProblems, // Use processed problems
           units: selectedUnits,
           difficulties: difficulty,
-          count: collectedProblems.length,
+          count: processedProblems.length,
+          pointReview: collectedPointReview, // Pass to PDF generator
           options
         })
       });
@@ -225,6 +540,14 @@ export default function Home() {
         spread: 70,
         origin: { y: 0.6 }
       });
+
+      // Send Desktop Notification
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification('問題作成完了', {
+          body: 'PDFの作成が完了しました。',
+        });
+      }
+
       // setShowSuccess(true); // Disable modal
     } catch (e: any) {
       setError(e.message || 'エラーが発生しました');
@@ -287,37 +610,80 @@ export default function Home() {
         setTimeout(() => document.body.removeChild(a), 100);
   };
 
-  /* Sub-unit toggle logic */
+  /* New state for expanded units (UI only) */
+  const [expandedUnits, setExpandedUnits] = useState<string[]>([]);
+
+  /* Sub-unit toggle logic - UPDATED: Only toggles expansion */
   const toggleUnit = (id: string) => {
-    setSelectedUnits(prev => {
-      const isSelected = prev.includes(id);
-      if (isSelected) {
-        // Deselecting: Remove from units and clear sub-units
-        const next = prev.filter(u => u !== id);
-        setSelectedSubUnits(prevSub => {
-            const copy = { ...prevSub };
-            delete copy[id];
-            return copy;
-        });
-        return next;
+    setExpandedUnits(prev => {
+      const isExpanded = prev.includes(id);
+      if (isExpanded) {
+        return prev.filter(u => u !== id);
       } else {
-        // Selecting: Add to units, but DO NOT select sub-units by default (empty = implied all/generic)
-        // We initialize with empty array to allow manual selection
         return [...prev, id];
       }
     });
   };
 
-  const toggleSubUnit = (unitId: string, subTitle: string) => {
-      setSelectedSubUnits(prev => {
+  const toggleTopic = (unitId: string, topicTitle: string) => {
+      setSelectedTopics(prev => {
           const current = prev[unitId] || [];
-          const exists = current.includes(subTitle);
+          const exists = current.includes(topicTitle);
           let next;
           if (exists) {
-              next = current.filter(t => t !== subTitle);
+              next = current.filter(t => t !== topicTitle);
           } else {
-              next = [...current, subTitle];
+              next = [...current, topicTitle];
           }
+          
+          // Sync with selectedUnits
+          const nextTopics = next;
+          setSelectedUnits(prevUnits => {
+              const unitExists = prevUnits.includes(unitId);
+              if (nextTopics.length > 0 && !unitExists) {
+                  return [...prevUnits, unitId];
+              } else if (nextTopics.length === 0 && unitExists) {
+                 // Check if other sub-units for this unit have topics? 
+                 // The `selectedTopics` struct is flat by unitId, so `next` covers ALL topics for this unitId.
+                 return prevUnits.filter(u => u !== unitId);
+              }
+              return prevUnits;
+          });
+
+          return { ...prev, [unitId]: next };
+      });
+  };
+
+  const toggleSubUnitAllTopics = (unitId: string, sub: SubUnit) => {
+      if (!sub.topics) return;
+      const topicTitles = sub.topics.map(t => t.title);
+      
+      setSelectedTopics(prev => {
+          const current = prev[unitId] || [];
+          const isAllSelected = topicTitles.every(t => current.includes(t));
+          
+          let next;
+          if (isAllSelected) {
+              // Deselect all
+              next = current.filter(t => !topicTitles.includes(t));
+          } else {
+              // Select all (union)
+              const toAdd = topicTitles.filter(t => !current.includes(t));
+              next = [...current, ...toAdd];
+          }
+
+          // Sync with selectedUnits
+          const nextTopics = next;
+          setSelectedUnits(prevUnits => {
+              const unitExists = prevUnits.includes(unitId);
+              if (nextTopics.length > 0 && !unitExists) {
+                  return [...prevUnits, unitId];
+              } else if (nextTopics.length === 0 && unitExists) {
+                 return prevUnits.filter(u => u !== unitId);
+              }
+              return prevUnits;
+          });
+
           return { ...prev, [unitId]: next };
       });
   };
@@ -340,6 +706,70 @@ export default function Home() {
   const visibleCurriculum = CURRICULUM.filter(cat => TAB_GROUPS[activeTab].includes(cat.subject));
 
   /* Helper for bulk selection */
+  const handleDeleteProblem = (index: number) => {
+    if (confirm('この問題を削除しますか？\n（削除後は「PDFを更新する」ボタンを押してください）')) {
+      setGeneratedProblems(prev => prev.filter((_, i) => i !== index));
+    }
+  };
+
+  const handleUpdateProblem = (index: number, updated: any) => {
+    setGeneratedProblems(prev => prev.map((p, i) => i === index ? updated : p));
+  };
+
+  const handleRegeneratePDF = async () => {
+    if (generatedProblems.length === 0) {
+      setError('問題がありません');
+      return;
+    }
+
+    setLoading(true);
+    setProgress('PDFを更新中...');
+    setError('');
+
+    try {
+      const pdfRes = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          providedQuestions: generatedProblems,
+          units: selectedUnits,
+          difficulties: difficulty,
+          count: generatedProblems.length,
+          pointReview: pointReview,
+          options
+        })
+      });
+
+      if (!pdfRes.ok) throw new Error('PDF Creation failed');
+
+      const blob = await pdfRes.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      const unitNames = selectedUnits
+        .map(id => ALL_UNITS.find(u => u.id === id)?.title ?? id)
+        .join('_')
+        .replace(/[\s\.]+/g, '_');
+      a.download = `${unitNames}_${new Date().toISOString().slice(0, 10)}_updated.pdf`;
+      
+      setPdfUrl(url);
+      setShowPreview(true);
+      
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+      
+    } catch (e: any) {
+      setError(e.message || 'エラーが発生しました');
+    } finally {
+      setLoading(false);
+      setProgress('');
+    }
+  };
+
   const handleSelectAll = (catUnits: Unit[]) => {
       const ids = catUnits.map(u => u.id);
       const isAllSelected = ids.every(id => selectedUnits.includes(id));
@@ -435,56 +865,74 @@ export default function Home() {
                     {cat.units.map(u => (
                         <button
                         key={u.id}
-                        className={`${styles.card} ${selectedUnits.includes(u.id) ? styles.active : ''}`}
+                        className={`${styles.card} ${expandedUnits.includes(u.id) ? '' : ''}`} // Modified: No active style for parent
                         onClick={() => toggleUnit(u.id)}
                         style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', height: 'auto' }}
                         >
                             <span style={{ fontSize: '1rem' }}>{u.title}</span>
-                            
-                            {/* Sub-unit selection */}
-                            {selectedUnits.includes(u.id) && u.subUnits && (
-                                <div 
-                                    onClick={e => e.stopPropagation()} 
-                                    style={{ 
-                                        marginTop: '1rem', 
-                                        width: '100%',
-                                        textAlign: 'left'
-                                    }}
+                            {/* Sub-units rendering */}
+                            {expandedUnits.includes(u.id) && u.subUnits && (
+                                <div style={{ 
+                                    marginTop: '0.5rem', 
+                                    width: '100%', 
+                                    display: 'flex', 
+                                    flexDirection: 'column', 
+                                    gap: '4px',
+                                    borderTop: '1px solid #eee',
+                                    paddingTop: '0.5rem'
+                                }}
+                                onClick={(e) => e.stopPropagation()} // Stop propagation to prevent closing parent
                                 >
-                                    <div style={{fontSize: '0.75rem', fontWeight: 'bold', marginBottom:'8px', color: '#888'}}>
-                                        絞り込み (任意):
-                                    </div>
-                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                                        {u.subUnits.map(sub => {
-                                            const isChecked = (selectedSubUnits[u.id] || []).includes(sub.title);
-                                            return (
-                                                <button
-                                                    key={sub.id}
-                                                    onClick={(e) => {
-                                                        e.stopPropagation(); // Prevent unit toggle
-                                                        toggleSubUnit(u.id, sub.title);
-                                                    }}
-                                                    style={{
-                                                        fontSize: '0.75rem',
-                                                        padding: '4px 12px',
-                                                        borderRadius: '20px',
-                                                        border: isChecked ? '1px solid #FFB300' : '1px solid #eee',
-                                                        background: isChecked ? '#FFF8E1' : '#f9f9f9',
-                                                        color: isChecked ? '#B45309' : '#666',
-                                                        fontWeight: isChecked ? '600' : 'normal',
+                                    {u.subUnits.map(sub => {
+                                         // Check detailed topic selection
+                                         const currentTopics = selectedTopics[u.id] || [];
+                                         const allSubTopicTitles = sub.topics?.map(t => t.title) || [];
+                                         // If at least one topic is selected, we consider the sub-unit "active" visually, 
+                                         // or we can just rely on individual topic chips.
+                                         // Let's rely on individual chips.
+                                         const isSubFullySelected = allSubTopicTitles.length > 0 && allSubTopicTitles.every(t => currentTopics.includes(t));
+
+                                         return (
+                                            <div key={sub.id} style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                                                <div 
+                                                    onClick={() => toggleSubUnitAllTopics(u.id, sub)}
+                                                    style={{ 
+                                                        fontSize: '0.85rem', 
+                                                        color: isSubFullySelected ? '#0070f3' : '#666',
+                                                        fontWeight: 'bold',
                                                         cursor: 'pointer',
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        gap: '4px',
-                                                        transition: 'all 0.15s ease'
+                                                        padding: '2px 4px',
+                                                        marginBottom: '2px'
                                                     }}
                                                 >
-                                                    {isChecked && <span>✓</span>}
                                                     {sub.title}
-                                                </button>
-                                            );
-                                        })}
-                                    </div>
+                                                </div>
+                                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', paddingLeft: '8px' }}>
+                                                    {sub.topics?.map(topic => {
+                                                        const isSelected = currentTopics.includes(topic.title);
+                                                        return (
+                                                            <span 
+                                                                key={topic.id}
+                                                                onClick={() => toggleTopic(u.id, topic.title)}
+                                                                style={{
+                                                                    fontSize: '0.75rem',
+                                                                    padding: '2px 6px',
+                                                                    borderRadius: '4px',
+                                                                    border: '1px solid',
+                                                                    borderColor: isSelected ? '#ffb74d' : '#ddd', // Orange border if selected
+                                                                    background: isSelected ? '#fff3e0' : '#f9f9f9', // Light orange bg if selected,
+                                                                    color: isSelected ? '#e65100' : '#888',
+                                                                    cursor: 'pointer'
+                                                                }}
+                                                            >
+                                                                {topic.title}
+                                                            </span>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
+                                         );
+                                    })}
                                 </div>
                             )}
                         </button>
@@ -497,111 +945,112 @@ export default function Home() {
         </section>
 
         <section className={styles.section}>
-          <h2>2. 難易度 & 設定</h2>
-          <div className={styles.settingsGrid}>
-            {/* Difficulty */}
-            <div className={styles.controlGroup}>
-              <h3>難易度</h3>
-              <div className={styles.toggleGroup}>
-                {[
-                  { id: 'L1', label: '基礎' },
-                  { id: 'L2', label: '標準' },
-                  { id: 'L3', label: '発展' }
-                ].map(d => (
-                  <div
-                    key={d.id}
-                    className={`${styles.toggleButton} ${difficulty.includes(d.id) ? styles.active : ''}`}
-                    onClick={() => toggleDifficulty(d.id)}
-                  >
-                    {d.label}
-                  </div>
-                ))}
-              </div>
-            </div>
+          <h2>2. オプション設定</h2>
+          <div className={styles.optionsGrid}>
+            <label className={styles.checkboxLabel}>
+              <input
+                type="checkbox"
+                checked={options.moreWorkSpace}
+                onChange={(e) => setOptions({ ...options, moreWorkSpace: e.target.checked })}
+              />
+              広めの計算スペース
+            </label>
+          </div>
+          
+          <div style={{ marginTop: '1rem' }}>
+             <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.5rem' }}>問題数</label>
+             <input 
+               type="number" 
+               value={count} 
+               onChange={(e) => setCount(Math.max(1, parseInt(e.target.value) || 1))}
+               style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc', width: '80px' }}
+             />
+          </div>
 
-            {/* Count */}
-            <div className={styles.controlGroup}>
-              <h3>
-                問題数
-                <span style={{ color: '#FFB300', fontSize: '1.2rem', fontWeight: 'bold' }}>{count}</span>
-              </h3>
-              <div className={styles.sliderContainer}>
-                <span style={{ fontSize: '0.8rem', color: '#999', fontWeight: 'bold' }}>3</span>
-                <input
-                  type="range" min="3" max="30"
-                  value={count}
-                  onChange={(e) => setCount(Number(e.target.value))}
-                  className={styles.rangeInput}
-                />
-                <span style={{ fontSize: '0.8rem', color: '#999', fontWeight: 'bold' }}>30</span>
-              </div>
-            </div>
+          <div style={{ marginTop: '1rem' }}>
+             <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.5rem' }}>難易度</label>
+             <div style={{ display: 'flex', gap: '0.5rem' }}>
+                 {['L1', 'L2', 'L3', 'L4', 'L5'].map(d => (
+                     <button
+                        key={d}
+                        onClick={() => toggleDifficulty(d)}
+                        style={{
+                            padding: '0.5rem 1rem',
+                            borderRadius: '20px',
+                            border: '1px solid #ccc',
+                            background: difficulty.includes(d) ? '#0070f3' : '#fff',
+                            color: difficulty.includes(d) ? '#fff' : '#000',
+                            cursor: 'pointer'
+                        }}
+                     >
+                        {d === 'L1' ? '基礎' : d === 'L2' ? '標準' : d === 'L3' ? '発展' : d === 'L4' ? '難関' : '最難関'}
+                     </button>
+                 ))}
+             </div>
+          </div>
+          
+           <div style={{ marginTop: '1rem' }}>
+             <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.5rem' }}>AIモデル</label>
+             <select 
+               value={aiModel} 
+               onChange={(e) => setAiModel(e.target.value as any)}
+               style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc', width: '100%', maxWidth: '300px' }}
+             >
+               <option value="gpt-5.2">GPT-5.2 (推奨)</option>
+               <option value="gpt-5-mini">GPT-5-mini (高速)</option>
+             </select>
+          </div>
 
-            {/* AI Model */}
-            <div className={styles.controlGroup}>
-              <h3>AIモデル</h3>
-              <div className={styles.modelOptions}>
-                {[
-                  { id: 'gpt-4o', name: '高品質 (gpt-4o)', desc: '高い論理的思考で良問を作成' },
-                  { id: 'gpt-4o-mini', name: '高速 (gpt-4o-mini)', desc: '生成スピードを優先' }
-                ].map((m) => (
-                  <div
-                    key={m.id}
-                    className={`${styles.modelCard} ${aiModel === m.id ? styles.selected : ''}`}
-                    onClick={() => setAiModel(m.id as any)}
-                  >
-                    <div className={styles.radioCircle}></div>
-                    <div className={styles.modelInfo}>
-                      <span className={styles.modelName}>{m.name}</span>
-                      <span className={styles.modelDesc}>{m.desc}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Additional Request */}
-            <div className={styles.controlGroup} style={{ gridColumn: '1 / -1' }}>
-                <h3>その他要望</h3>
-                <textarea
-                    placeholder="例: 文章題を多めにしてください、計算過程を詳しく書いてください etc."
-                    value={additionalRequest}
-                    onChange={(e) => setAdditionalRequest(e.target.value)}
-                    style={{
-                        width: '100%',
-                        padding: '1rem',
-                        borderRadius: '12px',
-                        border: '2px solid #eaeaea',
-                        fontSize: '0.95rem',
-                        minHeight: '80px',
-                        fontFamily: 'inherit',
-                        resize: 'vertical',
-                        boxSizing: 'border-box'
-                    }}
-                />
-            </div>
+           <div style={{ marginTop: '1.5rem' }}>
+             <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.5rem' }}>
+                 追加のリクエスト <span style={{ fontWeight: 'normal', fontSize: '0.8rem', color: '#666' }}>（任意）</span>
+             </label>
+             <textarea
+               value={additionalRequest}
+               onChange={(e) => setAdditionalRequest(e.target.value)}
+               placeholder="例: 文章題を多めにしてほしい、計算問題を重点的に..."
+               style={{ 
+                   width: '100%', 
+                   height: '80px', 
+                   padding: '0.5rem', 
+                   borderRadius: '4px', 
+                   border: '1px solid #ccc',
+                   fontFamily: 'inherit'
+               }}
+             />
           </div>
         </section>
 
-        <div className={styles.actions}>
-            <button
-              className={styles.generateButton}
-              onClick={handleAutoGenerate}
-              disabled={loading || selectedUnits.length === 0}
-            >
-              {loading ? '作成中...' : 'プリントを作成'}
-            </button>
+        <div style={{ textAlign: 'center', marginTop: '2rem' }}>
+          <button
+            className={styles.generateButton}
+            onClick={handleAutoGenerate}
+            disabled={loading}
+          >
+            {loading ? '作成中...' : '問題を作成する'}
+          </button>
         </div>
 
         {/* Results Section */}
         {pdfUrl && (
-            <div className={styles.section} style={{ marginTop: '2rem', border: '2px solid #FFB300', background: '#fffcf5' }}>
-                <h2 style={{ borderBottom: 'none', textAlign: 'center', fontSize: '1.5rem', marginBottom: '1rem' }}>🎉 生成完了</h2>
+            <div style={{ marginTop: '3rem', borderTop: '1px solid #eee', paddingTop: '2rem' }}>
+                <h2 style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+                    <span style={{ fontSize: '1.5rem' }}>🎉</span> 作成完了！
+                </h2>
                 
                 {intent && (
-                    <div style={{ background: 'white', padding: '1.5rem', borderRadius: '12px', marginBottom: '1.5rem', border: '1px solid #eee' }}>
-                        <h3 style={{ margin: '0 0 1rem 0', color: '#555' }}>🎯 出題のねらい・構成</h3>
-                        <div style={{ whiteSpace: 'pre-wrap', lineHeight: '1.6' }}>
+                    <div style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'center' }}>
+                        <div style={{ 
+                            background: '#f0f9ff', 
+                            border: '1px solid #bae6fd', 
+                            borderRadius: '8px', 
+                            padding: '1rem', 
+                            maxWidth: '800px',
+                            width: '100%'
+                        }}>
+                             <div style={{ fontWeight: 'bold', marginBottom: '0.5rem', color: '#0284c7' }}>
+                                AIからのメッセージ:
+                            </div>
                             <LatexRenderer content={intent} />
                         </div>
                     </div>
@@ -633,57 +1082,36 @@ export default function Home() {
                     </div>
                 )}
 
-                {/* Generated Problems List */}
+                {/* Editable Generated Problems List */}
                 {generatedProblems.length > 0 && (
                     <div style={{ marginTop: '2rem', borderTop: '2px dashed #FFB300', paddingTop: '2rem' }}>
-                        <h3 style={{ textAlign: 'center', marginBottom: '1.5rem', color: '#B45309' }}>📖 生成された問題一覧</h3>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                            {generatedProblems.map((p, idx) => (
-                                <div key={idx} style={{ background: 'white', padding: '1.5rem', borderRadius: '12px', border: '1px solid #eee', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
-                                    <div style={{ fontWeight: 'bold', marginBottom: '0.5rem', color: '#555', borderBottom: '1px solid #eee', paddingBottom: '0.5rem' }}>
-                                        問{idx + 1}
-                                    </div>
-                                    <div style={{ marginBottom: '1rem', fontSize: '1.1rem' }}>
-                                        <LatexRenderer content={p.stem_latex} />
-                                    </div>
-
-                                    <details style={{ background: '#f9f9f9', padding: '1rem', borderRadius: '8px', cursor: 'pointer' }}>
-                                        <summary style={{ fontWeight: 'bold', color: '#666' }}>解答・解説を表示</summary>
-                                        <div style={{ marginTop: '1rem' }}>
-                                            <div style={{ fontWeight: 'bold', color: '#d97706', marginBottom: '0.5rem' }}>【解答】</div>
-                                            <div style={{ marginBottom: '1rem' }}>
-                                                <LatexRenderer content={p.answer_latex} />
-                                            </div>
-                                            
-                                            {p.explanation_latex && (
-                                                <>
-                                                    <div style={{ fontWeight: 'bold', color: '#555', marginBottom: '0.5rem' }}>【解説】</div>
-                                                    <div style={{ whiteSpace: 'pre-wrap' }}>
-                                                        <LatexRenderer content={p.explanation_latex} />
-                                                    </div>
-                                                </>
-                                            )}
-
-                                            {p.teaching_point_latex && (
-                                                <div style={{ 
-                                                    marginTop: '1.5rem', 
-                                                    background: '#e3f2fd', 
-                                                    border: '1px solid #90caf9', 
-                                                    padding: '1rem', 
-                                                    borderRadius: '8px',
-                                                    color: '#0d47a1'
-                                                }}>
-                                                    <div style={{ display: 'flex', alignItems: 'center', fontWeight: 'bold', marginBottom: '0.5rem' }}>
-                                                        <span style={{ fontSize: '1.2rem', marginRight: '0.5rem' }}>💡</span>
-                                                        生徒への指導ポイント
-                                                    </div>
-                                                    <LatexRenderer content={p.teaching_point_latex} />
-                                                </div>
-                                            )}
-                                        </div>
-                                    </details>
-                                </div>
-                            ))}
+                        <ProblemEditList 
+                            problems={generatedProblems} 
+                            onDelete={handleDeleteProblem}
+                            onUpdate={handleUpdateProblem}
+                            onRequestPDFUpdate={handleRegeneratePDF}
+                        />
+                        
+                        <div style={{ textAlign: 'center', marginTop: '2rem' }}>
+                            <button
+                                onClick={handleRegeneratePDF}
+                                style={{
+                                    padding: '12px 24px',
+                                    fontSize: '1.1rem',
+                                    fontWeight: 'bold',
+                                    color: 'white',
+                                    background: '#FF9800',
+                                    border: 'none',
+                                    borderRadius: '8px',
+                                    cursor: 'pointer',
+                                    boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
+                                }}
+                            >
+                                🔄 PDFを更新する
+                            </button>
+                            <p style={{ marginTop: '0.5rem', fontSize: '0.9rem', color: '#666' }}>
+                                ※編集・削除を反映して新しいPDFを作成します
+                            </p>
                         </div>
                     </div>
                 )}
