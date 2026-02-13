@@ -173,6 +173,56 @@ Difficulty: ${difficulty}
         return { success: true };
     }
 
+    async regenerateSingleProblem(
+        currentProblem: AIProblemItem | null,
+        instruction: string,
+        topic: string,
+        difficulty: string,
+        modelOverride?: string
+    ): Promise<ValidatedProblem> {
+        const systemPrompt = `You are a skilled mathematics teacher.
+Refine or create a SINGLE math problem based on the user's specific instruction.
+IMPORTANT: You must generate EXACTLY ONE problem.
+Output MUST be a valid JSON object strictly matching the problem schema.
+- 'stem_latex': Problem text in LaTeX (Japanese). Wrap math in $...$.
+- 'answer_latex': Answer in LaTeX. Wrap math in $...$.
+- 'explanation_latex': Detailed explanation. Wrap math in $...$.
+- 'difficulty': ${difficulty}
+- 'intent': Brief description of changes.
+
+CRITICAL: When writing LaTeX inside JSON, you MUST double-escape backslashes. 
+Example: Use "\\\\frac{1}{2}" instead of "\\frac{1}{2}".
+Example: Use "\\\\sqrt{2}" instead of "\\sqrt{2}".
+`;
+
+        let userPrompt = `Topic: ${topic}\nDifficulty: ${difficulty}\nInstruction: ${instruction}\n`;
+        
+        if (currentProblem) {
+            userPrompt += `
+Original Problem:
+${currentProblem.stem_latex}
+Original Answer:
+${currentProblem.answer_latex}
+`;
+        }
+
+        // Reuse generateVerifiedFlexible with count 1
+        const result = await this.generateVerifiedFlexible(
+            systemPrompt,
+            userPrompt,
+            1,
+            modelOverride,
+            undefined, // no progress callback
+            true // stop after first attempt if successful
+        );
+
+        if (result.problems.length === 0) {
+            throw new Error("Failed to regenerate problem.");
+        }
+
+        return result.problems[0];
+    }
+
     private tryRepairMath(latex: string): string {
         if (!latex) return latex;
         // Permissive repair for missing math delimiters

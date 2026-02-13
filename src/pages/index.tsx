@@ -20,9 +20,10 @@ export default function Home() {
   const [generatedProblems, setGeneratedProblems] = useState<any[]>([]); // New state
   const [pointReview, setPointReview] = useState<string>(''); // New state for Point Review
   const [difficulty, setDifficulty] = useState<string[]>(['L1']);
+  /* Options */
   const [count, setCount] = useState<number>(10);
   const [options, setOptions] = useState({
-    stumblingBlock: false,
+    stumblingBlock: true, // Default to true as requested
     moreWorkSpace: false,
   });
   const [aiModel, setAiModel] = useState<'gpt-5.2' | 'gpt-5-mini'>('gpt-5.2');
@@ -949,14 +950,6 @@ export default function Home() {
             <label className={styles.checkboxLabel}>
               <input
                 type="checkbox"
-                checked={options.stumblingBlock}
-                onChange={(e) => setOptions({ ...options, stumblingBlock: e.target.checked })}
-              />
-              つまずきポイント（前提知識）を含める
-            </label>
-            <label className={styles.checkboxLabel}>
-              <input
-                type="checkbox"
                 checked={options.moreWorkSpace}
                 onChange={(e) => setOptions({ ...options, moreWorkSpace: e.target.checked })}
               />
@@ -1096,6 +1089,7 @@ export default function Home() {
                             problems={generatedProblems} 
                             onDelete={handleDeleteProblem}
                             onUpdate={handleUpdateProblem}
+                            onRequestPDFUpdate={handleRegeneratePDF}
                         />
                         
                         <div style={{ textAlign: 'center', marginTop: '2rem' }}>

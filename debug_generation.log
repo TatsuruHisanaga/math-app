@@ -3385,3 +3385,300 @@ Transcript written on main.log.
     at async handleRequest (/Users/tatsuru/math-app/node_modules/next/dist/server/lib/router-server.js:447:24)
     at async requestHandlerImpl (/Users/tatsuru/math-app/node_modules/next/dist/server/lib/router-server.js:496:13)
     at async Server.requestListener (/Users/tatsuru/math-app/node_modules/next/dist/server/lib/start-server.js:226:13)
+[2026-02-13T15:41:50.397Z] Problem rejected: COMPILE_FAILED - LaTeX compilation failed with code 1.
+Stderr: 
+Stdout: This is LuaHBTeX, Version 1.21.0 (TeX Live 2025) 
+ restricted system commands enabled.
+
+(/Users/tatsuru/math-app/temp_builds/98c00d6d-4546-433c-a851-cf566a8fe13c/main.
+tex
+LaTeX2e <2024-11-01> patch level 2
+L3 programming layer <2025-01-18>
+ (/usr/local/texlive/2025basic/texmf-dist/tex/latex/base/article.cls
+Document Class: article 2024/06/29 v1.4n Standard LaTeX document class
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/base/size10.clo))
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/addons/luatexja-pr
+eset.sty (/usr/local/texlive/2025basic/texmf-dist/tex/latex/l3kernel/expl3.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/l3backend/l3backend-luatex.d
+ef))
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/l3packages/l3keys2e/l3keys2e
+.sty) (/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/luatexja.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/luatexja-core.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/infwarerr/infwarerr.sty)
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexbase/luatexbase.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/ctablestack/ctablestack.sty
+)) (/usr/local/texlive/2025basic/texmf-dist/tex/generic/ltxcmds/ltxcmds.sty)
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pdftexcmds/pdftexcmds.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/iftex/iftex.sty))
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/xkeyval/xkeyval.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/xkeyval/xkeyval.tex
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/xkeyval/xkvutils.tex
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/xkeyval/keyval.tex))))
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/etoolbox/etoolbox.sty)
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/ltj-base.sty)
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/ltj-latex.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/patches/lltjfont.s
+ty (/usr/local/texlive/2025basic/texmf-dist/tex/latex/base/tuenc.def))
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/patches/lltjdefs.s
+ty
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/jfm-ujisv.lua)
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/jfm-ujis.lua))
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/patches/lltjcore-2
+41201.sty)
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/patches/lltjp-atbe
+gshi.sty)
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/patches/lltjp-geom
+etry.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/iftex/ifluatex.sty))))
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/luatexja-compat.st
+y))
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/addons/luatexja-fo
+ntspec.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/fontspec/fontspec.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/l3packages/xparse/xparse.sty
+)
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/fontspec/fontspec-luatex.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/base/fontenc.sty)
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/fontspec/fontspec.cfg)))
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/patches/lltjp-font
+spec.sty)
+(/usr/local/texlive/2025basic/texmf-dist/tex/luatex/luatexja/addons/luatexja-fo
+ntspec-29e.sty))
+
+Package luatexja-preset Warning: Japanese fonts will be scaled by
+(luatexja-preset)                0.96221923828125.
+
+
+Package luatexja-fontspec Warning: \addjfontfeature(s) ignored;
+(luatexja-fontspec)                it cannot be used with a font that wasn't
+(luatexja-fontspec)                selected by luatexja-fontspec.
+
+) (/usr/local/texlive/2025basic/texmf-dist/tex/latex/geometry/geometry.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/iftex/ifvtex.sty))
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/amsmath/amsmath.sty
+For additional information on amsmath, use the `?' option.
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/amsmath/amstext.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/amsmath/amsgen.sty))
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/amsmath/amsbsy.sty)
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/amsmath/amsopn.sty))
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/amsfonts/amssymb.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/amsfonts/amsfonts.sty))
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/tools/multicol.sty
+
+Package multicol Warning: May not work with the twocolumn option on input line 
+140.
+
+) (/usr/local/texlive/2025basic/texmf-dist/tex/latex/needspace/needspace.sty)
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/xcolor/xcolor.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/graphics-cfg/color.cfg)
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/graphics-def/luatex.def)
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/graphics/mathcolor.ltx))
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/pgf/frontendlayer/tikz.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/pgf/basiclayer/pgf.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/pgf/utilities/pgfrcs.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/utilities/pgfutil-comm
+on.tex)
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/utilities/pgfutil-late
+x.def)
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/utilities/pgfrcs.code.
+tex (/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/pgf.revision.tex))
+) (/usr/local/texlive/2025basic/texmf-dist/tex/latex/pgf/basiclayer/pgfcore.sty
+ (/usr/local/texlive/2025basic/texmf-dist/tex/latex/graphics/graphicx.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/graphics/graphics.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/graphics/trig.sty)
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/graphics-cfg/graphics.cfg)))
+ (/usr/local/texlive/2025basic/texmf-dist/tex/latex/pgf/systemlayer/pgfsys.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/systemlayer/pgfsys.cod
+e.tex
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/utilities/pgfkeys.code
+.tex
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/utilities/pgfkeyslibra
+ryfiltered.code.tex))
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/systemlayer/pgf.cfg)
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/systemlayer/pgfsys-lua
+tex.def
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/systemlayer/pgfsys-com
+mon-pdf.def)))
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/systemlayer/pgfsyssoft
+path.code.tex)
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/systemlayer/pgfsysprot
+ocol.code.tex))
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/basiclayer/pgfcore.cod
+e.tex
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/math/pgfmath.code.tex
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/math/pgfmathutil.code.
+tex)
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/math/pgfmathparser.cod
+e.tex)
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.
+code.tex)
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.
+basic.code.tex)
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.
+trigonometric.code.tex)
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.
+random.code.tex)
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.
+comparison.code.tex)
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.
+base.code.tex)
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.
+round.code.tex)
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.
+misc.code.tex)
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.
+integerarithmetics.code.tex)
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/math/pgfmathcalc.code.
+tex)
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/math/pgfmathfloat.code
+.tex))
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/math/pgfint.code.tex)
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepoin
+ts.code.tex)
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepath
+construct.code.tex)
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepath
+usage.code.tex)
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/basiclayer/pgfcorescop
+es.code.tex)
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/basiclayer/pgfcoregrap
+hicstate.code.tex)
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/basiclayer/pgfcoretran
+sformations.code.tex)
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/basiclayer/pgfcorequic
+k.code.tex)
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreobje
+cts.code.tex)
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepath
+processing.code.tex)
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/basiclayer/pgfcorearro
+ws.code.tex)
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreshad
+e.code.tex)
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreimag
+e.code.tex)
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreexte
+rnal.code.tex)
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/basiclayer/pgfcorelaye
+rs.code.tex)
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/basiclayer/pgfcoretran
+sparency.code.tex)
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepatt
+erns.code.tex)
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/basiclayer/pgfcorerdf.
+code.tex)))
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/modules/pgfmoduleshape
+s.code.tex)
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/modules/pgfmoduleplot.
+code.tex)
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/pgf/compatibility/pgfcomp-ve
+rsion-0-65.sty)
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/pgf/compatibility/pgfcomp-ve
+rsion-1-18.sty))
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/pgf/utilities/pgffor.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/pgf/utilities/pgfkeys.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/utilities/pgfkeys.code
+.tex)) (/usr/local/texlive/2025basic/texmf-dist/tex/latex/pgf/math/pgfmath.sty
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/math/pgfmath.code.tex)
+)
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/utilities/pgffor.code.
+tex))
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/frontendlayer/tikz/tik
+z.code.tex
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/libraries/pgflibrarypl
+othandlers.code.tex)
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/modules/pgfmodulematri
+x.code.tex)
+(/usr/local/texlive/2025basic/texmf-dist/tex/generic/pgf/frontendlayer/tikz/lib
+raries/tikzlibrarytopaths.code.tex)))
+No file main.aux.
+*geometry* driver: auto-detecting
+*geometry* detected driver: luatex
+(/usr/local/texlive/2025basic/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+)
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.s
+ty
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
+)) (/usr/local/texlive/2025basic/texmf-dist/tex/latex/amsfonts/umsa.fd)
+(/usr/local/texlive/2025basic/texmf-dist/tex/latex/amsfonts/umsb.fd)
+
+! LaTeX Error: Bad math environment delimiter.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.100 ...x-\int 6x\,dx+\int 1\,dx=x^4-3x^2+x+C\]$}
+                                                  
+! Missing \endgroup inserted.
+<inserted text> 
+                \endgroup 
+l.100 ...x-\int 6x\,dx+\int 1\,dx=x^4-3x^2+x+C\]$}
+                                                  
+
+! LaTeX Error: \begin{minipage} on input line 100 ended by \end{equation*}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.100 ...x-\int 6x\,dx+\int 1\,dx=x^4-3x^2+x+C\]$}
+                                                  
+! Missing $ inserted.
+<inserted text> 
+                $
+l.100 ...x-\int 6x\,dx+\int 1\,dx=x^4-3x^2+x+C\]$}
+                                                  
+! Missing $ inserted.
+<inserted text> 
+                $
+l.100 ...x-\int 6x\,dx+\int 1\,dx=x^4-3x^2+x+C\]$}
+                                                  
+! Missing } inserted.
+<inserted text> 
+                }
+l.100 ...x-\int 6x\,dx+\int 1\,dx=x^4-3x^2+x+C\]$}
+                                                  
+! Extra }, or forgotten \endgroup.
+\endminipage ...pagefalse \color@endgroup \egroup 
+                                                  \expandafter \@iiiparbox \...
+
+l.100 ...x-\int 6x\,dx+\int 1\,dx=x^4-3x^2+x+C\]$}
+                                                  
+! Missing } inserted.
+<inserted text> 
+                }
+l.101 \end{qbox}
+                
+! Extra }, or forgotten \endgroup.
+\endminipage ...pagefalse \color@endgroup \egroup 
+                                                  \expandafter \@iiiparbox \...
+
+l.101 \end{qbox}
+                
+! Undefined control sequence.
+\endminipage ...\expandafter \@iiiparbox \@mpargs 
+                                                  {\unvbox \@tempboxa }
+l.101 \end{qbox}
+                
+)
+Runaway argument?
+\@checkend {minipage}\endgroup \UseHook {env/minipage/after}\if@ignore \ETC.
+! File ended while scanning use of \@iiiparbox.
+<inserted text> 
+                \par 
+<*> ...c00d6d-4546-433c-a851-cf566a8fe13c/main.tex
+                                                  
+! Emergency stop.
+<*> ...c00d6d-4546-433c-a851-cf566a8fe13c/main.tex
+                                                  
+ 1037 words of node memory still in use:
+   9 hlist, 1 vlist, 5 rule, 2 dir, 4 kern, 1 glyph, 202 attribute, 54 glue_spe
+c, 30 attribute_list, 1 temp, 1 write, 13 user_defined, 2 pdf_colorstack nodes
+   avail lists: 1:14,2:1387,3:44,4:13,5:28,6:5,7:105,8:39,9:20,10:2,11:1
+!  ==> Fatal error occurred, no output PDF file produced!
+Transcript written on main.log.
+
+Content: 不定積分 $\displaystyle \int (4x^3-6x+1)\,dx$ を求めよ。
+Answer: $\[\int (4x^3-6x+1)\,dx=\int 4x^3\,dx-\int 6x\,dx+\int 1\,dx=x^4-3x^2+x+C\]$

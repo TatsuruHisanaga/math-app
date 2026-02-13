@@ -14,33 +14,64 @@ type Props = {
   problems: Problem[];
   onDelete: (index: number) => void;
   onUpdate: (index: number, updated: Problem) => void;
+  onRequestPDFUpdate: () => void;
 };
 
-export default function ProblemEditList({ problems, onDelete, onUpdate }: Props) {
+export default function ProblemEditList({ problems, onDelete, onUpdate, onRequestPDFUpdate }: Props) {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  const [editForm, setEditForm] = useState<Problem | null>(null);
+  const [instruction, setInstruction] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const startEdit = (index: number, problem: Problem) => {
+  const startEdit = (index: number) => {
     setEditingIndex(index);
-    setEditForm({ ...problem });
+    setInstruction('');
   };
 
   const cancelEdit = () => {
     setEditingIndex(null);
-    setEditForm(null);
+    setInstruction('');
   };
 
-  const saveEdit = () => {
-    if (editingIndex !== null && editForm) {
-      onUpdate(editingIndex, editForm);
-      setEditingIndex(null);
-      setEditForm(null);
-    }
-  };
+  const handleRegenerate = async () => {
+    if (editingIndex === null || !instruction.trim()) return;
+    
+    setLoading(true);
+    const problem = problems[editingIndex];
+    
+    try {
+      const res = await fetch('/api/regenerate_problem', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          problem,
+          instruction,
+          unit_title: problem.unit_title || 'Math Problem',
+          difficulty: 'L1' // You might want to pass actual difficulty if available in problem object
+        })
+      });
 
-  const handleChange = (field: keyof Problem, value: string) => {
-    if (editForm) {
-      setEditForm({ ...editForm, [field]: value });
+      if (!res.ok) throw new Error('Regeneration failed');
+      
+      const data = await res.json();
+      if (data.problem) {
+        onUpdate(editingIndex, {
+            ...data.problem,
+            id: problem.id, // Keep original ID
+            unit_title: problem.unit_title,
+            unit_id: problem.unit_id
+        });
+        cancelEdit();
+        
+        // Confirmation popup
+        if (window.confirm('AIの編集が完了しました。PDFを更新しますか？')) {
+            onRequestPDFUpdate();
+        }
+      }
+    } catch (e) {
+      alert('再生成に失敗しました');
+      console.error(e);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -64,80 +95,14 @@ export default function ProblemEditList({ problems, onDelete, onUpdate }: Props)
             border: '1px solid #eee',
             boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
           }}>
-            {editingIndex === idx && editForm ? (
-               // Edit Mode
-               <div style={{ background: '#fafafa', padding: '1rem', borderRadius: '4px', border: '1px solid #ddd' }}>
-                 <div style={{ marginBottom: '1rem' }}>
-                   <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 'bold', marginBottom: '0.3rem', color: '#555' }}>
-                     問題文 (LaTeX):
-                   </label>
-                   <textarea
-                     value={editForm.stem_latex}
-                     onChange={(e) => handleChange('stem_latex', e.target.value)}
-                     style={{ width: '100%', minHeight: '80px', padding: '8px', fontSize: '0.9rem', fontFamily: 'monospace', borderRadius: '4px', border: '1px solid #ccc' }}
-                   />
-                 </div>
-                 
-                 <div style={{ marginBottom: '1rem' }}>
-                   <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 'bold', marginBottom: '0.3rem', color: '#555' }}>
-                     解答 (LaTeX):
-                   </label>
-                   <textarea
-                     value={editForm.answer_latex}
-                     onChange={(e) => handleChange('answer_latex', e.target.value)}
-                     style={{ width: '100%', minHeight: '60px', padding: '8px', fontSize: '0.9rem', fontFamily: 'monospace', borderRadius: '4px', border: '1px solid #ccc' }}
-                   />
-                 </div>
-                 
-                 <div style={{ marginBottom: '1rem' }}>
-                   <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 'bold', marginBottom: '0.3rem', color: '#555' }}>
-                     解説 (LaTeX):
-                   </label>
-                   <textarea
-                     value={editForm.explanation_latex || ''}
-                     onChange={(e) => handleChange('explanation_latex', e.target.value)}
-                     style={{ width: '100%', minHeight: '80px', padding: '8px', fontSize: '0.9rem', fontFamily: 'monospace', borderRadius: '4px', border: '1px solid #ccc' }}
-                   />
-                 </div>
-
-                 <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
-                   <button 
-                     onClick={cancelEdit}
-                     style={{
-                       padding: '6px 12px',
-                       background: '#eee',
-                       color: '#333',
-                       border: '1px solid #ccc',
-                       borderRadius: '4px',
-                       cursor: 'pointer'
-                     }}
-                   >
-                     キャンセル
-                   </button>
-                   <button 
-                     onClick={saveEdit}
-                     style={{
-                       padding: '6px 16px',
-                       background: '#4CAF50',
-                       color: 'white',
-                       border: 'none',
-                       borderRadius: '4px',
-                       cursor: 'pointer',
-                       fontWeight: 'bold'
-                     }}
-                   >
-                     保存
-                   </button>
-                 </div>
-               </div>
-            ) : (
-                // View Mode
-                <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
-                        <span style={{ fontWeight: 'bold', minWidth: '3rem', color: '#0070f3' }}>({idx + 1})</span>
+            {/* Always show problem content for reference */}
+            <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
+                    <span style={{ fontWeight: 'bold', minWidth: '3rem', color: '#0070f3' }}>({idx + 1})</span>
+                    {editingIndex !== idx && (
                         <div style={{ display: 'flex', gap: '0.5rem' }}>
                             <button 
-                            onClick={() => startEdit(idx, prob)}
+                            onClick={() => startEdit(idx)}
                             style={{
                                 padding: '4px 10px',
                                 fontSize: '0.8rem',
@@ -148,7 +113,7 @@ export default function ProblemEditList({ problems, onDelete, onUpdate }: Props)
                                 cursor: 'pointer'
                             }}
                             >
-                            編集
+                            AIで編集
                             </button>
                             <button 
                             onClick={() => onDelete(idx)}
@@ -165,21 +130,81 @@ export default function ProblemEditList({ problems, onDelete, onUpdate }: Props)
                             削除
                             </button>
                         </div>
-                    </div>
-                    <div style={{ paddingLeft: '3rem' }}>
-                        <div style={{ marginBottom: '0.8rem', fontSize: '1rem' }}>
-                            <LatexRenderer content={prob.stem_latex} />
-                        </div>
-                        <div style={{ fontSize: '0.9rem', color: '#555', background: '#f5f5f5', padding: '0.5rem', borderRadius: '4px' }}>
-                            <strong>答:</strong> <LatexRenderer content={prob.answer_latex} />
-                        </div>
-                        {prob.explanation_latex && (
-                            <div style={{ fontSize: '0.9rem', color: '#555', marginTop: '0.5rem', padding: '0.5rem', borderTop: '1px dashed #eee' }}>
-                                <strong>解説:</strong> <LatexRenderer content={prob.explanation_latex} />
-                            </div>
-                        )}
-                    </div>
+                    )}
                 </div>
+                <div style={{ paddingLeft: '3rem' }}>
+                    <div style={{ marginBottom: '0.8rem', fontSize: '1rem' }}>
+                        <LatexRenderer content={prob.stem_latex} />
+                    </div>
+                    <div style={{ fontSize: '0.9rem', color: '#555', background: '#f5f5f5', padding: '0.5rem', borderRadius: '4px' }}>
+                        <strong>答:</strong> <LatexRenderer content={prob.answer_latex} />
+                    </div>
+                    {prob.explanation_latex && (
+                        <div style={{ fontSize: '0.9rem', color: '#555', marginTop: '0.5rem', padding: '0.5rem', borderTop: '1px dashed #eee' }}>
+                            <strong>解説:</strong> <LatexRenderer content={prob.explanation_latex} />
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {editingIndex === idx && (
+               // Edit Mode with Instruction
+               <div style={{ marginTop: '1rem', background: '#f0f9ff', padding: '1rem', borderRadius: '4px', border: '1px solid #bae6fd' }}>
+                 <div style={{ marginBottom: '1rem' }}>
+                   <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 'bold', marginBottom: '0.5rem', color: '#0284c7' }}>
+                     AIへの指示:
+                   </label>
+                   <textarea
+                     value={instruction}
+                     onChange={(e) => setInstruction(e.target.value)}
+                     placeholder="例: 数値を簡単にして、文章題に変更して、など"
+                     style={{ 
+                         width: '100%', 
+                         minHeight: '60px', 
+                         padding: '8px', 
+                         fontSize: '0.95rem', 
+                         borderRadius: '4px', 
+                         border: '1px solid #90caf9',
+                         fontFamily: 'inherit'
+                     }}
+                   />
+                 </div>
+                 
+                 <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
+                   <button 
+                     onClick={cancelEdit}
+                     disabled={loading}
+                     style={{
+                       padding: '6px 12px',
+                       background: '#fff',
+                       color: '#666',
+                       border: '1px solid #ccc',
+                       borderRadius: '4px',
+                       cursor: 'pointer'
+                     }}
+                   >
+                     キャンセル
+                   </button>
+                   <button 
+                     onClick={handleRegenerate}
+                     disabled={loading || !instruction.trim()}
+                     style={{
+                       padding: '6px 16px',
+                       background: loading ? '#ccc' : '#0ea5e9',
+                       color: 'white',
+                       border: 'none',
+                       borderRadius: '4px',
+                       cursor: loading ? 'not-allowed' : 'pointer',
+                       fontWeight: 'bold',
+                       display: 'flex',
+                       alignItems: 'center',
+                       gap: '0.5rem'
+                     }}
+                   >
+                     {loading ? '生成中...' : '💫 AIで再生成'}
+                   </button>
+                 </div>
+               </div>
             )}
           </div>
         ))}
