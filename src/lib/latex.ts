@@ -155,7 +155,7 @@ export class PDFBuilder {
       anchor=west,
       xshift=15pt
     ] at (box.north west) {
-       \\bfseries \\hspace{0.5em} ★ Point Review - 今日の重要ポイント ★ \\hspace{0.5em}
+       \\bfseries \\hspace{0.5em} ★ Point Review - 今回の重要ポイント ★ \\hspace{0.5em}
     };
   \\end{tikzpicture}
   \\end{center}
