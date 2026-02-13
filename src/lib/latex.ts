@@ -113,49 +113,52 @@ export class PDFBuilder {
 \\usepackage{multicol}
 \\usepackage{needspace}
 \\usepackage{xcolor}
-\\usepackage{enumitem} % Added for list customization
+\\usepackage{tikz} % Added for rounded corners
 \\pagestyle{empty}
 
 % Internal padding for fbox
 \\setlength{\\fboxsep}{8pt}
 
-% Point Review Box Style - Manual implementation using xcolor/boxes/lrbox for maximum compatibility
+% Point Review Box Style - Redesigned with TikZ for rounded corners and print-friendly look
 \\newsavebox{\\pointboxcontent}
 \\newenvironment{pointbox}{%
-  \\par\\vspace{1em}
+  \\par\\vspace{1.5em}
   \\noindent
   \\begin{lrbox}{\\pointboxcontent}%
-    \\begin{minipage}{\\dimexpr\\linewidth-1mm-2\\fboxrule\\relax}%
-      \\vspace{0.5em}
-      \\centering
-      \\begin{minipage}{0.95\\linewidth}
-        \\linespread{1.3}\\selectfont % Increase line spacing
-        \\setlength{\\parskip}{0.5em}
-        % Customize itemize inside this box
-        \\setlist[itemize]{leftmargin=1.5em, itemsep=0.5em, parsep=0pt, topsep=0pt}
+    \\begin{minipage}{0.92\\linewidth}
+      \\linespread{1.3}\\selectfont
+      \\setlength{\\parskip}{0.5em}
+      % Customize itemize inside this box manually for compatibility
+      \\let\\olditemize\\itemize
+      \\renewcommand\\itemize{\\olditemize\\setlength\\itemsep{0.5em}\\setlength\\parskip{0pt}\\setlength\\parsep{0pt}}
 }{%
-      \\end{minipage}
-      \\vspace{0.5em}
-    \\end{minipage}%
-  \\end{lrbox}%
-  % Output the box
-  \\setlength{\\fboxsep}{0pt}%
-  \\setlength{\\fboxrule}{0.5mm}%
-  \\fcolorbox{black!70}{gray!5}{%
-    \\begin{minipage}{\\dimexpr\\linewidth-1mm\\relax}%
-      % Title Bar
-      \\colorbox{black!70}{%
-        \\begin{minipage}{\\dimexpr\\linewidth-6pt\\relax}%
-           \\vspace{3pt}
-           \\centering\\textcolor{white}{\\bfseries\\large ★ Point Review - 今日の重要ポイント ★}
-           \\vspace{3pt}
-        \\end{minipage}%
-      }%
-      \\par
-      % Content (captured in lrbox)
-      \\usebox{\\pointboxcontent}
-    \\end{minipage}%
-  }%
+    \\end{minipage}
+  \\end{lrbox}
+  \\begin{center}
+  \\begin{tikzpicture}
+    % Main box: Rounded corners, thick dark border, white background
+    \\node [
+      draw=black!80,
+      line width=1.5pt,
+      rectangle,
+      rounded corners=8pt,
+      inner sep=12pt,
+      inner ysep=15pt,
+      fill=white
+    ] (box) {\\usebox{\\pointboxcontent}};
+    
+    % Floating Header: Badge style on top border
+    \\node [
+      fill=black!80,
+      text=white,
+      rounded corners=4pt,
+      anchor=west,
+      xshift=15pt
+    ] at (box.north west) {
+       \\bfseries \\hspace{0.5em} ★ Point Review - 今日の重要ポイント ★ \\hspace{0.5em}
+    };
+  \\end{tikzpicture}
+  \\end{center}
   \\par\\vspace{1em}
 }
 

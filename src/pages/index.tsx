@@ -407,6 +407,12 @@ export default function Home() {
       setError('単元を選択してください');
       return;
     }
+
+    // Request notification permission if not already granted/denied
+    if ('Notification' in window && Notification.permission === 'default') {
+      await Notification.requestPermission();
+    }
+
     setLoading(true);
     setProgress('問題を作成中...');
     setError('');
@@ -526,6 +532,14 @@ export default function Home() {
         spread: 70,
         origin: { y: 0.6 }
       });
+
+      // Send Desktop Notification
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification('問題作成完了', {
+          body: 'PDFの作成が完了しました。',
+        });
+      }
+
       // setShowSuccess(true); // Disable modal
     } catch (e: any) {
       setError(e.message || 'エラーが発生しました');
