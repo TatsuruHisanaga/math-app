@@ -11,6 +11,7 @@ export interface AIProblemItem {
 export interface AIProblemSet {
   problems: AIProblemItem[];
   intent: string;
+  point_review_latex: string;
 }
 
 export interface AIFeedbackItem {
