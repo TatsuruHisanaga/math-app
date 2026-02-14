@@ -62,10 +62,10 @@ export default function ProblemEditList({ problems, onDelete, onUpdate, onReques
         });
         cancelEdit();
         
-        // Confirmation popup
-        if (window.confirm('AIの編集が完了しました。PDFを更新しますか？')) {
-            onRequestPDFUpdate();
-        }
+        // Confirmation popup removed as per request
+        // if (window.confirm('AIの編集が完了しました。PDFを更新しますか？')) {
+        //     onRequestPDFUpdate();
+        // }
       }
     } catch (e) {
       alert('再生成に失敗しました');
