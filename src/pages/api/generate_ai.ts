@@ -4,6 +4,15 @@ import path from 'path';
 import { AIClient } from '@/lib/ai/client';
 import { GenerationPipeline } from '@/lib/verify/regenerate';
 
+import formidable from 'formidable';
+const pdf = require('pdf-parse');
+
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -16,26 +25,58 @@ export default async function handler(
   if (!apiKey) {
       const logPath = path.resolve(process.cwd(), 'debug_generation.log');
       const timestamp = new Date().toISOString();
-      // Ensure fs and path are imported (they are at top of file)
-      // But verify if fs/path imports are available at this scope - yes they are global imports.
-      // Wait, I need to make sure I don't break if fs isn't imported yet, but it is.
       try {
         require('fs').appendFileSync(logPath, `[${timestamp}] Config Error: Missing API Key\n`);
       } catch (e) { /* ignore */ }
       return res.status(500).json({ message: 'Server configuration error: Missing API Key' });
   }
 
-  try {
-    const { 
-        units, // string[] unit IDs
-        unitDetails, // Record<string, string[]> - Sub-topic titles
-        difficulty, // string
-        count, // number
-        aiModel // string (optional)
-    } = req.body;
+  const form = formidable({});
 
-    if (!units || !count || !difficulty) {
+  try {
+    const [fields, files] = await form.parse(req);
+
+    // fields values are arrays, we need to extract them
+    // Note: units and unitDetails might be stringified JSON if sent as FormData text
+    
+    let units: string[] = [];
+    try {
+        units = JSON.parse(fields.units?.[0] || '[]');
+    } catch (e) {
+        // Handle case where it might be just comma separated or single
+        if (fields.units?.[0]) units = [fields.units[0]];
+    }
+
+    let unitDetails: Record<string, string[]> = {};
+    try {
+        unitDetails = JSON.parse(fields.unitDetails?.[0] || '{}');
+    } catch (e) {}
+
+    const difficulty = fields.difficulty?.[0] || 'L1';
+    const count = parseInt(fields.count?.[0] || '5');
+    const aiModel = fields.aiModel?.[0] || 'gpt-4o';
+    const additionalRequest = fields.additionalRequest?.[0] || '';
+
+    if (!units || units.length === 0 || !count) {
         return res.status(400).json({ message: 'Missing required fields' });
+    }
+
+    // Process Files
+    const images: any[] = [];
+    if (files.files) {
+      const uploadedFiles = Array.isArray(files.files) ? files.files : [files.files];
+      
+      for (const file of uploadedFiles) {
+        if (!file.mimetype) continue;
+        
+        if (file.mimetype.startsWith('image/')) {
+          const base64 = fs.readFileSync(file.filepath).toString('base64');
+          images.push({
+            type: 'image_url',
+            image_url: { url: `data:${file.mimetype};base64,${base64}` }
+          });
+        }
+      }
     }
 
     // Resolve unit IDs to titles directly from JSON to avoid stale singleton
@@ -43,12 +84,10 @@ export default async function handler(
     const unitMapData = JSON.parse(fs.readFileSync(unitMapPath, 'utf-8'));
     
     // Construct refined unit titles with sub-topics
-    // Construct refined unit titles with sub-topics
-    const unitTitles = (units as string[]).map(id => {
+    const unitTitles = units.map(id => {
         const baseTitle = unitMapData.units[id]?.title_ja || id;
         const details = unitDetails?.[id];
         if (details && Array.isArray(details) && details.length > 0) {
-            // Modified: Return ONLY the sub-topics details, do not prepend baseTitle
             return `${details.join(', ')}`;
         }
         return baseTitle;
@@ -56,6 +95,9 @@ export default async function handler(
     
     console.log('API request units:', units);
     console.log('Resolved titles for AI:', unitTitles);
+    if (images.length > 0) {
+        console.log(`Processing ${images.length} images`);
+    }
 
     const client = new AIClient(apiKey);
     const pipeline = new GenerationPipeline(client);
@@ -71,38 +113,19 @@ export default async function handler(
         res.write(`data: ${JSON.stringify({ type: 'progress', count, total })}\n\n`);
     };
 
-    // We need to modify pipeline to accept a callback or check how we can hook into it.
-    // For now, let's just make pipeline return intermediate results or modify it.
-    // Actually, let's modify the pipeline class or just inline the logic if it's not too complex.
-    // Since I can't easily change the pipeline signature across files without multiple edits, 
-    // I will use a slight workaround: Assume pipeline.generateVerified can be monitored? 
-    // No, I'll update GenerationPipeline to accept a callback in the next step. 
-    // But for this file, I'll assume it accepts it.
+    const targetCount = count;
     
-    // WAIT: I need to update GenerationPipeline first.
-    // let's revert to standard JSON for a moment if I can't stream easily? 
-    // No, I must implement it.
-    
-    // Use an extended version of generateVerified momentarily code-injected here or update the class.
-    // I will update the class `src/lib/verify/regenerate.ts` in the next tool call.
-    // Here I will call it assuming the signature update.
-    
-    const targetCount = typeof count === 'string' ? parseInt(count) : count;
-    
-    // We request slightly more from AI to account for verification failures, 
-    // but the pipeline loop needs the exact target count to stop.
-    // The previous implementation of generateVerified inside GenerationPipeline handles buffering internally 
-    // based on 'needed' count.
-    
+    // Pass images to regenerateVerified
     const { problems, intent, point_review_latex } = await pipeline.generateVerified(
         unitTitles, 
         targetCount, 
-        difficulty || 'L1', 
-        aiModel, // Custom model override
+        difficulty, 
+        aiModel, 
         (current: number, total: number) => {
              res.write(`data: ${JSON.stringify({ type: 'progress', count: current, total })}\n\n`);
         },
-        req.body.additionalRequest
+        additionalRequest,
+        images // Pass images
     );
 
     console.log('AI Generation Complete. Point Review Length:', point_review_latex?.length); // Debug Log

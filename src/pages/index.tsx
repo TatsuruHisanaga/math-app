@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Head from 'next/head';
 import styles from '@/styles/Home.module.css';
 import confetti from 'canvas-confetti';
@@ -34,6 +34,12 @@ export default function Home() {
   const [intent, setIntent] = useState('');
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [showPreview, setShowPreview] = useState(true);
+  
+  // File Upload State
+  const [files, setFiles] = useState<File[]>([]);
+  const [previews, setPreviews] = useState<string[]>([]);
+  const [previewModalSrc, setPreviewModalSrc] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Expanded Unit List with categories
   const CURRICULUM: { subject: string; units: Unit[] }[] = [
@@ -422,17 +428,22 @@ export default function Home() {
 
     try {
       // 1. AI Generation
+      const formData = new FormData();
+      formData.append('units', JSON.stringify(selectedUnits));
+      formData.append('unitDetails', JSON.stringify(selectedTopics));
+      formData.append('difficulty', difficulty[0] || 'L1');
+      formData.append('count', count.toString());
+      formData.append('aiModel', aiModel);
+      formData.append('additionalRequest', additionalRequest);
+      
+      files.forEach(file => {
+          formData.append('files', file);
+      });
+
       const res = await fetch('/api/generate_ai', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          units: selectedUnits,
-          unitDetails: selectedTopics,
-          difficulty: difficulty[0] || 'L1',
-          count,
-          aiModel,
-          additionalRequest
-        })
+        // headers: { 'Content-Type': 'multipart/form-data' }, // Do NOT set Content-Type manually with FormData!
+        body: formData
       });
 
       if (!res.ok) throw new Error('AI Generation failed');
@@ -793,6 +804,30 @@ export default function Home() {
       }
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (e.target.files) {
+          const newFiles = Array.from(e.target.files);
+          setFiles(prev => [...prev, ...newFiles]);
+
+          newFiles.forEach(file => {
+              if (file.type.startsWith('image/')) {
+                  const reader = new FileReader();
+                  reader.onload = (rev) => {
+                      setPreviews(prev => [...prev, rev.target?.result as string]);
+                  };
+                  reader.readAsDataURL(file);
+              } else {
+                  setPreviews(prev => [...prev, '/pdf-icon.png']); 
+              }
+          });
+      }
+  };
+
+  const removeFile = (index: number) => {
+      setFiles(prev => prev.filter((_, i) => i !== index));
+      setPreviews(prev => prev.filter((_, i) => i !== index));
+  };
+
   return (
     <div className={styles.container}>
       <Head>
@@ -931,6 +966,8 @@ export default function Home() {
           </div>
         </section>
 
+
+
         <section className={styles.section}>
           <h2>2. オプション設定</h2>
           <div className={styles.optionsGrid}>
@@ -1028,8 +1065,76 @@ export default function Home() {
                    borderRadius: '4px', 
                    border: '1px solid #ccc',
                    fontFamily: 'inherit'
-               }}
-             />
+                }}
+                />
+                {previews.length > 0 && (
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', padding: '10px', background: '#f9f9f9', borderRadius: '8px', border: '1px solid #eee', marginTop: '0.5rem' }}>
+                        {previews.map((src, i) => (
+                            <div 
+                                key={i} 
+                                style={{ 
+                                    display: 'flex', 
+                                    alignItems: 'center', 
+                                    background: 'white', 
+                                    padding: '4px 8px', 
+                                    borderRadius: '16px', 
+                                    border: '1px solid #ddd',
+                                    fontSize: '0.85rem',
+                                    cursor: 'pointer',
+                                    boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
+                                }}
+                                onClick={() => setPreviewModalSrc(src)}
+                            >
+                                <span style={{ marginRight: '6px' }}>📷</span>
+                                <span style={{ maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                    {files[i].name}
+                                </span>
+                                <button 
+                                    onClick={(e) => { e.stopPropagation(); removeFile(i); }}
+                                    style={{ 
+                                        marginLeft: '6px', 
+                                        border: 'none', 
+                                        background: 'transparent', 
+                                        color: '#999', 
+                                        cursor: 'pointer',
+                                        fontWeight: 'bold',
+                                        fontSize: '1rem',
+                                        lineHeight: 1
+                                    }}
+                                >
+                                    ×
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                )}
+                <div style={{ marginTop: '0.5rem' }}>
+                    <label style={{ 
+                        display: 'inline-flex', 
+                        alignItems: 'center', 
+                        cursor: 'pointer', 
+                        background: '#f0f0f0', 
+                        padding: '8px 16px', 
+                        borderRadius: '8px',
+                        border: '1px solid #ccc',
+                        fontWeight: 'bold',
+                        color: '#333'
+                    }}>
+                        <input 
+                            type="file" 
+                            multiple 
+                            accept="image/*"
+                            ref={fileInputRef}
+                            onChange={handleFileChange}
+                            style={{ display: 'none' }}
+                        />
+                        📁 画像を選択
+                    </label>
+                        <p style={{ fontSize: '0.8rem', color: '#888', marginBottom: '0.5rem' }}>
+                             ※ワークの問題や手書きのメモなどをアップロードすると、それを参考に問題を作成します。
+                         </p>
+                </div>
+
           </div>
         </section>
 
@@ -1090,6 +1195,25 @@ export default function Home() {
                             src={`${pdfUrl}#toolbar=0`} 
                             style={{ width: '100%', height: '100%', border: 'none' }}
                             title="PDF Preview"
+                        />
+                    </div>
+                )}
+
+                {/* Image Preview Modal */}
+                {previewModalSrc && (
+                    <div 
+                        style={{
+                            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+                            background: 'rgba(0,0,0,0.8)', zIndex: 9999,
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            cursor: 'pointer'
+                        }}
+                        onClick={() => setPreviewModalSrc(null)}
+                    >
+                        <img 
+                            src={previewModalSrc} 
+                            alt="preview" 
+                            style={{ maxWidth: '90%', maxHeight: '90%', borderRadius: '8px' }} 
                         />
                     </div>
                 )}

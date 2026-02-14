@@ -31,7 +31,8 @@ export class GenerationPipeline {
         difficulty: string,
         modelOverride?: string,
         onProgress?: (current: number, total: number) => void,
-        otherRequests?: string
+        otherRequests?: string,
+        images?: any[] // New parameter for images
     ): Promise<{ problems: ValidatedProblem[], intent: string, point_review_latex: string }> {
         const systemPrompt = `You are a skilled mathematics teacher creating exercise problems for Japanese students.
 Generate ${count} math problems based on the unit topic and difficulty provided.
@@ -54,16 +55,25 @@ Difficulty Definitions:
 - L5 (発展): Advanced/Difficult entrance exam level. Complex application.
 `;
 
-        let userPrompt = `Unit: ${topic}
+        let textPrompt = `Unit: ${topic}
 Count: ${count}
 Difficulty: ${difficulty}
 `;
 
         if (otherRequests) {
-            userPrompt += `Other Requests: ${otherRequests}\n`;
+            textPrompt += `Other Requests: ${otherRequests}\n`;
         }
 
-        return this.generateVerifiedFlexible(systemPrompt, userPrompt, count, modelOverride, onProgress);
+        let finalUserPrompt: string | any[] = textPrompt;
+
+        if (images && images.length > 0) {
+            finalUserPrompt = [
+                { type: 'text', text: textPrompt },
+                ...images
+            ];
+        }
+
+        return this.generateVerifiedFlexible(systemPrompt, finalUserPrompt, count, modelOverride, onProgress);
     }
 
     async generateVerifiedFlexible(
