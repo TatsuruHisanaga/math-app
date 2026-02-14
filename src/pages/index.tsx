@@ -812,25 +812,6 @@ export default function Home() {
         <section className={styles.section}>
           <h2>
               1. 単元選択
-              <div style={{ display: 'inline-flex', flexWrap: 'wrap', gap: '0.5rem', marginLeft: '1rem', verticalAlign: 'middle' }}>
-                  {selectedUnits.length === 0 && <span style={{fontSize: '0.9rem', color: '#999', fontWeight: 'normal'}}>（未選択）</span>}
-                  {selectedUnits.map(id => {
-                      const unit = ALL_UNITS.find(u => u.id === id);
-                      return (
-                          <span key={id} style={{ 
-                              fontSize: '0.8rem', 
-                              padding: '2px 8px', 
-                              borderRadius: '12px', 
-                              background: '#eee', 
-                              color: '#666',
-                              fontWeight: 'normal',
-                              border: '1px solid #ddd'
-                          }}>
-                              {unit?.title || id}
-                          </span>
-                      );
-                  })}
-              </div>
           </h2>
 
           <div className={styles.toggleGroup} style={{ marginBottom: '1.5rem', background: 'white', border: '1px solid #ddd' }}>
@@ -1027,7 +1008,7 @@ export default function Home() {
                onChange={(e) => setAiModel(e.target.value as any)}
                style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc', width: '100%', maxWidth: '300px' }}
              >
-               <option value="gpt-5.2">GPT-5.2 (推奨)</option>
+               <option value="gpt-5.2">GPT-5.2 (高品質)</option>
                <option value="gpt-5-mini">GPT-5-mini (高速)</option>
              </select>
           </div>

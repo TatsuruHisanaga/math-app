@@ -122,7 +122,7 @@ JSON format details:
     // Let's use countParam as the "limit" if manual, or 10 if auto.
     const pipelineTarget = autoCount ? 10 : countParam;
 
-    const { problems, intent } = await pipeline.generateVerifiedFlexible(
+    const { problems, intent, point_review_latex } = await pipeline.generateVerifiedFlexible(
       systemPrompt,
       userPromptParts,
       pipelineTarget,
@@ -133,7 +133,7 @@ JSON format details:
       autoCount // stopAfterFirstAttempt
     );
 
-    res.write(`data: ${JSON.stringify({ type: 'complete', problems, intent })}\n\n`);
+    res.write(`data: ${JSON.stringify({ type: 'complete', problems, intent, point_review_latex })}\n\n`);
     res.end();
 
   } catch (error: any) {

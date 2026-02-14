@@ -212,6 +212,11 @@ export default function ProblemEditList({ problems, onDelete, onUpdate, onReques
                              <div style={{ fontSize: '0.85rem', color: '#6c757d' }}>
                                 <strong>答:</strong> <LatexRenderer content={prob.history.answer_latex} />
                              </div>
+                             {prob.history.explanation_latex && (
+                                <div style={{ fontSize: '0.85rem', color: '#6c757d', marginTop: '0.4rem', borderTop: '1px dashed #ccc', paddingTop: '0.4rem' }}>
+                                    <strong>解説:</strong> <LatexRenderer content={prob.history.explanation_latex} />
+                                </div>
+                             )}
                         </div>
                     </div>
                 )}
