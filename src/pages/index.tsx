@@ -804,9 +804,8 @@ export default function Home() {
         <h1 className={styles.title}>数学演習プリント生成</h1>
 
         <div className={styles.header}>
-          <p>AIがレベルに合わせた問題を自動生成します</p>
           <Link href="/ai-creation" className={styles.card} style={{ border: '2px solid #FFB300', fontWeight: 'bold' }}>
-            ✨ 自由入力・ファイルから作成 (新機能)
+            単元を選ばず、自由入力と画像から問題を作成 (β版)
           </Link>
         </div>
 

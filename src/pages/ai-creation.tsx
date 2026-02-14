@@ -57,7 +57,7 @@ export default function AiCreation() {
 
     const handleGenerate = async () => {
         if (!prompt && files.length === 0) {
-            setError('プロンプトを入力するか、ファイルをアップロードしてください。');
+            setError('プロンプトを入力するか、画像をアップロードしてください。');
             return;
         }
 
@@ -198,18 +198,18 @@ export default function AiCreation() {
                     <Link href="/" className={styles.backLink}>
                         ← トップへ戻る
                     </Link>
-                    <h1>テキスト・ファイルから問題作成</h1>
+                    <h1>テキスト / 画像から問題を作成</h1>
                     <div></div>
                 </div>
 
                 <div className={styles.chatContainer}>
                     <div className={styles.inputArea}>
                         <p style={{ fontSize: '0.95rem', color: '#666', fontWeight: 'bold', marginBottom: '0.2rem' }}>
-                            AIへの指示 (ChatGPTのように具体的な要望を伝えてください)
+                            AIへの指示
                         </p>
                         <textarea 
                             className={styles.textarea}
-                            placeholder="例: 中学3年生レベルの因数分解の問題を5問作ってください。特にたすき掛けを使うものを中心に。"
+                            placeholder="例: 因数分解の問題を作ってください。特にたすき掛けを使うものを中心に。"
                             value={prompt}
                             onChange={(e) => setPrompt(e.target.value)}
                         />
@@ -239,11 +239,11 @@ export default function AiCreation() {
                                         <input 
                                             type="file" 
                                             multiple 
-                                            accept="image/*,application/pdf"
+                                            accept="image/*"
                                             className={styles.fileInput}
                                             onChange={handleFileChange}
                                         />
-                                        ファイルを選択
+                                        画像を選択
                                     </label>
                                 </div>
                                 
@@ -273,7 +273,7 @@ export default function AiCreation() {
                                     />
                                 </div>
 
-                                <div className={styles.teachingAssistantToggle} style={{ marginTop: '1rem' }}>
+                                {/* <div className={styles.teachingAssistantToggle} style={{ marginTop: '1rem' }}>
                                     <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', fontSize: '0.9rem' }}>
                                         <input 
                                             type="checkbox" 
@@ -286,7 +286,7 @@ export default function AiCreation() {
                                     <p style={{ fontSize: '0.8rem', color: '#888', marginLeft: '1.6rem', marginTop: '0.2rem' }}>
                                         解説に加え、各問題のヒントステップを掲載した講師用ページを追加します。
                                     </p>
-                                </div>
+                                </div> */}
                             </div>
 
                             <button 
@@ -295,7 +295,7 @@ export default function AiCreation() {
                                 disabled={loading || (!prompt && files.length === 0)}
                                 style={{ padding: '0.9rem 2.5rem', fontSize: '1.1rem', borderRadius: '14px' }}
                             >
-                                {loading ? '分析中...' : 'AIに問題を頼む'}
+                                {loading ? '作成中...' : 'AIに問題を頼む'}
                             </button>
                         </div>
                     </div>
