@@ -807,9 +807,33 @@ export default function Home() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       if (e.target.files) {
           const newFiles = Array.from(e.target.files);
-          setFiles(prev => [...prev, ...newFiles]);
+          
+          // Validation Constants
+          const MAX_FILES = 10;
+          const MAX_SIZE_MB = 5;
+          const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
 
-          newFiles.forEach(file => {
+          // Check Total Count
+          if (files.length + newFiles.length > MAX_FILES) {
+              alert(`画像は最大${MAX_FILES}枚までしかアップロードできません。`);
+              return;
+          }
+
+          // Check File Sizes
+          const validFiles: File[] = [];
+          for (const file of newFiles) {
+              if (file.size > MAX_SIZE_BYTES) {
+                  alert(`ファイル「${file.name}」はサイズが大きすぎます（${MAX_SIZE_MB}MB以下にしてください）。`);
+                  continue;
+              }
+              validFiles.push(file);
+          }
+
+          if (validFiles.length === 0) return;
+
+          setFiles(prev => [...prev, ...validFiles]);
+
+          validFiles.forEach(file => {
               if (file.type.startsWith('image/')) {
                   const reader = new FileReader();
                   reader.onload = (rev) => {
@@ -820,6 +844,11 @@ export default function Home() {
                   setPreviews(prev => [...prev, '/pdf-icon.png']); 
               }
           });
+          
+          // Reset input value to allow selecting the same file again if needed
+          if (fileInputRef.current) {
+              fileInputRef.current.value = '';
+          }
       }
   };
 
@@ -1199,24 +1228,7 @@ export default function Home() {
                     </div>
                 )}
 
-                {/* Image Preview Modal */}
-                {previewModalSrc && (
-                    <div 
-                        style={{
-                            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-                            background: 'rgba(0,0,0,0.8)', zIndex: 9999,
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            cursor: 'pointer'
-                        }}
-                        onClick={() => setPreviewModalSrc(null)}
-                    >
-                        <img 
-                            src={previewModalSrc} 
-                            alt="preview" 
-                            style={{ maxWidth: '90%', maxHeight: '90%', borderRadius: '8px' }} 
-                        />
-                    </div>
-                )}
+
 
                 {/* Editable Generated Problems List */}
                 {generatedProblems.length > 0 && (
@@ -1377,6 +1389,24 @@ export default function Home() {
           </div>
       )}
 
+      {/* Image Preview Modal (Global) */}
+      {previewModalSrc && (
+          <div 
+              style={{
+                  position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+                  background: 'rgba(0,0,0,0.8)', zIndex: 9999,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  cursor: 'pointer'
+              }}
+              onClick={() => setPreviewModalSrc(null)}
+          >
+              <img 
+                  src={previewModalSrc} 
+                  alt="preview" 
+                  style={{ maxWidth: '90%', maxHeight: '90%', borderRadius: '8px' }} 
+              />
+          </div>
+      )}
     </div>
   );
 }
