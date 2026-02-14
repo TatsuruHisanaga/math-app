@@ -43,8 +43,15 @@ Output MUST be a valid JSON object strictly matching the schema.
 - 'answer_latex': The descriptive answer in LaTeX. Include intermediate steps/derivations. Example: "$(x+1)(x+2) = 0 \\rightarrow x = -1, -2$". Wrappers $...$ required. Do NOT include "Answer:" prefix.
 - 'explanation_latex': Detailed explanation. Wrap all math in $...$.
 - 'point_review_latex': A summary of key formulas, theorems, and concepts used in this problem set, formatted as a LaTeX itemize environment (\\begin{itemize} ... \\end{itemize}). Each item should start with a bold topic name, e.g., \\item \\textbf{Topic}: Content. Japanese text with math in $...$.
-- 'difficulty': One of L1, L2, L3.
-- 'intent': A brief description of the generation intent in Japanese.
+- 'difficulty': One of L1, L2, L3, L4, L5.
+- 'intent': A brief description of the generation intent in Japanese. IMPORTANT: Wrap ALL math symbols (e.g. $n$, $P$, $C$, equations) in $...$ to ensure they render correctly. Do not use plain text for math. When mentioning difficulty, use Japanese terms: "基礎1" (L1), "基礎2" (L2), "基礎3" (L3), "標準" (L4), "発展" (L5).
+
+Difficulty Definitions:
+- L1 (基礎1): Introductory level. Definitions, formulas, simple calculation drills.
+- L2 (基礎2): Textbook standard level. Basic word problems, routine standard questions.
+- L3 (基礎3): Textbook application level. End-of-chapter problems, complex basic questions.
+- L4 (標準): Standard entrance exam level. Typical university exam problems.
+- L5 (発展): Advanced/Difficult entrance exam level. Complex application.
 `;
 
         let userPrompt = `Unit: ${topic}
@@ -188,7 +195,9 @@ Output MUST be a valid JSON object strictly matching the problem schema.
 - 'answer_latex': Answer in LaTeX. Wrap math in $...$.
 - 'explanation_latex': Detailed explanation. Wrap math in $...$.
 - 'difficulty': ${difficulty}
-- 'intent': Brief description of changes.
+- 'difficulty': ${difficulty}
+- 'difficulty': ${difficulty}
+- 'intent': Brief description of changes. IMPORTANT: Wrap ALL math symbols (e.g. $n$, $x^2$, $nCr$) in $...$. Use Japanese terms for difficulty: "基礎1" (L1), "基礎2" (L2), "基礎3" (L3), "標準" (L4), "発展" (L5).
 
 CRITICAL: When writing LaTeX inside JSON, you MUST double-escape backslashes. 
 Example: Use "\\\\frac{1}{2}" instead of "\\frac{1}{2}".

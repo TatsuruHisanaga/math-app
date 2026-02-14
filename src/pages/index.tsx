@@ -990,10 +990,35 @@ export default function Home() {
                             cursor: 'pointer'
                         }}
                      >
-                        {d === 'L1' ? '基礎' : d === 'L2' ? '標準' : d === 'L3' ? '発展' : d === 'L4' ? '難関' : '最難関'}
+                        {d === 'L1' ? '基礎1' : d === 'L2' ? '基礎2' : d === 'L3' ? '基礎3' : d === 'L4' ? '標準' : '発展'}
                      </button>
                  ))}
-             </div>
+              </div>
+
+              {/* Difficulty Descriptions */}
+              <div style={{ marginTop: '0.8rem', fontSize: '0.85rem', color: '#555', background: '#f5f5f5', padding: '0.8rem', borderRadius: '4px' }}>
+                  {difficulty.length === 0 ? (
+                      <span style={{ color: '#999' }}>難易度を選択してください</span>
+                  ) : (
+                      <ul style={{ margin: 0, paddingLeft: '1.2rem', listStyleType: 'disc' }}>
+                          {['L1', 'L2', 'L3', 'L4', 'L5'].filter(d => difficulty.includes(d)).map(d => {
+                              const labels: Record<string, string> = { 'L1': '基礎1', 'L2': '基礎2', 'L3': '基礎3', 'L4': '標準', 'L5': '発展' };
+                              const descs: Record<string, string> = {
+                                  'L1': '教科書の例題・計算ドリルレベル',
+                                  'L2': '教科書の標準問題レベル',
+                                  'L3': '教科書の章末応用問題レベル',
+                                  'L4': '一般入試標準レベル',
+                                  'L5': '難関大入試レベル'
+                              };
+                              return (
+                                  <li key={d} style={{ marginBottom: '0.2rem' }}>
+                                      <strong>{labels[d]}</strong>: {descs[d]}
+                                  </li>
+                              );
+                          })}
+                      </ul>
+                  )}
+              </div>
           </div>
           
            <div style={{ marginTop: '1rem' }}>
@@ -1219,6 +1244,32 @@ export default function Home() {
                       );
                   })}
               </div>
+              
+              {/* Difficulty Descriptions */}
+              <div style={{ marginTop: '0.8rem', fontSize: '0.85rem', color: '#555', background: '#f5f5f5', padding: '0.8rem', borderRadius: '4px' }}>
+                  {difficulty.length === 0 ? (
+                      <span style={{ color: '#999' }}>難易度を選択してください</span>
+                  ) : (
+                      <ul style={{ margin: 0, paddingLeft: '1.2rem', listStyleType: 'disc' }}>
+                          {['L1', 'L2', 'L3', 'L4', 'L5'].filter(d => difficulty.includes(d)).map(d => {
+                              const labels: Record<string, string> = { 'L1': '基礎1', 'L2': '基礎2', 'L3': '基礎3', 'L4': '標準', 'L5': '発展' };
+                              const descs: Record<string, string> = {
+                                  'L1': '教科書の例題・計算ドリルレベル',
+                                  'L2': '教科書の標準問題レベル',
+                                  'L3': '教科書の章末応用問題レベル',
+                                  'L4': '一般入試標準レベル',
+                                  'L5': '難関大入試レベル'
+                              };
+                              return (
+                                  <li key={d} style={{ marginBottom: '0.2rem' }}>
+                                      <strong>{labels[d]}</strong>: {descs[d]}
+                                  </li>
+                              );
+                          })}
+                      </ul>
+                  )}
+             </div>
+              
           </div>
       )}
 
