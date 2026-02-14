@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import LatexRenderer from './LatexRenderer';
 
 type Problem = {
@@ -8,6 +8,7 @@ type Problem = {
   explanation_latex?: string;
   unit_title?: string;
   unit_id?: string;
+  history?: Problem; // Previous version for undo
 };
 
 type Props = {
@@ -21,6 +22,16 @@ export default function ProblemEditList({ problems, onDelete, onUpdate, onReques
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [instruction, setInstruction] = useState('');
   const [loading, setLoading] = useState(false);
+  
+  // Simple Toast State
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+      if (toastMessage) {
+          const timer = setTimeout(() => setToastMessage(null), 3000);
+          return () => clearTimeout(timer);
+      }
+  }, [toastMessage]);
 
   const startEdit = (index: number) => {
     setEditingIndex(index);
@@ -36,16 +47,16 @@ export default function ProblemEditList({ problems, onDelete, onUpdate, onReques
     if (editingIndex === null || !instruction.trim()) return;
     
     setLoading(true);
-    const problem = problems[editingIndex];
+    const currentProblem = problems[editingIndex];
     
     try {
       const res = await fetch('/api/regenerate_problem', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          problem,
+          problem: currentProblem,
           instruction,
-          unit_title: problem.unit_title || 'Math Problem',
+          unit_title: currentProblem.unit_title || 'Math Problem',
           difficulty: 'L1' // You might want to pass actual difficulty if available in problem object
         })
       });
@@ -56,16 +67,15 @@ export default function ProblemEditList({ problems, onDelete, onUpdate, onReques
       if (data.problem) {
         onUpdate(editingIndex, {
             ...data.problem,
-            id: problem.id, // Keep original ID
-            unit_title: problem.unit_title,
-            unit_id: problem.unit_id
+            id: currentProblem.id, // Keep original ID
+            unit_title: currentProblem.unit_title,
+            unit_id: currentProblem.unit_id,
+            history: currentProblem // Save current state as history
         });
         cancelEdit();
         
-        // Confirmation popup removed as per request
-        // if (window.confirm('AIの編集が完了しました。PDFを更新しますか？')) {
-        //     onRequestPDFUpdate();
-        // }
+        // Show Toast
+        setToastMessage('AI編集が完了しました');
       }
     } catch (e) {
       alert('再生成に失敗しました');
@@ -75,10 +85,40 @@ export default function ProblemEditList({ problems, onDelete, onUpdate, onReques
     }
   };
 
+  const handleUndo = (index: number) => {
+      const current = problems[index];
+      if (current.history) {
+          if (confirm('編集前の状態に戻しますか？')) {
+             onUpdate(index, current.history);
+          }
+      }
+  };
+
   if (!problems || problems.length === 0) return null;
 
   return (
-    <div style={{ marginTop: '2rem', padding: '1rem', background: '#f9f9f9', borderRadius: '8px', border: '1px solid #ddd' }}>
+    <div style={{ marginTop: '2rem', padding: '1rem', background: '#f9f9f9', borderRadius: '8px', border: '1px solid #ddd', position: 'relative' }}>
+      
+      {/* Toast Notification */}
+      {toastMessage && (
+          <div style={{
+              position: 'fixed',
+              top: '20px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              background: '#333',
+              color: '#fff',
+              padding: '10px 20px',
+              borderRadius: '8px',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+              zIndex: 9999,
+              animation: 'fadeInOut 3s ease-in-out',
+              fontWeight: 'bold'
+          }}>
+              {toastMessage}
+          </div>
+      )}
+
       <h3 style={{ marginBottom: '1rem', borderBottom: '2px solid #ddd', paddingBottom: '0.5rem', color: '#333' }}>
         生成された問題の編集・削除
       </h3>
@@ -101,6 +141,26 @@ export default function ProblemEditList({ problems, onDelete, onUpdate, onReques
                     <span style={{ fontWeight: 'bold', minWidth: '3rem', color: '#0070f3' }}>({idx + 1})</span>
                     {editingIndex !== idx && (
                         <div style={{ display: 'flex', gap: '0.5rem' }}>
+                            {prob.history && (
+                                <button 
+                                onClick={() => handleUndo(idx)}
+                                style={{
+                                    padding: '4px 10px',
+                                    fontSize: '0.8rem',
+                                    background: '#fff',
+                                    color: '#757575',
+                                    border: '1px solid #757575',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '4px'
+                                }}
+                                title="編集前に戻す"
+                                >
+                                ↩ 元に戻す
+                                </button>
+                            )}
                             <button 
                             onClick={() => startEdit(idx)}
                             style={{
@@ -132,7 +192,33 @@ export default function ProblemEditList({ problems, onDelete, onUpdate, onReques
                         </div>
                     )}
                 </div>
+                
+                {/* Original Content Display (if exists) */}
+                {prob.history && (
+                    <div style={{ 
+                        marginBottom: '1rem', 
+                        padding: '0.8rem', 
+                        background: '#f8f9fa', 
+                        borderLeft: '4px solid #adb5bd',
+                        opacity: 0.85
+                    }}>
+                        <div style={{ fontSize: '0.8rem', fontWeight: 'bold', color: '#6c757d', marginBottom: '0.5rem' }}>
+                             [編集前]
+                        </div>
+                        <div style={{ paddingLeft: '1rem' }}>
+                             <div style={{ marginBottom: '0.5rem', fontSize: '0.95rem', color: '#495057' }}>
+                                 <LatexRenderer content={prob.history.stem_latex} />
+                             </div>
+                             <div style={{ fontSize: '0.85rem', color: '#6c757d' }}>
+                                <strong>答:</strong> <LatexRenderer content={prob.history.answer_latex} />
+                             </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Current Content */}
                 <div style={{ paddingLeft: '3rem' }}>
+                    {prob.history && <div style={{ fontSize: '0.8rem', fontWeight: 'bold', color: '#0070f3', marginBottom: '0.5rem' }}>[編集後]</div>}
                     <div style={{ marginBottom: '0.8rem', fontSize: '1rem' }}>
                         <LatexRenderer content={prob.stem_latex} />
                     </div>
@@ -209,6 +295,14 @@ export default function ProblemEditList({ problems, onDelete, onUpdate, onReques
           </div>
         ))}
       </div>
+      <style jsx>{`
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translate(-50%, -20px); }
+            10% { opacity: 1; transform: translate(-50%, 0); }
+            90% { opacity: 1; transform: translate(-50%, 0); }
+            100% { opacity: 0; transform: translate(-50%, -20px); }
+        }
+      `}</style>
     </div>
   );
 }
