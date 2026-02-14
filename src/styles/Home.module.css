@@ -395,3 +395,90 @@
     font-size: 0.75rem;
     color: #888;
 }
+
+/* Floating Panel - White Theme */
+.floatingPanel {
+  position: fixed;
+  bottom: 2rem;
+  left: 2rem;
+  width: 320px;
+  max-width: 90vw;
+  max-height: 50vh;
+  /* White Background */
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 20px;
+  /* Deep Shadow */
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+  z-index: 900;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  color: #333;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.panelHeader {
+  padding: 1rem 1.2rem;
+  background: rgba(0, 0, 0, 0.02);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+  font-size: 1rem;
+  color: #333;
+}
+
+.unitList {
+  padding: 1rem;
+  overflow-y: auto;
+  display: flex;
+  flex-wrap: wrap; /* Chips layout */
+  gap: 0.5rem;
+}
+
+.unitChip {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  background: #f0f0f0;
+  border: 1px solid #e0e0e0;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  color: #333;
+  transition: all 0.2s;
+  cursor: default;
+}
+
+.unitChip:hover {
+  background: #e6e6e6;
+  border-color: #d0d0d0;
+}
+
+.chipRemove {
+  margin-left: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.15);
+  font-size: 14px;
+  line-height: 1;
+  transition: all 0.2s;
+  color: #666;
+}
+
+.chipRemove:hover {
+  background: #ef4444; /* Red-500 */
+  color: white;
+}

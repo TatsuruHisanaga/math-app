@@ -625,6 +625,18 @@ export default function Home() {
     });
   };
 
+  const deselectUnit = (id: string) => {
+    // 1. Remove from selectedUnits
+    setSelectedUnits(prev => prev.filter(u => u !== id));
+    
+    // 2. Remove from selectedTopics (optional, but good for cleanup)
+    setSelectedTopics(prev => {
+        const next = { ...prev };
+        delete next[id];
+        return next;
+    });
+  };
+
   const toggleTopic = (unitId: string, topicTitle: string) => {
       setSelectedTopics(prev => {
           const current = prev[unitId] || [];
@@ -810,17 +822,12 @@ export default function Home() {
                               fontSize: '0.8rem', 
                               padding: '2px 8px', 
                               borderRadius: '12px', 
-                              background: '#333', 
-                              color: '#fff',
-                              fontWeight: 'normal' 
+                              background: '#eee', 
+                              color: '#666',
+                              fontWeight: 'normal',
+                              border: '1px solid #ddd'
                           }}>
                               {unit?.title || id}
-                              <span 
-                                  onClick={(e) => { e.stopPropagation(); toggleUnit(id); }}
-                                  style={{ marginLeft: '6px', cursor: 'pointer', opacity: 0.8 }}
-                              >
-                                  ×
-                              </span>
                           </span>
                       );
                   })}
@@ -1165,6 +1172,55 @@ export default function Home() {
         </div>
       )}
 
+
+      {/* Floating Selected Units Panel */}
+      {selectedUnits.length > 0 && (
+          <div className={styles.floatingPanel}>
+              <div className={styles.panelHeader}>
+                  <span>選択中のトピックス</span>
+                  <span 
+                    onClick={() => { setSelectedUnits([]); setSelectedTopics({}); }}
+                    style={{ fontSize: '0.8rem', cursor: 'pointer', color: '#999', fontWeight: 'normal' }}
+                  >
+                    すべて解除
+                  </span>
+              </div>
+              <div className={styles.unitList}>
+                  {selectedUnits.map(unitId => {
+                      const unit = ALL_UNITS.find(u => u.id === unitId);
+                      const topics = selectedTopics[unitId];
+                      
+                      // Case A: Specific topics are selected
+                      if (topics && topics.length > 0) {
+                          return topics.map(topicTitle => (
+                              <div key={`${unitId}-${topicTitle}`} className={styles.unitChip}>
+                                  {topicTitle}
+                                  <span 
+                                      className={styles.chipRemove}
+                                      onClick={() => toggleTopic(unitId, topicTitle)}
+                                  >
+                                      ×
+                                  </span>
+                              </div>
+                          ));
+                      }
+                      
+                      // Case B: No specific topics (Unit as a whole)
+                      return (
+                          <div key={unitId} className={styles.unitChip}>
+                              {unit?.title || unitId}
+                              <span 
+                                  className={styles.chipRemove}
+                                  onClick={() => deselectUnit(unitId)}
+                              >
+                                  ×
+                              </span>
+                          </div>
+                      );
+                  })}
+              </div>
+          </div>
+      )}
 
     </div>
   );
