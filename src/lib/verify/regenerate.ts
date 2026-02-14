@@ -228,7 +228,7 @@ ${currentProblem.answer_latex}
         // Permissive repair for missing math delimiters
         const mathTokens = ['^', '_', '\\frac', '\\sqrt', '\\times', '\\div', '=', '\\pi'];
         const hasMathToken = mathTokens.some(t => latex.includes(t));
-        const hasDollar = latex.includes('$');
+        const hasDollar = latex.includes('$') || latex.includes('\\(') || latex.includes('\\[') || latex.includes('\\begin{');
         
         if (hasMathToken && !hasDollar) {
             const hasJapanese = /[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\u4e00-\u9faf]/.test(latex);
