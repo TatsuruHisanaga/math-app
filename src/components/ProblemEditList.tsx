@@ -248,7 +248,7 @@ export default function ProblemEditList({ problems, onDelete, onUpdate, onReques
                    <textarea
                      value={instruction}
                      onChange={(e) => setInstruction(e.target.value)}
-                     placeholder="例: 数値を簡単にして、文章題に変更して、など"
+                     placeholder="例: 数値を簡単にして、解説をもっと丁寧にして、など"
                      style={{ 
                          width: '100%', 
                          minHeight: '60px', 
@@ -292,7 +292,7 @@ export default function ProblemEditList({ problems, onDelete, onUpdate, onReques
                        gap: '0.5rem'
                      }}
                    >
-                     {loading ? '生成中...' : '💫 AIで再生成'}
+                     {loading ? '生成中...' : 'AIに修正をお願いする'}
                    </button>
                  </div>
                </div>

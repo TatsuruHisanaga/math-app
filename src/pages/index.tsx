@@ -865,7 +865,7 @@ export default function Home() {
       </Head>
 
       <main className={styles.main}>
-        <h1 className={styles.title}>数学演習プリント生成</h1>
+        <h1 className={styles.title}>数学プリントジェネレーター</h1>
 
         <div className={styles.header}>
           <Link href="/ai-creation" className={styles.card} style={{ border: '2px solid #FFB300', fontWeight: 'bold' }}>
