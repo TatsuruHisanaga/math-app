@@ -419,6 +419,13 @@
   color: #333;
 }
 
+/* Hide on Mobile/Tablet (max-width: 1024px) */
+@media (max-width: 1024px) {
+    .floatingPanel {
+        display: none !important;
+    }
+}
+
 @keyframes slideUp {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
