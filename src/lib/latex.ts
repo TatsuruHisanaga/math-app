@@ -37,12 +37,23 @@ export class PDFBuilder {
       // latexmk is missing in BasicTeX by default sometimes. 
       // Switch to direct lualatex execution.
       // We run it twice to ensure references/page numbers are correct (though for this MVP once might suffice, safety first).
-      const cmd = 'lualatex'; 
-      const args = [
+      // Use /usr/bin/time to measure memory usage on macOS
+      let cmd = 'lualatex';
+      let args = [
         '--interaction=nonstopmode',
         `--output-directory=${jobDir}`,
         texFile
       ];
+
+      // Check if we are on macOS
+      if (process.platform === 'darwin') {
+          // Wrap with /usr/bin/time -l
+          // We need to execute: /usr/bin/time -l lualatex ...
+          // So cmd becomes /usr/bin/time, and args start with -l, then lualatex, then original args
+          const originalCmd = cmd;
+          cmd = '/usr/bin/time';
+          args = ['-l', originalCmd, ...args];
+      }
 
       // Note: We might need to add /Library/TeX/texbin to PATH for the spawn process
       // if it's not already there.
@@ -54,6 +65,8 @@ export class PDFBuilder {
         const texPath = '/Library/TeX/texbin:/usr/local/bin:/opt/homebrew/bin';
         env.PATH = `${texPath}:${env.PATH || ''}`;
       }
+
+      console.log(`Spawning PDF generation: ${cmd} ${args.join(' ')}`);
 
       // Timeout after 120 seconds to prevent infinite hangs (first run cache can be slow)
       const processNode = spawn(cmd, args, { env });
@@ -80,6 +93,16 @@ export class PDFBuilder {
         // Check if PDF exists regardless of exit code
         if (fs.existsSync(pdfFile)) {
           const pdfBuffer = fs.readFileSync(pdfFile);
+          
+          // Try to parse memory usage from stderr (which is where /usr/bin/time outputs)
+          // Look for "maximum resident set size"
+          const match = stderr.match(/(\d+)\s+maximum resident set size/);
+          if (match) {
+              const maxRssBytes = parseInt(match[1], 10);
+              const maxRssMb = (maxRssBytes / 1024 / 1024).toFixed(2);
+              console.log(`[PDF Memory] Maximum Resident Set Size: ${maxRssBytes} bytes (~${maxRssMb} MB)`);
+          }
+
           // Cleanup
           fs.rmSync(jobDir, { recursive: true, force: true });
           
