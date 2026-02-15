@@ -884,11 +884,11 @@ export default function Home() {
       <main className={styles.main}>
         <h1 className={styles.title}>数学プリントジェネレーター</h1>
 
-        <div className={styles.header}>
+        {/* <div className={styles.header}>
           <Link href="/ai-creation" className={styles.card} style={{ border: '2px solid #FFB300', fontWeight: 'bold' }}>
             単元を選ばず、自由入力と画像から問題を作成 (β版)
           </Link>
-        </div>
+        </div> */}
 
         <section className={styles.section}>
           <h2>
