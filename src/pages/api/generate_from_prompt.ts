@@ -87,6 +87,15 @@ export default async function handler(
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
     res.flushHeaders();
+
+    // Prevent timeout
+    if (res.socket) {
+        res.socket.setTimeout(0); // No timeout
+        res.socket.on('close', () => {
+             console.log('Client disconnected (socket closed)');
+             res.end();
+        });
+    }
     
     const countInstruction = autoCount 
       ? "Determine an appropriate number of problems based on the context and reference material (generate between 3 to 10 problems)."
@@ -150,15 +159,20 @@ JSON format details:
     res.end();
 
   } catch (error: any) {
-    console.error('AI Prompt Generation Error:', error);
+    console.error('CRITICAL API ERROR (generate_from_prompt):', error);
     const logPath = path.resolve(process.cwd(), 'debug_generation.log');
     const timestamp = new Date().toISOString();
-    fs.appendFileSync(logPath, `[${timestamp}] API Error (generate_from_prompt): ${error.message}\nStack: ${error.stack}\n`);
-    if (!res.headersSent) {
-      res.status(500).json({ message: 'AI generation failed', error: error.message });
+    try {
+        fs.appendFileSync(logPath, `[${timestamp}] CRITICAL ERROR (generate_from_prompt): ${error.message}\nStack: ${error.stack}\n`);
+    } catch (e) { console.error('Failed to write log:', e); }
+
+    if (res.headersSent) {
+        try {
+            res.write(`data: ${JSON.stringify({ type: 'error', message: `Server Error: ${error.message}` })}\n\n`);
+            res.end();
+        } catch (e) { console.error('Failed to send error event:', e); }
     } else {
-      res.write(`data: ${JSON.stringify({ type: 'error', message: error.message })}\n\n`);
-      res.end();
+        res.status(500).json({ message: 'AI generation failed (Server Error)', error: error.message });
     }
   }
 }

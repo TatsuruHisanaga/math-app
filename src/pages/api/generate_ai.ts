@@ -124,6 +124,15 @@ export default async function handler(
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
     res.flushHeaders();
+    
+    // Prevent timeout (e.g. for Vercel/Render, keep-alive helps, but local dev might need socket config)
+    if (res.socket) {
+        res.socket.setTimeout(0); // No timeout
+        res.socket.on('close', () => {
+             console.log('Client disconnected (socket closed)');
+             res.end();
+        });
+    }
 
     // Custom callback to stream progress
     const onProgress = (count: number, total: number) => {
@@ -151,16 +160,22 @@ export default async function handler(
     res.end();
 
   } catch (error: any) {
-    console.error('AI Generation Error:', error);
+    console.error('CRITICAL API ERROR (generate_ai):', error);
     const logPath = path.resolve(process.cwd(), 'debug_generation.log');
     const timestamp = new Date().toISOString();
-    fs.appendFileSync(logPath, `[${timestamp}] API Error (generate_ai): ${error.message}\nStack: ${error.stack}\n`);
-    // If headers sent, we can't send status 500 JSON.
-    if (!res.headersSent) {
-        res.status(500).json({ message: 'AI generation failed', error: error.message });
+    try {
+        fs.appendFileSync(logPath, `[${timestamp}] CRITICAL ERROR (generate_ai): ${error.message}\nStack: ${error.stack}\n`);
+    } catch (e) { console.error('Failed to write log:', e); }
+
+    // If headers sent, we MUST send an error event via SSE
+    if (res.headersSent) {
+        try {
+            res.write(`data: ${JSON.stringify({ type: 'error', message: `Server Error: ${error.message}` })}\n\n`);
+            res.end();
+        } catch (e) { console.error('Failed to send error event:', e); }
     } else {
-        res.write(`data: ${JSON.stringify({ type: 'error', message: error.message })}\n\n`);
-        res.end();
+        // Headers not sent yet, safe to send JSON
+        res.status(500).json({ message: 'AI generation failed (Server Error)', error: error.message });
     }
   }
 }

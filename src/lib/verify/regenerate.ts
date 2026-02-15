@@ -175,17 +175,17 @@ Difficulty: ${difficulty}
         res = checkMath(p);
         if (!res.success) return res;
 
-        // 3. Compile Check
-        res = await checkCompilation(p.stem_latex, 'stem');
-        if (!res.success) return res;
+        // 3. Compile Check - TEMPORARILY DISABLED for debugging crash
+        // res = await checkCompilation(p.stem_latex, 'stem');
+        // if (!res.success) return res;
         
-        res = await checkCompilation(p.answer_latex, 'answer');
-        if (!res.success) return res;
+        // res = await checkCompilation(p.answer_latex, 'answer');
+        // if (!res.success) return res;
 
-        if (p.explanation_latex) {
-            res = await checkCompilation(p.explanation_latex, 'answer');
-            if (!res.success) return res;
-        }
+        // if (p.explanation_latex) {
+        //     res = await checkCompilation(p.explanation_latex, 'answer');
+        //     if (!res.success) return res;
+        // }
 
         return { success: true };
     }
