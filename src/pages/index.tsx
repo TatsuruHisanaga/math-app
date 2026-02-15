@@ -13,6 +13,16 @@ type SubUnit = { id: string; title: string; topics?: Topic[] };
 type Unit = { id: string; title: string; subUnits?: SubUnit[] };
 type UnitMap = { units: Record<string, Unit> };
 
+const getFormattedDateTime = () => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  return `${year}-${month}-${day}_${hours}${minutes}`;
+};
+
 export default function Home() {
   const [units, setUnits] = useState<Unit[]>([]);
   const [selectedUnits, setSelectedUnits] = useState<string[]>([]);
@@ -528,7 +538,7 @@ export default function Home() {
         .map(id => ALL_UNITS.find(u => u.id === id)?.title ?? id)
         .join('_')
         .replace(/[\s\.]+/g, '_'); // Sanitize filename
-      a.download = `${unitNames}_${new Date().toISOString().slice(0, 10)}.pdf`;
+      a.download = `${unitNames}_${getFormattedDateTime()}.pdf`;
       
       setPdfUrl(url);
       if (collectedIntent) {
@@ -595,7 +605,7 @@ export default function Home() {
       const a = document.createElement('a');
       a.style.display = 'none';
       a.href = url;
-      a.download = `Math_Exercise_${new Date().toISOString().slice(0, 10)}.pdf`;
+      a.download = `Math_Exercise_${getFormattedDateTime()}.pdf`;
       document.body.appendChild(a);
       a.click();
       setTimeout(() => {
@@ -609,6 +619,9 @@ export default function Home() {
     }
   };
 
+  /* Explanation Detail State */
+  const [explanationDetail, setExplanationDetail] = useState(3);
+
   const downloadCurrentPdf = () => {
         if (!pdfUrl) return;
         const a = document.createElement('a');
@@ -618,7 +631,7 @@ export default function Home() {
             .map(id => ALL_UNITS.find(u => u.id === id)?.title ?? id)
             .join('_')
             .replace(/[\s\.]+/g, '_');
-        a.download = `${unitNames}_${new Date().toISOString().slice(0, 10)}.pdf`;
+        a.download = `${unitNames}_${getFormattedDateTime()}.pdf`;
         document.body.appendChild(a);
         a.click();
         setTimeout(() => document.body.removeChild(a), 100);
@@ -762,7 +775,8 @@ export default function Home() {
           difficulties: difficulty,
           count: generatedProblems.length,
           pointReview: pointReview,
-          options
+          options,
+          explanationDetail
         })
       });
 
@@ -777,7 +791,7 @@ export default function Home() {
         .map(id => ALL_UNITS.find(u => u.id === id)?.title ?? id)
         .join('_')
         .replace(/[\s\.]+/g, '_');
-      a.download = `${unitNames}_${new Date().toISOString().slice(0, 10)}_updated.pdf`;
+      a.download = `${unitNames}_${getFormattedDateTime()}_updated.pdf`;
       
       setPdfUrl(url);
       setShowPreview(true);
@@ -870,11 +884,11 @@ export default function Home() {
       <main className={styles.main}>
         <h1 className={styles.title}>数学プリントジェネレーター</h1>
 
-        <div className={styles.header}>
+        {/* <div className={styles.header}>
           <Link href="/ai-creation" className={styles.card} style={{ border: '2px solid #FFB300', fontWeight: 'bold' }}>
             単元を選ばず、自由入力と画像から問題を作成 (β版)
           </Link>
-        </div>
+        </div> */}
 
         <section className={styles.section}>
           <h2>
@@ -1002,7 +1016,17 @@ export default function Home() {
 
         <section className={styles.section}>
           <h2>2. オプション設定</h2>
-          <div className={styles.optionsGrid}>
+          
+          <div style={{ marginTop: '1rem' }}>
+             <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.5rem' }}>問題数</label>
+             <input 
+               type="number" 
+               value={count} 
+               onChange={(e) => setCount(Math.max(1, parseInt(e.target.value)))}
+               style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc', width: '80px' }}
+             />
+          </div>
+          <div className={styles.optionsGrid} style={{ marginTop: '1rem' }}>
             <label className={styles.checkboxLabel}>
               <input
                 type="checkbox"
@@ -1011,16 +1035,6 @@ export default function Home() {
               />
               広めの計算スペース
             </label>
-          </div>
-          
-          <div style={{ marginTop: '1rem' }}>
-             <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.5rem' }}>問題数</label>
-             <input 
-               type="number" 
-               value={count} 
-               onChange={(e) => setCount(Math.max(1, parseInt(e.target.value) || 1))}
-               style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc', width: '80px' }}
-             />
           </div>
 
           <div style={{ marginTop: '1rem' }}>
@@ -1069,6 +1083,39 @@ export default function Home() {
                   )}
               </div>
           </div>
+
+          <div style={{ marginTop: '1rem' }}>
+             <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.5rem' }}>解説の丁寧さ</label>
+             <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                 {[1, 2, 3, 4, 5].map(level => {
+                     const labels: Record<number, string> = { 1: '1:シンプル', 2: '2:普通', 3: '3:丁寧', 4: '4:詳細', 5: '5:発展' };
+                     return (
+                         <button
+                            key={level}
+                            onClick={() => setExplanationDetail(level)}
+                            style={{
+                                padding: '0.5rem 0.8rem',
+                                borderRadius: '20px',
+                                border: '1px solid #ccc',
+                                background: explanationDetail === level ? '#0070f3' : '#fff',
+                                color: explanationDetail === level ? '#fff' : '#000',
+                                cursor: 'pointer',
+                                fontSize: '0.9rem'
+                            }}
+                         >
+                            {labels[level]}
+                         </button>
+                     );
+                 })}
+             </div>
+             <p style={{ margin: '0.5rem 0 0', fontSize: '0.8rem', color: '#666' }}>
+                 {explanationDetail === 1 && '計算過程のみなど、最小限の解説です。復習用。'}
+                 {explanationDetail === 2 && '教科書の例題レベルの標準的な解説です。'}
+                 {explanationDetail === 3 && '【推奨】初学者が教科書なしで理解できる丁寧な解説です。'}
+                 {explanationDetail === 4 && '途中式を省略せず、考え方を詳しく記述します。'}
+                 {explanationDetail === 5 && '背景知識や別解、発展的な内容を含めます。'}
+             </p>
+          </div>
           
            <div style={{ marginTop: '1rem' }}>
              <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.5rem' }}>AIモデル</label>
@@ -1081,6 +1128,7 @@ export default function Home() {
                <option value="gpt-5-mini">GPT-5 mini (高速)</option>
              </select>
           </div>
+
 
            <div style={{ marginTop: '1.5rem' }}>
              <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.5rem' }}>

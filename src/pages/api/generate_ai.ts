@@ -63,6 +63,8 @@ export default async function handler(
     } else if (typeof rawAiModel === 'string') {
         aiModel = rawAiModel;
     }
+
+    const explanationDetail = parseInt(fields.explanationDetail?.[0] || '3');
     const additionalRequest = fields.additionalRequest?.[0] || '';
 
     if (!units || units.length === 0 || !count) {
@@ -151,7 +153,8 @@ export default async function handler(
              res.write(`data: ${JSON.stringify({ type: 'progress', count: current, total })}\n\n`);
         },
         additionalRequest,
-        images // Pass images
+        images, // Pass images
+        explanationDetail // Pass explanation detail
     );
 
     console.log('AI Generation Complete. Point Review Length:', point_review_latex?.length); // Debug Log
