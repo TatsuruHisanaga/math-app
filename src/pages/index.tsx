@@ -1018,7 +1018,7 @@ export default function Home() {
              <input 
                type="number" 
                value={count} 
-               onChange={(e) => setCount(Math.max(1, parseInt(e.target.value) || 1))}
+               onChange={(e) => setCount(Math.max(1, parseInt(e.target.value)))}
                style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc', width: '80px' }}
              />
           </div>
