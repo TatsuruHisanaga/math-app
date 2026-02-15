@@ -113,51 +113,34 @@ export class PDFBuilder {
 \\usepackage{multicol}
 \\usepackage{needspace}
 \\usepackage{xcolor}
-\\usepackage{tikz} % Added for rounded corners
+% \\usepackage{tcolorbox} % Removed to prevent garbage output text
 \\pagestyle{empty}
 
 % Internal padding for fbox
-\\setlength{\\fboxsep}{8pt}
+\\setlength{\\fboxsep}{10pt}
+\\setlength{\\fboxrule}{1.5pt}
 
-% Point Review Box Style - Redesigned with TikZ for rounded corners and print-friendly look
+% Point Review Box Style - Standard LaTeX implementation (No TikZ, No tcolorbox)
+% This ensures maximum stability and zero memory overhead.
 \\newsavebox{\\pointboxcontent}
 \\newenvironment{pointbox}{%
   \\par\\vspace{1.5em}
   \\noindent
   \\begin{lrbox}{\\pointboxcontent}%
-    \\begin{minipage}{0.92\\linewidth}
+    \\begin{minipage}{0.90\\linewidth}
       \\linespread{1.3}\\selectfont
       \\setlength{\\parskip}{0.5em}
-      % Customize itemize inside this box manually for compatibility
+      % Customize itemize inside this box
       \\let\\olditemize\\itemize
       \\renewcommand\\itemize{\\olditemize\\setlength\\itemsep{0.5em}\\setlength\\parskip{0pt}\\setlength\\parsep{0pt}}
+      \\vspace{0.5em} % Spacing for title
 }{%
     \\end{minipage}
   \\end{lrbox}
   \\begin{center}
-  \\begin{tikzpicture}
-    % Main box: Rounded corners, thick dark border, white background
-    \\node [
-      draw=black!80,
-      line width=1.5pt,
-      rectangle,
-      rounded corners=8pt,
-      inner sep=12pt,
-      inner ysep=15pt,
-      fill=white
-    ] (box) {\\usebox{\\pointboxcontent}};
-    
-    % Floating Header: Badge style on top border
-    \\node [
-      fill=black!80,
-      text=white,
-      rounded corners=4pt,
-      anchor=west,
-      xshift=15pt
-    ] at (box.north west) {
-       \\bfseries \\hspace{0.5em} ★ Point Review - 今回の重要ポイント ★ \\hspace{0.5em}
-    };
-  \\end{tikzpicture}
+    % Title Box (Simulated with colorbox)
+    \\colorbox{black!80}{\\textcolor{white}{\\textbf{\\ \\ ★ Point Review - 今回の重要ポイント ★\\ \\ }}}\\[-0.5em]
+    \\fbox{\\usebox{\\pointboxcontent}}
   \\end{center}
   \\par\\vspace{1em}
 }
