@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 export class PDFBuilder {
   private tempDir: string;
   private fontsDir: string;
+  private engine: 'lualatex' | 'uplatex';
 
   constructor() {
     // Determine temp dir (in a real app, might want a specific cache dir)
@@ -15,6 +16,19 @@ export class PDFBuilder {
     if (!fs.existsSync(this.tempDir)) {
       fs.mkdirSync(this.tempDir, { recursive: true });
     }
+
+    // Determine engine based on platform or env var
+    // 1. PDF_ENGINE env var (override)
+    // 2. macOS (Dev) -> lualatex (default)
+    // 3. Linux (Docker/Prod) -> uplatex (default)
+    if (process.env.PDF_ENGINE === 'uplatex') {
+      this.engine = 'uplatex';
+    } else if (process.env.PDF_ENGINE === 'lualatex') {
+      this.engine = 'lualatex';
+    } else {
+      this.engine = process.platform === 'darwin' ? 'lualatex' : 'uplatex';
+    }
+    console.log(`[PDFBuilder] Initialized with engine: ${this.engine}`);
   }
 
   // Generate PDF from LaTeX string
@@ -28,109 +42,111 @@ export class PDFBuilder {
 
     fs.writeFileSync(texFile, latexContent);
 
-    // We use latexmk for reliable building
-    // Note: Assuming 'lualatex' and 'latexmk' are in PATH.
+    // We use latexmk for reliable building or direct commands
+    // Note: Assuming 'uplatex' and 'dvipdfmx' are in PATH.
     // If not, we might need to configure absolute paths or user environment.
-    return new Promise((resolve, reject) => {
-      // Use basictex paths if standard path fails? 
-      // For now, assume user will fix PATH or we use standard command.
-      // latexmk is missing in BasicTeX by default sometimes. 
-      // Switch to direct lualatex execution.
-      // We run it twice to ensure references/page numbers are correct (though for this MVP once might suffice, safety first).
-      // Use /usr/bin/time to measure memory usage on macOS
-      let cmd = 'lualatex';
-      let args = [
-        '--interaction=nonstopmode',
-        `--output-directory=${jobDir}`,
-        texFile
-      ];
+      // Use uplatex + dvipdfmx for lower memory usage
+      // 1. Run uplatex to generate .dvi
+      // 2. Run dvipdfmx to generate .pdf
 
-      // Check if we are on macOS
-      if (process.platform === 'darwin') {
-          // Wrap with /usr/bin/time -l
-          // We need to execute: /usr/bin/time -l lualatex ...
-          // So cmd becomes /usr/bin/time, and args start with -l, then lualatex, then original args
-          const originalCmd = cmd;
-          cmd = '/usr/bin/time';
-          args = ['-l', originalCmd, ...args];
-      }
-
-      // Note: We might need to add /Library/TeX/texbin to PATH for the spawn process
-      // if it's not already there.
-      // Use environment PATH or a sensible default for Linux/Docker
+      // Note: We use /usr/bin/time if available for memory logging, or just run directly.
+      
       const env = { ...process.env };
-      // On many Linux setups, lualatex is in /usr/bin or /usr/local/bin which are usually in PATH.
-      // We only append specific paths if we are on macOS for local dev convenience.
       if (process.platform === 'darwin') {
         const texPath = '/Library/TeX/texbin:/usr/local/bin:/opt/homebrew/bin';
         env.PATH = `${texPath}:${env.PATH || ''}`;
       }
 
-      console.log(`Spawning PDF generation: ${cmd} ${args.join(' ')}`);
+      const runCommand = (cmd: string, args: string[], stepName: string): Promise<void> => {
+          return new Promise((resolve, reject) => {
+              // Wrap with time on Mac for memory monitoring (if not already wrapped)
+              let finalCmd = cmd;
+              let finalArgs = args;
+              
+              if (process.platform === 'darwin' && cmd !== '/usr/bin/time') {
+                  finalArgs = ['-l', cmd, ...args];
+                  finalCmd = '/usr/bin/time';
+              }
 
-      // Timeout after 120 seconds to prevent infinite hangs (first run cache can be slow)
-      const processNode = spawn(cmd, args, { env });
-      
-      const timeout = setTimeout(() => {
-          processNode.kill();
-          reject(new Error('LaTeX compilation timed out (120s).'));
-      }, 120000);
+              console.log(`[PDFBuilder] Starting ${stepName}: ${finalCmd} ${finalArgs.join(' ')}`);
+              
+              const p = spawn(finalCmd, finalArgs, { env });
+              
+              let stdout = '';
+              let stderr = '';
+              
+              p.stdout.on('data', d => stdout += d.toString());
+              p.stderr.on('data', d => stderr += d.toString());
+              
+              p.on('close', (code) => {
+                  // Try to parse memory usage from stderr (which is where /usr/bin/time outputs)
+                  // Look for "maximum resident set size"
+                  const match = stderr.match(/(\d+)\s+maximum resident set size/);
+                  if (match) {
+                      const maxRssBytes = parseInt(match[1], 10);
+                      const maxRssMb = (maxRssBytes / 1024 / 1024).toFixed(2);
+                      console.log(`[PDF Memory] ${stepName}: Maximum Resident Set Size: ${maxRssBytes} bytes (~${maxRssMb} MB)`);
+                  }
 
-      let stdout = '';
-      let stderr = '';
+                  if (code === 0) {
+                      resolve();
+                  } else {
+                      console.error(`[PDFBuilder] ${stepName} failed:`, stdout);
+                      reject(new Error(`${stepName} failed with code ${code}\nStderr: ${stderr}\nStdout: ${stdout}`));
+                  }
+              });
+          });
+      };
 
-      processNode.stdout.on('data', (data) => {
-        stdout += data.toString();
-      });
+      try {
+         if (this.engine === 'uplatex') {
+            // Step 1: uplatex
+            // Run output to jobDir. uplatex creates .dvi
+            await runCommand('uplatex', ['-interaction=nonstopmode', `-output-directory=${jobDir}`, texFile], 'uplatex');
+            
+            // Step 2: dvipdfmx
+            // Input is .dvi file in jobDir/main.dvi
+            const dviFile = path.join(jobDir, 'main.dvi');
+            if (!fs.existsSync(dviFile)) {
+                throw new Error('DVI file was not created by uplatex');
+            }
+            await runCommand('dvipdfmx', ['-o', pdfFile, dviFile], 'dvipdfmx');
+         } else {
+             // lualatex (macOS/Legacy)
+             // Use /usr/bin/time if available on Mac for monitoring (optional, kept from previous impl)
+              let cmd = 'lualatex';
+              let args = ['-interaction=nonstopmode', `-output-directory=${jobDir}`, texFile];
 
-      processNode.stderr.on('data', (data) => {
-        stderr += data.toString();
-      });
+              if (process.platform === 'darwin') {
+                   // Measure memory on Mac
+                   args = ['-l', cmd, ...args];
+                   cmd = '/usr/bin/time';
+              }
 
-      processNode.on('close', (code) => {
-        clearTimeout(timeout);
-        
-        // Check if PDF exists regardless of exit code
-        if (fs.existsSync(pdfFile)) {
-          const pdfBuffer = fs.readFileSync(pdfFile);
-          
-          // Try to parse memory usage from stderr (which is where /usr/bin/time outputs)
-          // Look for "maximum resident set size"
-          const match = stderr.match(/(\d+)\s+maximum resident set size/);
-          if (match) {
-              const maxRssBytes = parseInt(match[1], 10);
-              const maxRssMb = (maxRssBytes / 1024 / 1024).toFixed(2);
-              console.log(`[PDF Memory] Maximum Resident Set Size: ${maxRssBytes} bytes (~${maxRssMb} MB)`);
-          }
+              await runCommand(cmd, args, 'lualatex');
+         }
 
-          // Cleanup
-          fs.rmSync(jobDir, { recursive: true, force: true });
-          
-          if (code !== 0) {
-              console.warn('LaTeX build finished with non-zero exit code, but PDF was generated.', stdout);
-          }
-          resolve(pdfBuffer);
-          return;
-        }
-
-        if (code !== 0) {
-          console.error('LaTeX build failed:', stdout); // Log header
-          // Clean up somewhat
-          // fs.rmSync(jobDir, { recursive: true, force: true });
-          reject(new Error(`LaTeX compilation failed with code ${code}.\nStderr: ${stderr}\nStdout: ${stdout}`));
-          return;
-        }
-
-        reject(new Error('PDF file was not created despite exit code 0'));
-      });
-    });
+         if (fs.existsSync(pdfFile)) {
+             const pdfBuffer = fs.readFileSync(pdfFile);
+             fs.rmSync(jobDir, { recursive: true, force: true });
+             return pdfBuffer;
+         } else {
+             throw new Error('PDF file was not created');
+         }
+      } catch (e) {
+          // Clean up on error?
+           // fs.rmSync(jobDir, { recursive: true, force: true });
+          throw e;
+      }
   }
 
   public getLayoutTemplate(content: string, isAnswer: boolean = false): string {
-     // Basic wrapper
-     return `
-\\documentclass[a4paper,10pt,twocolumn]{article}
-\\usepackage[haranoaji]{luatexja-preset}
+     if (this.engine === 'uplatex') {
+         // uplatex template
+         return `
+\\documentclass[a4paper,10pt,twocolumn,uplatex,dvipdfmx]{ujarticle}
+% \\usepackage[haranoaji]{luatexja-preset} % Removed for uplatex
+
 \\usepackage[top=10mm,bottom=10mm,left=10mm,right=10mm]{geometry}
 \\usepackage{amsmath,amssymb}
 \\usepackage{multicol}
@@ -236,14 +252,121 @@ export class PDFBuilder {
 ${content}
 
 \\end{document}
-     `;
+         `;
+     } else {
+         // lualatex template (Legacy/Mac)
+         return `
+\\documentclass[a4paper,10pt,twocolumn]{article}
+\\usepackage[haranoaji]{luatexja-preset}
+\\usepackage[top=10mm,bottom=10mm,left=10mm,right=10mm]{geometry}
+\\usepackage{amsmath,amssymb}
+\\usepackage{multicol}
+\\usepackage{needspace}
+\\usepackage{xcolor}
+\\pagestyle{empty}
+
+\\setlength{\\fboxsep}{3pt} 
+\\setlength{\\fboxrule}{0.4pt}
+
+% Definitions same as above but compatible with lualatex (standard latex is compatible)
+% Point Review Box Style
+\\newsavebox{\\pointboxcontent}
+\\newsavebox{\\pointboxtitle}
+\\newsavebox{\\pointboxframe}
+\\newenvironment{pointbox}{%
+  \\par\\vspace{2em}
+  \\noindent
+  \\begin{lrbox}{\\pointboxcontent}%
+    \\begin{minipage}{0.90\\linewidth}
+      \\linespread{1.3}\\selectfont
+      \\setlength{\\parskip}{0.5em}
+      \\let\\olditemize\\itemize
+      \\renewcommand\\itemize{\\olditemize\\setlength\\itemsep{0.5em}\\setlength\\parskip{0pt}\\setlength\\parsep{0pt}}
+      \\vspace{0.5em} 
+}{%
+    \\end{minipage}
+  \\end{lrbox}
+  \\begin{center}
+    \\sbox{\\pointboxframe}{%
+      \\setlength{\\fboxrule}{1.5pt}%
+      \\setlength{\\fboxsep}{10pt}%
+      \\fbox{\\usebox{\\pointboxcontent}}%
+    }%
+    \\sbox{\\pointboxtitle}{%
+      \\colorbox{black!80}{\\textcolor{white}{\\textbf{\\ \\ ★ 今回の重要ポイント ★\\ \\ }}}%
+    }%
+    \\leavevmode
+    \\usebox{\\pointboxframe}%
+    \\hspace{-\\wd\\pointboxframe}%
+    \\raisebox{\\dimexpr\\ht\\pointboxframe - 0.5\\ht\\pointboxtitle\\relax}{%
+       \\makebox[\\wd\\pointboxframe][l]{%
+         \\hspace{1em}%
+         \\usebox{\\pointboxtitle}%
+       }%
+    }%
+  \\end{center}
+  \\par\\vspace{1em}
+}
+
+\\newsavebox{\\myqbox}
+\\newenvironment{qbox}{%
+  \\setlength{\\fboxsep}{8pt}%
+  \\begin{lrbox}{\\myqbox}%
+  \\begin{minipage}{\\dimexpr\\linewidth-2\\fboxsep-2\\fboxrule\\relax}
+  \\setlength{\\parskip}{5pt}
+}{%
+  \\end{minipage}%
+  \\end{lrbox}%
+  \\par\\noindent
+  \\fbox{\\usebox{\\myqbox}}%
+  \\par\\vspace{1em}
+}
+
+\\newcommand{\\answerbox}[2]{
+  \\par\\vspace{0.2em}
+  \\begin{minipage}[t][#1][t]{\\dimexpr\\linewidth-1em\\relax}
+    \\mbox{}
+  \\end{minipage}
+}
+
+\\newcommand{\\answeredbox}[1]{
+  \\par\\vspace{0.2em}
+  \\noindent\\textbf{答:}\\ 
+  \\begin{minipage}[t]{\\dimexpr\\linewidth-3em\\relax}
+    \\raggedright
+    \\color{red}
+    \\normalsize #1
+  \\end{minipage}
+  \\par
+}
+
+\\begin{document}
+${content}
+\\end{document}
+         `;
+     }
   }
 
   public getVerificationTemplate(content: string): string {
-      // Lightweight template for syntax checking only
-      // Omits heavy packages like luatexja-preset, geometry, multicol, etc.
-      // Defines dummy environments to pass compilation
-      return `
+      if (this.engine === 'uplatex') {
+          return `
+\\documentclass[uplatex,dvipdfmx]{ujarticle}
+\\usepackage{amsmath,amssymb}
+\\usepackage{xcolor}
+
+% Dummy definitions to pass syntax check
+\\newenvironment{qbox}{}{}
+\\newcommand{\\answerbox}[2]{}
+\\newcommand{\\answeredbox}[1]{}
+\\newenvironment{pointbox}{}{}
+
+\\begin{document}
+${content}
+\\end{document}
+          `;
+      } else {
+          // MacOS / Lualatex verification
+          return `
 \\documentclass{article}
 \\usepackage{amsmath,amssymb}
 \\usepackage{xcolor}
@@ -257,7 +380,8 @@ ${content}
 \\begin{document}
 ${content}
 \\end{document}
-      `;
+          `;
+      }
   }
 
   public getPointReview(content: string): string {
