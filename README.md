@@ -34,7 +34,8 @@ sudo tlmgr update --self
 
 # Install required packages
 # haranoaji is REQUIRED for Japanese fonts
-sudo tlmgr install luatexja needspace geometry multicol haranoaji
+# pgf (TikZ) is REQUIRED for graph generation
+sudo tlmgr install luatexja needspace geometry multicol haranoaji pgf
 ```
 
 ## Setup & Run
@@ -73,40 +74,45 @@ sudo tlmgr install luatexja needspace geometry multicol haranoaji
 
 ### 主要機能
 1.  **AI問題生成機能 (`/ai-creation`)**:
-    - OpenAI API (GPT-4o) を利用し、単元・難易度・重点トピックを指定して問題を生成。
+    - OpenAI API (GPT-4o) を利用し、選択した単元・難易度・トピックに基づいて問題を生成。
+    - **画像添付機能**: 問題文や図版の画像をアップロードし、その内容に基づいた問題生成が可能。
+    - **生成後の編集・再生成**: 生成された個別の問題に対して修正指示、削除、単独再生成が可能。
     - 生成された問題は自動的にLaTeX構文チェックと数式チェックが行われます。
-2.  **テンプレート問題生成機能 (`/`)**:
-    - 予め用意されたテンプレートに変数を埋め込んで問題を生成（※現在、`unit_map.json` と `templates.json` のID不整合により機能制限あり）。
-3.  **PDF出力機能**:
+
+2.  **PDF出力機能**:
     - LuaLaTeX を使用し、問題編・解答編・講師用ガイドを含むPDFを生成。
+    - **Concept Point Review**: 解答編の末尾に、出題単元の重要公式や定理をまとめたレビューセクションを自動生成。
+    - **TikZグラフ描画**: 高品質な関数グラフをLaTeXのTikZパッケージを用いて描画。
 
 ## 2. 機能仕様詳細
 
 ### 2.1 AI問題作成
-- **入力**: 単元、重点トピック、難易度 (L1-L3)、問題数、AIモデル、追加指示。
+- **入力**: 単元、難易度、問題数、AIモデル、追加指示、画像の添付。
 - **検証プロセス**:
     - 生成後、LaTeXコンパイルチェックと簡易的な数式チェックを実施。
     - エラー時は最大4回まで再試行。
-- **出力**: リアルタイムストリーミングによる進捗表示と、完了後のPDFダウンロード。
+- **UI/UX**:
+    - **デスクトップ通知**: 生成完了時にブラウザ通知でお知らせ。
+    - **単元選択**: フローティングパネルによる直感的な単元管理（チップ表示）。
+    - **進捗表示**: リアルタイムストリーミングによる生成状況の可視化。
 
 ### 2.2 PDFレイアウト
 - **用紙**: A4 縦置き (2段組み対応)
 - **構成**:
     - **問題編**: ヘッダー（単元・日付・氏名）、問題ボックス（問題文＋解答欄）
-    - **解答編**: 赤字の解答と解説
+    - **解答編**: 赤字の解答と解説、**Concept Point Review**（重要事項のまとめ）
     - **講師用ガイド**: ヒントと指導案（オプション）
 
 ## 3. データ構造
 
-- **Unit Definisions (`data/unit_map.json`)**: 単元ID、タイトル、前提単元を定義。
-- **Templates (`data/templates.json`)**: 変数埋め込み可能なLaTeXテンプレート。
+- **Unit Definitions (`data/unit_map.json`)**: 単元ID、単元名を定義（数I〜数IIIまで対応）。
+
 
 ## 4. 技術スタック
-- **Frontend**: Next.js (Pages Router), React 19, TailwindCSS
-- **Backend/PDF**: LuaLaTeX (via `child_process`), KaTeX
-- **AI**: OpenAI API (Structured Outputs)
+- **Frontend**: Next.js 16 (Pages Router), React 19, TailwindCSS, canvas-confetti
+- **Backend/PDF**: LuaLaTeX (via `child_process`), KaTeX, TikZ (for Graph Plotting)
+- **AI**: OpenAI API (Structured Outputs, GPT-5.2, GPT-5 mini, Vision API)
 - **Infrastructure**: Docker (Production), Local managed LaTeX (Development)
 
 ## 5. 既知の問題点
-- **テンプレートID不整合**: `unit_map.json` と `templates.json` の間でIDが一致していないため、テンプレート生成が正しく動作しない場合があります。
 - **LaTeX環境依存**: ローカル開発には `luatexja` 等を含むTeX環境の構築が必要です。

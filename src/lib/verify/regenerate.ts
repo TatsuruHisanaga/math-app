@@ -31,7 +31,8 @@ export class GenerationPipeline {
         difficulty: string,
         modelOverride?: string,
         onProgress?: (current: number, total: number) => void,
-        otherRequests?: string
+        otherRequests?: string,
+        images?: any[] // New parameter for images
     ): Promise<{ problems: ValidatedProblem[], intent: string, point_review_latex: string }> {
         const systemPrompt = `You are a skilled mathematics teacher creating exercise problems for Japanese students.
 Generate ${count} math problems based on the unit topic and difficulty provided.
@@ -43,20 +44,36 @@ Output MUST be a valid JSON object strictly matching the schema.
 - 'answer_latex': The descriptive answer in LaTeX. Include intermediate steps/derivations. Example: "$(x+1)(x+2) = 0 \\rightarrow x = -1, -2$". Wrappers $...$ required. Do NOT include "Answer:" prefix.
 - 'explanation_latex': Detailed explanation. Wrap all math in $...$.
 - 'point_review_latex': A summary of key formulas, theorems, and concepts used in this problem set, formatted as a LaTeX itemize environment (\\begin{itemize} ... \\end{itemize}). Each item should start with a bold topic name, e.g., \\item \\textbf{Topic}: Content. Japanese text with math in $...$.
-- 'difficulty': One of L1, L2, L3.
-- 'intent': A brief description of the generation intent in Japanese.
+- 'difficulty': One of L1, L2, L3, L4, L5.
+- 'intent': A brief description of the generation intent in Japanese. IMPORTANT: Wrap ALL math symbols (e.g. $n$, $P$, $C$, equations) in $...$ to ensure they render correctly. Do not use plain text for math. When mentioning difficulty, use Japanese terms: "基礎1" (L1), "基礎2" (L2), "基礎3" (L3), "標準" (L4), "発展" (L5).
+
+Difficulty Definitions:
+- L1 (基礎1): Introductory level. Definitions, formulas, simple calculation drills.
+- L2 (基礎2): Textbook standard level. Basic word problems, routine standard questions.
+- L3 (基礎3): Textbook application level. End-of-chapter problems, complex basic questions.
+- L4 (標準): Standard entrance exam level. Typical university exam problems.
+- L5 (発展): Advanced/Difficult entrance exam level. Complex application.
 `;
 
-        let userPrompt = `Unit: ${topic}
+        let textPrompt = `Unit: ${topic}
 Count: ${count}
 Difficulty: ${difficulty}
 `;
 
         if (otherRequests) {
-            userPrompt += `Other Requests: ${otherRequests}\n`;
+            textPrompt += `Other Requests: ${otherRequests}\n`;
         }
 
-        return this.generateVerifiedFlexible(systemPrompt, userPrompt, count, modelOverride, onProgress);
+        let finalUserPrompt: string | any[] = textPrompt;
+
+        if (images && images.length > 0) {
+            finalUserPrompt = [
+                { type: 'text', text: textPrompt },
+                ...images
+            ];
+        }
+
+        return this.generateVerifiedFlexible(systemPrompt, finalUserPrompt, count, modelOverride, onProgress);
     }
 
     async generateVerifiedFlexible(
@@ -188,7 +205,9 @@ Output MUST be a valid JSON object strictly matching the problem schema.
 - 'answer_latex': Answer in LaTeX. Wrap math in $...$.
 - 'explanation_latex': Detailed explanation. Wrap math in $...$.
 - 'difficulty': ${difficulty}
-- 'intent': Brief description of changes.
+- 'difficulty': ${difficulty}
+- 'difficulty': ${difficulty}
+- 'intent': Brief description of changes. IMPORTANT: Wrap ALL math symbols (e.g. $n$, $x^2$, $nCr$) in $...$. Use Japanese terms for difficulty: "基礎1" (L1), "基礎2" (L2), "基礎3" (L3), "標準" (L4), "発展" (L5).
 
 CRITICAL: When writing LaTeX inside JSON, you MUST double-escape backslashes. 
 Example: Use "\\\\frac{1}{2}" instead of "\\frac{1}{2}".
@@ -228,7 +247,7 @@ ${currentProblem.answer_latex}
         // Permissive repair for missing math delimiters
         const mathTokens = ['^', '_', '\\frac', '\\sqrt', '\\times', '\\div', '=', '\\pi'];
         const hasMathToken = mathTokens.some(t => latex.includes(t));
-        const hasDollar = latex.includes('$');
+        const hasDollar = latex.includes('$') || latex.includes('\\(') || latex.includes('\\[') || latex.includes('\\begin{');
         
         if (hasMathToken && !hasDollar) {
             const hasJapanese = /[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\u4e00-\u9faf]/.test(latex);

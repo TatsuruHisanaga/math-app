@@ -26,7 +26,13 @@ Output MUST be a valid JSON object strictly matching the schema.
 - 'stem_latex': The problem text in LaTeX. Use Japanese for text. IMPORTANT: All math expressions (e.g. equations, variables like x) MUST be wrapped in $...$ (inline math) or $$...$$ (display math). DO NOT include the answer in this field.
 - 'answer_latex': The descriptive answer in LaTeX. Include intermediate steps/derivations. Example: "$(x+1)(x+2) = 0 \\rightarrow x = -1, -2$". Wrappers $...$ required. Do NOT include "Answer:" prefix.
 - 'explanation_latex': Detailed explanation. Wrap all math in $...$.
-- 'difficulty': One of L1, L2, L3.
+- 'difficulty': One of L1, L2, L3, L4, L5. (L1=基礎1, L2=基礎2, L3=基礎3, L4=標準, L5=発展)
+Difficulty Levels:
+L1: 基礎1 (Introductory/Drill)
+L2: 基礎2 (Textbook Standard)
+L3: 基礎3 (Textbook Application)
+L4: 標準 (Entrance Exam Standard)
+L5: 発展 (Advanced/Difficult)
 `;
 
     const userPrompt = `Unit: ${topic}

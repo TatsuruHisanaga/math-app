@@ -1,4 +1,4 @@
-export type Difficulty = 'L1' | 'L2' | 'L3';
+export type Difficulty = 'L1' | 'L2' | 'L3' | 'L4' | 'L5';
 
 export interface AIProblemItem {
   stem_latex: string;

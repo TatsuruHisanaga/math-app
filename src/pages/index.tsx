@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Head from 'next/head';
 import styles from '@/styles/Home.module.css';
 import confetti from 'canvas-confetti';
@@ -34,6 +34,12 @@ export default function Home() {
   const [intent, setIntent] = useState('');
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [showPreview, setShowPreview] = useState(true);
+  
+  // File Upload State
+  const [files, setFiles] = useState<File[]>([]);
+  const [previews, setPreviews] = useState<string[]>([]);
+  const [previewModalSrc, setPreviewModalSrc] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Expanded Unit List with categories
   const CURRICULUM: { subject: string; units: Unit[] }[] = [
@@ -422,17 +428,22 @@ export default function Home() {
 
     try {
       // 1. AI Generation
+      const formData = new FormData();
+      formData.append('units', JSON.stringify(selectedUnits));
+      formData.append('unitDetails', JSON.stringify(selectedTopics));
+      formData.append('difficulty', difficulty[0] || 'L1');
+      formData.append('count', count.toString());
+      formData.append('aiModel', aiModel);
+      formData.append('additionalRequest', additionalRequest);
+      
+      files.forEach(file => {
+          formData.append('files', file);
+      });
+
       const res = await fetch('/api/generate_ai', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          units: selectedUnits,
-          unitDetails: selectedTopics,
-          difficulty: difficulty[0] || 'L1',
-          count,
-          aiModel,
-          additionalRequest
-        })
+        // headers: { 'Content-Type': 'multipart/form-data' }, // Do NOT set Content-Type manually with FormData!
+        body: formData
       });
 
       if (!res.ok) throw new Error('AI Generation failed');
@@ -625,6 +636,18 @@ export default function Home() {
     });
   };
 
+  const deselectUnit = (id: string) => {
+    // 1. Remove from selectedUnits
+    setSelectedUnits(prev => prev.filter(u => u !== id));
+    
+    // 2. Remove from selectedTopics (optional, but good for cleanup)
+    setSelectedTopics(prev => {
+        const next = { ...prev };
+        delete next[id];
+        return next;
+    });
+  };
+
   const toggleTopic = (unitId: string, topicTitle: string) => {
       setSelectedTopics(prev => {
           const current = prev[unitId] || [];
@@ -781,6 +804,59 @@ export default function Home() {
       }
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (e.target.files) {
+          const newFiles = Array.from(e.target.files);
+          
+          // Validation Constants
+          const MAX_FILES = 10;
+          const MAX_SIZE_MB = 5;
+          const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
+
+          // Check Total Count
+          if (files.length + newFiles.length > MAX_FILES) {
+              alert(`画像は最大${MAX_FILES}枚までしかアップロードできません。`);
+              return;
+          }
+
+          // Check File Sizes
+          const validFiles: File[] = [];
+          for (const file of newFiles) {
+              if (file.size > MAX_SIZE_BYTES) {
+                  alert(`ファイル「${file.name}」はサイズが大きすぎます（${MAX_SIZE_MB}MB以下にしてください）。`);
+                  continue;
+              }
+              validFiles.push(file);
+          }
+
+          if (validFiles.length === 0) return;
+
+          setFiles(prev => [...prev, ...validFiles]);
+
+          validFiles.forEach(file => {
+              if (file.type.startsWith('image/')) {
+                  const reader = new FileReader();
+                  reader.onload = (rev) => {
+                      setPreviews(prev => [...prev, rev.target?.result as string]);
+                  };
+                  reader.readAsDataURL(file);
+              } else {
+                  setPreviews(prev => [...prev, '/pdf-icon.png']); 
+              }
+          });
+          
+          // Reset input value to allow selecting the same file again if needed
+          if (fileInputRef.current) {
+              fileInputRef.current.value = '';
+          }
+      }
+  };
+
+  const removeFile = (index: number) => {
+      setFiles(prev => prev.filter((_, i) => i !== index));
+      setPreviews(prev => prev.filter((_, i) => i !== index));
+  };
+
   return (
     <div className={styles.container}>
       <Head>
@@ -789,42 +865,17 @@ export default function Home() {
       </Head>
 
       <main className={styles.main}>
-        <h1 className={styles.title}>数学演習プリント生成</h1>
+        <h1 className={styles.title}>数学プリントジェネレーター</h1>
 
         <div className={styles.header}>
-          <p>AIがレベルに合わせた問題を自動生成します</p>
           <Link href="/ai-creation" className={styles.card} style={{ border: '2px solid #FFB300', fontWeight: 'bold' }}>
-            ✨ 自由入力・ファイルから作成 (新機能)
+            単元を選ばず、自由入力と画像から問題を作成 (β版)
           </Link>
         </div>
 
         <section className={styles.section}>
           <h2>
               1. 単元選択
-              <div style={{ display: 'inline-flex', flexWrap: 'wrap', gap: '0.5rem', marginLeft: '1rem', verticalAlign: 'middle' }}>
-                  {selectedUnits.length === 0 && <span style={{fontSize: '0.9rem', color: '#999', fontWeight: 'normal'}}>（未選択）</span>}
-                  {selectedUnits.map(id => {
-                      const unit = ALL_UNITS.find(u => u.id === id);
-                      return (
-                          <span key={id} style={{ 
-                              fontSize: '0.8rem', 
-                              padding: '2px 8px', 
-                              borderRadius: '12px', 
-                              background: '#333', 
-                              color: '#fff',
-                              fontWeight: 'normal' 
-                          }}>
-                              {unit?.title || id}
-                              <span 
-                                  onClick={(e) => { e.stopPropagation(); toggleUnit(id); }}
-                                  style={{ marginLeft: '6px', cursor: 'pointer', opacity: 0.8 }}
-                              >
-                                  ×
-                              </span>
-                          </span>
-                      );
-                  })}
-              </div>
           </h2>
 
           <div className={styles.toggleGroup} style={{ marginBottom: '1.5rem', background: 'white', border: '1px solid #ddd' }}>
@@ -944,6 +995,8 @@ export default function Home() {
           </div>
         </section>
 
+
+
         <section className={styles.section}>
           <h2>2. オプション設定</h2>
           <div className={styles.optionsGrid}>
@@ -983,10 +1036,35 @@ export default function Home() {
                             cursor: 'pointer'
                         }}
                      >
-                        {d === 'L1' ? '基礎' : d === 'L2' ? '標準' : d === 'L3' ? '発展' : d === 'L4' ? '難関' : '最難関'}
+                        {d === 'L1' ? '基礎1' : d === 'L2' ? '基礎2' : d === 'L3' ? '基礎3' : d === 'L4' ? '標準' : '発展'}
                      </button>
                  ))}
-             </div>
+              </div>
+
+              {/* Difficulty Descriptions */}
+              <div style={{ marginTop: '0.8rem', fontSize: '0.85rem', color: '#555', background: '#f5f5f5', padding: '0.8rem', borderRadius: '4px' }}>
+                  {difficulty.length === 0 ? (
+                      <span style={{ color: '#999' }}>難易度を選択してください</span>
+                  ) : (
+                      <ul style={{ margin: 0, paddingLeft: '1.2rem', listStyleType: 'disc' }}>
+                          {['L1', 'L2', 'L3', 'L4', 'L5'].filter(d => difficulty.includes(d)).map(d => {
+                              const labels: Record<string, string> = { 'L1': '基礎1', 'L2': '基礎2', 'L3': '基礎3', 'L4': '標準', 'L5': '発展' };
+                              const descs: Record<string, string> = {
+                                  'L1': '教科書の例題・計算ドリルレベル',
+                                  'L2': '教科書の標準問題レベル',
+                                  'L3': '教科書の章末応用問題レベル',
+                                  'L4': '一般入試標準レベル',
+                                  'L5': '難関大入試レベル'
+                              };
+                              return (
+                                  <li key={d} style={{ marginBottom: '0.2rem' }}>
+                                      <strong>{labels[d]}</strong>: {descs[d]}
+                                  </li>
+                              );
+                          })}
+                      </ul>
+                  )}
+              </div>
           </div>
           
            <div style={{ marginTop: '1rem' }}>
@@ -996,7 +1074,7 @@ export default function Home() {
                onChange={(e) => setAiModel(e.target.value as any)}
                style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc', width: '100%', maxWidth: '300px' }}
              >
-               <option value="gpt-5.2">GPT-5.2 (推奨)</option>
+               <option value="gpt-5.2">GPT-5.2 (高品質)</option>
                <option value="gpt-5-mini">GPT-5-mini (高速)</option>
              </select>
           </div>
@@ -1016,8 +1094,76 @@ export default function Home() {
                    borderRadius: '4px', 
                    border: '1px solid #ccc',
                    fontFamily: 'inherit'
-               }}
-             />
+                }}
+                />
+                {previews.length > 0 && (
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', padding: '10px', background: '#f9f9f9', borderRadius: '8px', border: '1px solid #eee', marginTop: '0.5rem' }}>
+                        {previews.map((src, i) => (
+                            <div 
+                                key={i} 
+                                style={{ 
+                                    display: 'flex', 
+                                    alignItems: 'center', 
+                                    background: 'white', 
+                                    padding: '4px 8px', 
+                                    borderRadius: '16px', 
+                                    border: '1px solid #ddd',
+                                    fontSize: '0.85rem',
+                                    cursor: 'pointer',
+                                    boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
+                                }}
+                                onClick={() => setPreviewModalSrc(src)}
+                            >
+                                <span style={{ marginRight: '6px' }}>📷</span>
+                                <span style={{ maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                    {files[i].name}
+                                </span>
+                                <button 
+                                    onClick={(e) => { e.stopPropagation(); removeFile(i); }}
+                                    style={{ 
+                                        marginLeft: '6px', 
+                                        border: 'none', 
+                                        background: 'transparent', 
+                                        color: '#999', 
+                                        cursor: 'pointer',
+                                        fontWeight: 'bold',
+                                        fontSize: '1rem',
+                                        lineHeight: 1
+                                    }}
+                                >
+                                    ×
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                )}
+                <div style={{ marginTop: '0.5rem' }}>
+                    <label style={{ 
+                        display: 'inline-flex', 
+                        alignItems: 'center', 
+                        cursor: 'pointer', 
+                        background: '#f0f0f0', 
+                        padding: '8px 16px', 
+                        borderRadius: '8px',
+                        border: '1px solid #ccc',
+                        fontWeight: 'bold',
+                        color: '#333'
+                    }}>
+                        <input 
+                            type="file" 
+                            multiple 
+                            accept="image/*"
+                            ref={fileInputRef}
+                            onChange={handleFileChange}
+                            style={{ display: 'none' }}
+                        />
+                        📁 画像を選択
+                    </label>
+                        <p style={{ fontSize: '0.8rem', color: '#888', marginBottom: '0.5rem' }}>
+                             ※ワークの問題や手書きのメモなどをアップロードすると、それを参考に問題を作成します。
+                         </p>
+                </div>
+
           </div>
         </section>
 
@@ -1081,6 +1227,8 @@ export default function Home() {
                         />
                     </div>
                 )}
+
+
 
                 {/* Editable Generated Problems List */}
                 {generatedProblems.length > 0 && (
@@ -1166,6 +1314,99 @@ export default function Home() {
       )}
 
 
+      {/* Floating Selected Units Panel */}
+      {selectedUnits.length > 0 && (
+          <div className={styles.floatingPanel}>
+              <div className={styles.panelHeader}>
+                  <span>選択中のトピックス</span>
+                  <span 
+                    onClick={() => { setSelectedUnits([]); setSelectedTopics({}); }}
+                    style={{ fontSize: '0.8rem', cursor: 'pointer', color: '#999', fontWeight: 'normal' }}
+                  >
+                    すべて解除
+                  </span>
+              </div>
+              <div className={styles.unitList}>
+                  {selectedUnits.map(unitId => {
+                      const unit = ALL_UNITS.find(u => u.id === unitId);
+                      const topics = selectedTopics[unitId];
+                      
+                      // Case A: Specific topics are selected
+                      if (topics && topics.length > 0) {
+                          return topics.map(topicTitle => (
+                              <div key={`${unitId}-${topicTitle}`} className={styles.unitChip}>
+                                  {topicTitle}
+                                  <span 
+                                      className={styles.chipRemove}
+                                      onClick={() => toggleTopic(unitId, topicTitle)}
+                                  >
+                                      ×
+                                  </span>
+                              </div>
+                          ));
+                      }
+                      
+                      // Case B: No specific topics (Unit as a whole)
+                      return (
+                          <div key={unitId} className={styles.unitChip}>
+                              {unit?.title || unitId}
+                              <span 
+                                  className={styles.chipRemove}
+                                  onClick={() => deselectUnit(unitId)}
+                              >
+                                  ×
+                              </span>
+                          </div>
+                      );
+                  })}
+              </div>
+              
+              {/* Difficulty Descriptions */}
+              <div style={{ marginTop: '0.8rem', fontSize: '0.85rem', color: '#555', background: '#f5f5f5', padding: '0.8rem', borderRadius: '4px' }}>
+                  {difficulty.length === 0 ? (
+                      <span style={{ color: '#999' }}>難易度を選択してください</span>
+                  ) : (
+                      <ul style={{ margin: 0, paddingLeft: '1.2rem', listStyleType: 'disc' }}>
+                          {['L1', 'L2', 'L3', 'L4', 'L5'].filter(d => difficulty.includes(d)).map(d => {
+                              const labels: Record<string, string> = { 'L1': '基礎1', 'L2': '基礎2', 'L3': '基礎3', 'L4': '標準', 'L5': '発展' };
+                              const descs: Record<string, string> = {
+                                  'L1': '教科書の例題・計算ドリルレベル',
+                                  'L2': '教科書の標準問題レベル',
+                                  'L3': '教科書の章末応用問題レベル',
+                                  'L4': '一般入試標準レベル',
+                                  'L5': '難関大入試レベル'
+                              };
+                              return (
+                                  <li key={d} style={{ marginBottom: '0.2rem' }}>
+                                      <strong>{labels[d]}</strong>: {descs[d]}
+                                  </li>
+                              );
+                          })}
+                      </ul>
+                  )}
+             </div>
+              
+          </div>
+      )}
+
+      {/* Image Preview Modal (Global) */}
+      {previewModalSrc && (
+          <div 
+              style={{
+                  position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+                  background: 'rgba(0,0,0,0.8)', zIndex: 9999,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  cursor: 'pointer'
+              }}
+              onClick={() => setPreviewModalSrc(null)}
+          >
+              <img 
+                  src={previewModalSrc} 
+                  alt="preview" 
+                  style={{ maxWidth: '90%', maxHeight: '90%', borderRadius: '8px' }} 
+              />
+          </div>
+      )}
     </div>
   );
 }
