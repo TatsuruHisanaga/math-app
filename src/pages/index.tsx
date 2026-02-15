@@ -1075,7 +1075,7 @@ export default function Home() {
                style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc', width: '100%', maxWidth: '300px' }}
              >
                <option value="gpt-5.2">GPT-5.2 (高品質)</option>
-               <option value="gpt-5-mini">GPT-5-mini (高速)</option>
+               <option value="gpt-5-mini">GPT-5 mini (高速)</option>
              </select>
           </div>
 

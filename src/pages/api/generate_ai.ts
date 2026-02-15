@@ -54,7 +54,15 @@ export default async function handler(
 
     const difficulty = fields.difficulty?.[0] || 'L1';
     const count = parseInt(fields.count?.[0] || '5');
-    const aiModel = fields.aiModel?.[0] || 'gpt-4o';
+    // Handle aiModel: formidable v3 parses fields as arrays of strings or just strings depending on config 
+    // but typically fields.param is string[] | undefined
+    const rawAiModel = fields.aiModel;
+    let aiModel = 'gpt-5.2'; // Default
+    if (Array.isArray(rawAiModel) && rawAiModel.length > 0) {
+        aiModel = rawAiModel[0];
+    } else if (typeof rawAiModel === 'string') {
+        aiModel = rawAiModel;
+    }
     const additionalRequest = fields.additionalRequest?.[0] || '';
 
     if (!units || units.length === 0 || !count) {
