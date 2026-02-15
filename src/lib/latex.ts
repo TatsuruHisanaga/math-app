@@ -40,9 +40,13 @@ export class PDFBuilder {
       const cmd = 'lualatex'; 
       const args = [
         '--interaction=nonstopmode',
+        '--halt-on-error',
         `--output-directory=${jobDir}`,
         texFile
       ];
+
+      console.log(`[PDFBuilder] Starting compilation for job: ${jobId}`);
+      console.log(`[PDFBuilder] Command: ${cmd} ${args.join(' ')}`);
 
       // Note: We might need to add /Library/TeX/texbin to PATH for the spawn process
       // if it's not already there.
@@ -55,30 +59,38 @@ export class PDFBuilder {
         env.PATH = `${texPath}:${env.PATH || ''}`;
       }
 
-      // Timeout after 120 seconds to prevent infinite hangs (first run cache can be slow)
+      // Timeout after 60 seconds to prevent infinite hangs (first run cache can be slow)
+      // Reduced from 120s to fail faster if stuck
       const processNode = spawn(cmd, args, { env });
       
       const timeout = setTimeout(() => {
+          console.error(`[PDFBuilder] Timeout reached for job ${jobId}. Killing process.`);
           processNode.kill();
-          reject(new Error('LaTeX compilation timed out (120s).'));
-      }, 120000);
+          reject(new Error('LaTeX compilation timed out (60s).'));
+      }, 60000);
 
       let stdout = '';
       let stderr = '';
 
       processNode.stdout.on('data', (data) => {
-        stdout += data.toString();
+        const chunk = data.toString();
+        // console.log(`[LaTeX STDOUT] ${chunk}`); // Too verbose for prod, maybe log only errors/warnings?
+        stdout += chunk;
       });
 
       processNode.stderr.on('data', (data) => {
-        stderr += data.toString();
+        const chunk = data.toString();
+        console.error(`[LaTeX STDERR] ${chunk}`);
+        stderr += chunk;
       });
 
       processNode.on('close', (code) => {
         clearTimeout(timeout);
+        console.log(`[PDFBuilder] Process exited with code ${code} for job ${jobId}`);
         
         // Check if PDF exists regardless of exit code
         if (fs.existsSync(pdfFile)) {
+          console.log(`[PDFBuilder] PDF generated successfully at ${pdfFile}`);
           const pdfBuffer = fs.readFileSync(pdfFile);
           // Cleanup
           fs.rmSync(jobDir, { recursive: true, force: true });
@@ -94,10 +106,11 @@ export class PDFBuilder {
           console.error('LaTeX build failed:', stdout); // Log header
           // Clean up somewhat
           // fs.rmSync(jobDir, { recursive: true, force: true });
-          reject(new Error(`LaTeX compilation failed with code ${code}.\nStderr: ${stderr}\nStdout: ${stdout}`));
+          reject(new Error(`LaTeX compilation failed with code ${code}.\nStderr: ${stderr}\nStdout (tail): ${stdout.slice(-500)}`));
           return;
         }
 
+        console.error(`[PDFBuilder] Exit code 0 but PDF missing.`);
         reject(new Error('PDF file was not created despite exit code 0'));
       });
     });
