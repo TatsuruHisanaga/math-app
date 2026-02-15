@@ -149,7 +149,7 @@ export class PDFBuilder {
     }%
     % Create the title box
     \\sbox{\\pointboxtitle}{%
-      \\colorbox{black!80}{\\textcolor{white}{\\textbf{\\ \\ ★ Point Review - 今回の重要ポイント ★\\ \\ }}}%
+      \\colorbox{black!80}{\\textcolor{white}{\\textbf{\\ \\ ★ 今回の重要ポイント ★\\ \\ }}}%
     }%
     % Draw Frame then Title on top
     \\leavevmode
@@ -173,6 +173,7 @@ export class PDFBuilder {
 % Single frame, question number and text inside, empty space below.
 \\newsavebox{\\myqbox}
 \\newenvironment{qbox}{%
+  \\setlength{\\fboxsep}{8pt}% Increase padding for problem box
   \\begin{lrbox}{\\myqbox}%
   % Subtract framesep and rule to fit exactly in column. fboxsep is now 8pt.
   \\begin{minipage}{\\dimexpr\\linewidth-2\\fboxsep-2\\fboxrule\\relax}
