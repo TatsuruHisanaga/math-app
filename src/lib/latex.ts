@@ -126,51 +126,58 @@ export class PDFBuilder {
 \\usepackage{multicol}
 \\usepackage{needspace}
 \\usepackage{xcolor}
-\\usepackage{tikz} % Added for rounded corners
+% \\usepackage{tcolorbox} % Removed to prevent garbage output text
 \\pagestyle{empty}
 
-% Internal padding for fbox
-\\setlength{\\fboxsep}{8pt}
+% Internal padding for fbox - Default is usually 3pt. 
+% We reset it to a standard value to avoid affecting other boxes.
+\\setlength{\\fboxsep}{3pt} 
+\\setlength{\\fboxrule}{0.4pt}
 
-% Point Review Box Style - Redesigned with TikZ for rounded corners and print-friendly look
+% Point Review Box Style - Standard LaTeX implementation (No TikZ, No tcolorbox)
+% Uses robust box measurement and overlay to place title on top of border.
 \\newsavebox{\\pointboxcontent}
+\\newsavebox{\\pointboxtitle}
+\\newsavebox{\\pointboxframe}
 \\newenvironment{pointbox}{%
-  \\par\\vspace{1.5em}
+  \\par\\vspace{2em}
   \\noindent
   \\begin{lrbox}{\\pointboxcontent}%
-    \\begin{minipage}{0.92\\linewidth}
+    \\begin{minipage}{0.90\\linewidth}
       \\linespread{1.3}\\selectfont
       \\setlength{\\parskip}{0.5em}
-      % Customize itemize inside this box manually for compatibility
+      % Customize itemize inside this box
       \\let\\olditemize\\itemize
       \\renewcommand\\itemize{\\olditemize\\setlength\\itemsep{0.5em}\\setlength\\parskip{0pt}\\setlength\\parsep{0pt}}
+      \\vspace{0.5em} 
 }{%
     \\end{minipage}
   \\end{lrbox}
   \\begin{center}
-  \\begin{tikzpicture}
-    % Main box: Rounded corners, thick dark border, white background
-    \\node [
-      draw=black!80,
-      line width=1.5pt,
-      rectangle,
-      rounded corners=8pt,
-      inner sep=12pt,
-      inner ysep=15pt,
-      fill=white
-    ] (box) {\\usebox{\\pointboxcontent}};
-    
-    % Floating Header: Badge style on top border
-    \\node [
-      fill=black!80,
-      text=white,
-      rounded corners=4pt,
-      anchor=west,
-      xshift=15pt
-    ] at (box.north west) {
-       \\bfseries \\hspace{0.5em} ★ Point Review - 今回の重要ポイント ★ \\hspace{0.5em}
-    };
-  \\end{tikzpicture}
+    % Create the frame box
+    \\sbox{\\pointboxframe}{%
+      \\setlength{\\fboxrule}{1.5pt}% Thick border for this box only
+      \\setlength{\\fboxsep}{10pt}% Padding
+      \\fbox{\\usebox{\\pointboxcontent}}%
+    }%
+    % Create the title box
+    \\sbox{\\pointboxtitle}{%
+      \\colorbox{black!80}{\\textcolor{white}{\\textbf{\\ \\ ★ 今回の重要ポイント ★\\ \\ }}}%
+    }%
+    % Draw Frame then Title on top
+    \\leavevmode
+    \\usebox{\\pointboxframe}%
+    \\hspace{-\\wd\\pointboxframe}% Move back to start
+    % Raise title to top edge of frame. 
+    % \\ht\\pointboxframe is height above baseline. 
+    % \\ht\\pointboxtitle is height of title.
+    % We want center of title to match top edge.
+    \\raisebox{\\dimexpr\\ht\\pointboxframe - 0.5\\ht\\pointboxtitle\\relax}{%
+       \\makebox[\\wd\\pointboxframe][l]{%
+         \\hspace{1em}% Indent title
+         \\usebox{\\pointboxtitle}%
+       }%
+    }%
   \\end{center}
   \\par\\vspace{1em}
 }
@@ -179,6 +186,7 @@ export class PDFBuilder {
 % Single frame, question number and text inside, empty space below.
 \\newsavebox{\\myqbox}
 \\newenvironment{qbox}{%
+  \\setlength{\\fboxsep}{8pt}% Increase padding for problem box
   \\begin{lrbox}{\\myqbox}%
   % Subtract framesep and rule to fit exactly in column. fboxsep is now 8pt.
   \\begin{minipage}{\\dimexpr\\linewidth-2\\fboxsep-2\\fboxrule\\relax}
