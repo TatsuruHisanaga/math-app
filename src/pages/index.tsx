@@ -1016,16 +1016,6 @@ export default function Home() {
 
         <section className={styles.section}>
           <h2>2. オプション設定</h2>
-          <div className={styles.optionsGrid}>
-            <label className={styles.checkboxLabel}>
-              <input
-                type="checkbox"
-                checked={options.moreWorkSpace}
-                onChange={(e) => setOptions({ ...options, moreWorkSpace: e.target.checked })}
-              />
-              広めの計算スペース
-            </label>
-          </div>
           
           <div style={{ marginTop: '1rem' }}>
              <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.5rem' }}>問題数</label>
@@ -1035,6 +1025,16 @@ export default function Home() {
                onChange={(e) => setCount(Math.max(1, parseInt(e.target.value)))}
                style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc', width: '80px' }}
              />
+          </div>
+          <div className={styles.optionsGrid} style={{ marginTop: '1rem' }}>
+            <label className={styles.checkboxLabel}>
+              <input
+                type="checkbox"
+                checked={options.moreWorkSpace}
+                onChange={(e) => setOptions({ ...options, moreWorkSpace: e.target.checked })}
+              />
+              広めの計算スペース
+            </label>
           </div>
 
           <div style={{ marginTop: '1rem' }}>
@@ -1083,7 +1083,7 @@ export default function Home() {
                   )}
               </div>
           </div>
-          
+
           <div style={{ marginTop: '1rem' }}>
              <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.5rem' }}>解説の丁寧さ</label>
              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
