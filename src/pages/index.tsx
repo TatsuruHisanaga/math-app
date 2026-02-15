@@ -609,6 +609,9 @@ export default function Home() {
     }
   };
 
+  /* Explanation Detail State */
+  const [explanationDetail, setExplanationDetail] = useState(3);
+
   const downloadCurrentPdf = () => {
         if (!pdfUrl) return;
         const a = document.createElement('a');
@@ -762,7 +765,8 @@ export default function Home() {
           difficulties: difficulty,
           count: generatedProblems.length,
           pointReview: pointReview,
-          options
+          options,
+          explanationDetail
         })
       });
 
@@ -1080,6 +1084,39 @@ export default function Home() {
                <option value="gpt-5.2">GPT-5.2 (高品質)</option>
                <option value="gpt-5-mini">GPT-5 mini (高速)</option>
              </select>
+          </div>
+
+          <div style={{ marginTop: '1rem' }}>
+             <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.5rem' }}>解説の丁寧さ</label>
+             <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                 {[1, 2, 3, 4, 5].map(level => {
+                     const labels: Record<number, string> = { 1: '1:シンプル', 2: '2:普通', 3: '3:丁寧', 4: '4:詳細', 5: '5:発展' };
+                     return (
+                         <button
+                            key={level}
+                            onClick={() => setExplanationDetail(level)}
+                            style={{
+                                padding: '0.5rem 0.8rem',
+                                borderRadius: '20px',
+                                border: '1px solid #ccc',
+                                background: explanationDetail === level ? '#0070f3' : '#fff',
+                                color: explanationDetail === level ? '#fff' : '#000',
+                                cursor: 'pointer',
+                                fontSize: '0.9rem'
+                            }}
+                         >
+                            {labels[level]}
+                         </button>
+                     );
+                 })}
+             </div>
+             <p style={{ margin: '0.5rem 0 0', fontSize: '0.8rem', color: '#666' }}>
+                 {explanationDetail === 1 && '計算過程のみなど、最小限の解説です。復習用。'}
+                 {explanationDetail === 2 && '教科書の例題レベルの標準的な解説です。'}
+                 {explanationDetail === 3 && '【推奨】初学者が教科書なしで理解できる丁寧な解説です。'}
+                 {explanationDetail === 4 && '途中式を省略せず、考え方を詳しく記述します。'}
+                 {explanationDetail === 5 && '背景知識や別解、発展的な内容を含めます。'}
+             </p>
           </div>
 
            <div style={{ marginTop: '1.5rem' }}>

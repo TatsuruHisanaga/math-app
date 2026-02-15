@@ -32,8 +32,20 @@ export class GenerationPipeline {
         modelOverride?: string,
         onProgress?: (current: number, total: number) => void,
         otherRequests?: string,
-        images?: any[] // New parameter for images
+        images?: any[], // New parameter for images
+        explanationDetail: number = 3 // New parameter for explanation detail
     ): Promise<{ problems: ValidatedProblem[], intent: string, point_review_latex: string }> {
+        // Define explanation instructions based on detail level
+        const detailInstructions: Record<number, string> = {
+            1: "Explanation check: **Extremely Concise**. Provide only the essential calculation steps. Minimal text explanation.",
+            2: "Explanation check: **Concise/Standard**. Focus on the solution path without excessive detail. Standard textbook example level.",
+            3: "Explanation check: **Detailed & Beginner Friendly**. Explanations must be understandable for beginners **without looking at a textbook**. Break down steps logically and explain 'why'.",
+            4: "Explanation check: **Very Detailed**. Do not skip any intermediate calculation steps. Explain the reasoning for every operation carefully.",
+            5: "Explanation check: **Advanced & Educational**. Explanations must be extremely detailed. **CRITICAL**: Include 'One Point Advice', alternative solutions, or historical/theoretical background to stimulate intellectual curiosity."
+        };
+
+        const explanationInstruction = detailInstructions[explanationDetail] || detailInstructions[3];
+
         const systemPrompt = `You are a skilled mathematics teacher creating exercise problems for Japanese students.
 Generate ${count} math problems based on the unit topic and difficulty provided.
 IMPORTANT: You MUST generate EXACTLY ${count} problems. Do not generate fewer than requested.
@@ -42,7 +54,7 @@ IMPORTANT: If "Focus topics" are provided, you MUST distribute the problems even
 Output MUST be a valid JSON object strictly matching the schema.
 - 'stem_latex': The problem text in LaTeX. Use Japanese for text. IMPORTANT: All math expressions (e.g. equations, variables like x) MUST be wrapped in $...$ (inline math) or $$...$$ (display math). DO NOT include the answer in this field.
 - 'answer_latex': The descriptive answer in LaTeX. Include intermediate steps/derivations. Example: "$(x+1)(x+2) = 0 \\rightarrow x = -1, -2$". Wrappers $...$ required. Do NOT include "Answer:" prefix.
-- 'explanation_latex': Detailed explanation. Wrap all math in $...$.
+- 'explanation_latex': Detailed explanation. Wrap all math in $...$. ${explanationInstruction}
 - 'point_review_latex': A summary of key formulas, theorems, and concepts used in this problem set, formatted as a LaTeX itemize environment (\\begin{itemize} ... \\end{itemize}). Each item should start with a bold topic name, e.g., \\item \\textbf{Topic}: Content. Japanese text with math in $...$.
 - 'difficulty': One of L1, L2, L3, L4, L5.
 - 'intent': A brief description of the generation intent in Japanese. IMPORTANT: Wrap ALL math symbols (e.g. $n$, $P$, $C$, equations) in $...$ to ensure they render correctly. Do not use plain text for math. When mentioning difficulty, use Japanese terms: "基礎1" (L1), "基礎2" (L2), "基礎3" (L3), "標準" (L4), "発展" (L5).
