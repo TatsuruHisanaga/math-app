@@ -1,118 +1,90 @@
-<img width="1920" height="2242" alt="image" src="https://github.com/user-attachments/assets/e9ff7df8-5a24-4b4e-a00d-ad3ef9def95c" />
+# Math PDF Generator
+upLaTeXを使用して、高校数学の演習プリント（問題編・解答編）を自動生成する Next.js アプリケーションです。
 
-# Math PDF Generator MVP
-A Next.js application to generate Math Exercise PDFs using LuaLaTeX.
+## スクリーンショット
 
 <img width="1920" height="2242" alt="image" src="https://github.com/user-attachments/assets/e1ab8ea8-7130-4d09-981e-6025d39776c0" />
 
+<div style="display: flex; gap: 10px;">
+  <img width="48%" alt="スクリーンショット" src="https://github.com/user-attachments/assets/fe6bcfa4-4516-4757-af39-043d3c43dce1" />
+  <img width="48%" alt="スクリーンショット" src="https://github.com/user-attachments/assets/c8c90b90-ad6b-4681-ac19-82880493267f" />
+</div>
 
-<img width="1046" height="775" alt="スクリーンショット 2025-12-28 23 26 47" src="https://github.com/user-attachments/assets/fe6bcfa4-4516-4757-af39-043d3c43dce1" />
+[出力サンプル: 指数・対数関数.pdf](https://github.com/user-attachments/files/24463655/_2025-12-28.pdf)
 
-<img width="1095" height="796" alt="スクリーンショット 2025-12-28 23 26 54" src="https://github.com/user-attachments/assets/c8c90b90-ad6b-4681-ac19-82880493267f" />
+## 主な機能
 
-<img width="2212" height="1318" alt="image" src="https://github.com/user-attachments/assets/f1f28511-a3d0-468d-b360-0896e35b082d" />
+### 1. AIによる問題生成 (`/ai-creation`)
+- **OpenAI API (GPT-5.2 / GPT-5 mini)**: 選択した単元、難易度、トピックに基づいて、高品質な数学問題を生成します。
+- **画像添付機能**: 教科書や問題集の写真をアップロードし、その内容に沿った類似問題を作成できます。
+- **インタラクティブな編集**: 生成された問題を個別に確認・修正・再生成が可能。
+- **自動検証**: 生成されたLaTeXコードの構文チェックと、簡易的な数式チェックを自動実行します。
 
-[指数・対数関数_2025-12-28.pdf](https://github.com/user-attachments/files/24463655/_2025-12-28.pdf)
+### 2. PDF生成
+- **ハイブリッドエンジン**: 本番環境向けに高速・省メモリな `upLaTeX + dvipdfmx`、開発用の `LuaLaTeX` の両方に対応。
+- **Concept Point Review**: 解答編の末尾に、出題単元の重要公式や定理をまとめた「復習ポイント」セクションを自動生成します。
+- **標準LaTeXレイアウト**: 安定性を重視し、TikZなどの重量級パッケージへの依存を排除。標準的なボックスレイアウトで高速かつ確実にPDFを出力します。
 
-[指数・対数関数_2025-12-28 (4).pdf](https://github.com/user-attachments/files/24463687/_2025-12-28.4.pdf)
+## UI/UX の特徴
 
-## Prerequisites
+- **リアルタイム進捗表示**: Server-Sent Events (SSE) を利用し、AIが問題を生成・検証している様子をリアルタイムで可視化。
+- **直感的な単元選択**:
+  - 数I/A, II/B, III/C のタブ切り替え。
+  - フローティングパネルによる選択中の単元・トピックの管理（チップUI）。
+- **デスクトップ通知**: 生成完了時にブラウザ通知でお知らせ。待ち時間に他の作業をしていても安心です。
+- **完了演出**: 生成成功時に紙吹雪 (Confetti) で祝福。
 
+## 技術スタックと工夫
+
+- **Frontend**: Next.js 16 (Pages Router), React 19, TailwindCSS
+- **Backend**: Node.js (API Routes)
+- **PDF Engine**:
+  - **upLaTeX**: 日本語処理に特化し、高速かつメモリ効率が良い。Docker等のメモリ制限がある環境に最適。
+  - **LuaLaTeX**: ローカル開発時のデフォルト。フォント管理が容易。
+- **Streaming API**: 生成プロセスが長時間に及ぶため、HTTP接続を切断せずに進捗をストリーミング送信するアーキテクチャを採用。
+- **メモリ管理**: PDF生成プロセス (`spawn`) のメモリ使用量を監視。
+
+## 必要条件 (Prerequisites)
 
 ### 1. Node.js
-Ensure Node.js (v18+) is installed.
+Node.js (v18以降) が必要です。
 
-### 2. LaTeX Environment (Crucial)
-This app requires a local LaTeX installation with LuaLaTeX and Japanese support.
+### 2. LaTeX環境 (必須)
+ローカルでPDFをビルドするには、LaTeX環境 (`TeX Live 2023` 以降推奨) が必要です。
 
-**macOS (using BasicTeX):**
+**macOS (BasicTeXを使用する場合):**
 ```bash
 brew install --cask basictex
 
-# Update package manager
+# パッケージマネージャーの更新
 sudo tlmgr update --self
 
-# Install required packages
-# haranoaji is REQUIRED for Japanese fonts
-# pgf (TikZ) is REQUIRED for graph generation
-sudo tlmgr install luatexja needspace geometry multicol haranoaji pgf
+# 必須パッケージのインストール
+# haranoaji: 日本語フォント
+# needspace, geometry, multicol: レイアウト調整用
+sudo tlmgr install luatexja needspace geometry multicol haranoaji
 ```
 
-## Setup & Run
+## セットアップと実行
 
-1. Install dependencies:
+1. 依存関係のインストール:
    ```bash
    npm install
    ```
 
-2. Start the development server:
+2. 開発サーバーの起動:
    ```bash
    npm run dev
    ```
+   
+   **upLaTeXを使用する場合 (推奨/高速):**
+   ```bash
+   PDF_ENGINE=uplatex npm run dev
+   ```
 
-3. Open [http://localhost:3000](http://localhost:3000)
+3. ブラウザでアクセス: [http://localhost:3000](http://localhost:3000)
 
-## System Details
+## 既知の問題点
 
-- **PDF Generation**: Occurs locally using `spawn` to call `lualatex`.
-- **First Run**: The first time you generate a PDF, it may take **several minutes** to build the LuaTeX font cache. Please be patient.
-- **Templates**: Located in `data/templates.json`.
-- **Layout**: Defined in `src/lib/latex.ts`.
-
-## Troubleshooting
-
-- **"Generation Failed"**: Check the error log in the UI modal.
-- **"Font not found"**: Ensure `sudo tlmgr install haranoaji` was run.
-- **"lualatex not found"**: The app looks for lualatex at `/Library/TeX/texbin/lualatex`. If your path is different, update `src/lib/latex.ts`.
-
----
-
-# 仕様書 (Specifications)
-
-## 1. システム概要
-本システムは、日本の高校数学（数I・数A・数II・数B・数C・数III）を対象とした演習プリント自動生成アプリケーションです。
-
-### 主要機能
-1.  **AI問題生成機能 (`/ai-creation`)**:
-    - OpenAI API (GPT-4o) を利用し、選択した単元・難易度・トピックに基づいて問題を生成。
-    - **画像添付機能**: 問題文や図版の画像をアップロードし、その内容に基づいた問題生成が可能。
-    - **生成後の編集・再生成**: 生成された個別の問題に対して修正指示、削除、単独再生成が可能。
-    - 生成された問題は自動的にLaTeX構文チェックと数式チェックが行われます。
-
-2.  **PDF出力機能**:
-    - LuaLaTeX を使用し、問題編・解答編・講師用ガイドを含むPDFを生成。
-    - **Concept Point Review**: 解答編の末尾に、出題単元の重要公式や定理をまとめたレビューセクションを自動生成。
-    - **TikZグラフ描画**: 高品質な関数グラフをLaTeXのTikZパッケージを用いて描画。
-
-## 2. 機能仕様詳細
-
-### 2.1 AI問題作成
-- **入力**: 単元、難易度、問題数、AIモデル、追加指示、画像の添付。
-- **検証プロセス**:
-    - 生成後、LaTeXコンパイルチェックと簡易的な数式チェックを実施。
-    - エラー時は最大4回まで再試行。
-- **UI/UX**:
-    - **デスクトップ通知**: 生成完了時にブラウザ通知でお知らせ。
-    - **単元選択**: フローティングパネルによる直感的な単元管理（チップ表示）。
-    - **進捗表示**: リアルタイムストリーミングによる生成状況の可視化。
-
-### 2.2 PDFレイアウト
-- **用紙**: A4 縦置き (2段組み対応)
-- **構成**:
-    - **問題編**: ヘッダー（単元・日付・氏名）、問題ボックス（問題文＋解答欄）
-    - **解答編**: 赤字の解答と解説、**Concept Point Review**（重要事項のまとめ）
-    - **講師用ガイド**: ヒントと指導案（オプション）
-
-## 3. データ構造
-
-- **Unit Definitions (`data/unit_map.json`)**: 単元ID、単元名を定義（数I〜数IIIまで対応）。
-
-
-## 4. 技術スタック
-- **Frontend**: Next.js 16 (Pages Router), React 19, TailwindCSS, canvas-confetti
-- **Backend/PDF**: LuaLaTeX (via `child_process`), KaTeX, TikZ (for Graph Plotting)
-- **AI**: OpenAI API (Structured Outputs, GPT-5.2, GPT-5 mini, Vision API)
-- **Infrastructure**: Docker (Production), Local managed LaTeX (Development)
-
-## 5. 既知の問題点
-- **LaTeX環境依存**: ローカル開発には `luatexja` 等を含むTeX環境の構築が必要です。
+- **大規模な生成時のタイムアウト**: サーバーレス環境（Vercel等）では、タイムアウト制限により生成が中断される場合があります。ローカル環境または長時間実行可能なコンテナ環境（Render, Railway等）での実行を推奨します。
+- **LaTeX環境依存**: 実行環境に TeX Live がインストールされていない場合、PDF生成は失敗します。Docker環境では日本語対応のTeXイメージを使用してください。
