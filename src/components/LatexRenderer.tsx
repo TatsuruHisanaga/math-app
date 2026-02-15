@@ -12,7 +12,9 @@ const LatexRenderer: React.FC<LatexRendererProps> = ({ content }) => {
 
   // Split content by various LaTeX delimiters: $$, $, \[, \(
   // Use a regex that captures the delimiters as well
-  const parts = content.split(/(\$\$.*?\$\$|\$.*?\$|\\\[[\s\S]*?\\\]|\\\([\s\S]*?\\\))/g);
+  // Also replace literal \n with newline for correct rendering
+  const normalizedContent = content.replace(/\\n/g, '\n');
+  const parts = normalizedContent.split(/(\$\$.*?\$\$|\$.*?\$|\\\[[\s\S]*?\\\]|\\\([\s\S]*?\\\))/g);
 
   return (
     <span>
