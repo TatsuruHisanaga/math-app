@@ -18,6 +18,7 @@ RUN apt-get update && apt-get install -y \
     texlive-latex-extra \
     texlive-fonts-recommended \
     fonts-ipaexfont \
+    && kanji-config-updmap-sys haranoaji \
     && rm -rf /var/lib/apt/lists/*
 
 ENV NODE_ENV=production
