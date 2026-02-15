@@ -13,6 +13,16 @@ type SubUnit = { id: string; title: string; topics?: Topic[] };
 type Unit = { id: string; title: string; subUnits?: SubUnit[] };
 type UnitMap = { units: Record<string, Unit> };
 
+const getFormattedDateTime = () => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  return `${year}-${month}-${day}_${hours}${minutes}`;
+};
+
 export default function Home() {
   const [units, setUnits] = useState<Unit[]>([]);
   const [selectedUnits, setSelectedUnits] = useState<string[]>([]);
@@ -528,7 +538,7 @@ export default function Home() {
         .map(id => ALL_UNITS.find(u => u.id === id)?.title ?? id)
         .join('_')
         .replace(/[\s\.]+/g, '_'); // Sanitize filename
-      a.download = `${unitNames}_${new Date().toISOString().slice(0, 10)}.pdf`;
+      a.download = `${unitNames}_${getFormattedDateTime()}.pdf`;
       
       setPdfUrl(url);
       if (collectedIntent) {
@@ -595,7 +605,7 @@ export default function Home() {
       const a = document.createElement('a');
       a.style.display = 'none';
       a.href = url;
-      a.download = `Math_Exercise_${new Date().toISOString().slice(0, 10)}.pdf`;
+      a.download = `Math_Exercise_${getFormattedDateTime()}.pdf`;
       document.body.appendChild(a);
       a.click();
       setTimeout(() => {
@@ -621,7 +631,7 @@ export default function Home() {
             .map(id => ALL_UNITS.find(u => u.id === id)?.title ?? id)
             .join('_')
             .replace(/[\s\.]+/g, '_');
-        a.download = `${unitNames}_${new Date().toISOString().slice(0, 10)}.pdf`;
+        a.download = `${unitNames}_${getFormattedDateTime()}.pdf`;
         document.body.appendChild(a);
         a.click();
         setTimeout(() => document.body.removeChild(a), 100);
@@ -781,7 +791,7 @@ export default function Home() {
         .map(id => ALL_UNITS.find(u => u.id === id)?.title ?? id)
         .join('_')
         .replace(/[\s\.]+/g, '_');
-      a.download = `${unitNames}_${new Date().toISOString().slice(0, 10)}_updated.pdf`;
+      a.download = `${unitNames}_${getFormattedDateTime()}_updated.pdf`;
       
       setPdfUrl(url);
       setShowPreview(true);
