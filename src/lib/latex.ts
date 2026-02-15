@@ -239,6 +239,27 @@ ${content}
      `;
   }
 
+  public getVerificationTemplate(content: string): string {
+      // Lightweight template for syntax checking only
+      // Omits heavy packages like luatexja-preset, geometry, multicol, etc.
+      // Defines dummy environments to pass compilation
+      return `
+\\documentclass{article}
+\\usepackage{amsmath,amssymb}
+\\usepackage{xcolor}
+
+% Dummy definitions to pass syntax check
+\\newenvironment{qbox}{}{}
+\\newcommand{\\answerbox}[2]{}
+\\newcommand{\\answeredbox}[1]{}
+\\newenvironment{pointbox}{}{}
+
+\\begin{document}
+${content}
+\\end{document}
+      `;
+  }
+
   public getPointReview(content: string): string {
       if (!content) return '';
       return `
