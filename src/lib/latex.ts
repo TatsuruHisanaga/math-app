@@ -72,6 +72,14 @@ export class PDFBuilder {
               
               const p = spawn(finalCmd, finalArgs, { env });
               
+              // 30s Timeout
+              const timeoutMs = 30000;
+              const timer = setTimeout(() => {
+                  console.error(`[PDFBuilder] Timeout (${timeoutMs}ms) reached for ${stepName}. Killing process...`);
+                  p.kill('SIGKILL'); // Force kill
+                  reject(new Error(`${stepName} timed out after ${timeoutMs}ms`));
+              }, timeoutMs);
+
               let stdout = '';
               let stderr = '';
               
@@ -79,6 +87,8 @@ export class PDFBuilder {
               p.stderr.on('data', d => stderr += d.toString());
               
               p.on('close', (code) => {
+                  clearTimeout(timer); // Clear timeout on completion
+
                   // Try to parse memory usage from stderr (which is where /usr/bin/time outputs)
                   // Look for "maximum resident set size"
                   const match = stderr.match(/(\d+)\s+maximum resident set size/);
@@ -91,9 +101,21 @@ export class PDFBuilder {
                   if (code === 0) {
                       resolve();
                   } else {
+                      // If killed by timeout, the error might have already been rejected, but usually 'close' fires after kill.
+                      // If logic handled reject in setTimeout, we should be careful not to reject twice or handle the null code.
+                      // signal might be 'SIGKILL'
+                      if (p.killed) {
+                          // Already rejected in timeout
+                          return;
+                      }
                       console.error(`[PDFBuilder] ${stepName} failed:`, stdout);
                       reject(new Error(`${stepName} failed with code ${code}\nStderr: ${stderr}\nStdout: ${stdout}`));
                   }
+              });
+              
+              p.on('error', (err) => {
+                  clearTimeout(timer);
+                  reject(err);
               });
           });
       };

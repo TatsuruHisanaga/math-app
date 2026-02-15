@@ -28,6 +28,11 @@ const escapeLatex = (str: string) => {
     return str.replace(/[&%$#_{}~^\\]/g, '\\$&');
 };
 
+
+// Simple in-memory semaphore for local development / single instance
+let activeRequests = 0;
+const MAX_CONCURRENT_REQUESTS = 3;
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -36,7 +41,16 @@ export default async function handler(
     return res.status(405).json({ message: 'Method Not Allowed' });
   }
 
+  // Concurrency Check
+  if (activeRequests >= MAX_CONCURRENT_REQUESTS) {
+      return res.status(503).json({ 
+          message: 'Server is busy. Please try again later.',
+          retryAfter: 10 
+      });
+  }
+
   try {
+    activeRequests++;
     const { 
         units, // string[]
         difficulties, // Difficulty[]
@@ -218,5 +232,7 @@ ${instructorBody}
   } catch (error: any) {
     console.error(error);
     res.status(500).json({ message: 'Generation failed', error: error.message });
+  } finally {
+      activeRequests--;
   }
 }
