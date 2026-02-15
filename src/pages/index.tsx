@@ -540,9 +540,12 @@ export default function Home() {
       // But if we wanted auto-download, we would do:
       // document.body.appendChild(a); a.click(); setTimeout(...)
       
-      // Let's scroll to bottom to show results
+      // Let's scroll to the results section
       setTimeout(() => {
-          window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+          const resultsSection = document.getElementById('pdf-results-section');
+          if (resultsSection) {
+              resultsSection.scrollIntoView({ behavior: 'smooth' });
+          }
       }, 100);
 
       // 3. Success
@@ -1179,7 +1182,7 @@ export default function Home() {
 
         {/* Results Section */}
         {pdfUrl && (
-            <div style={{ marginTop: '3rem', borderTop: '1px solid #eee', paddingTop: '2rem' }}>
+            <div id="pdf-results-section" style={{ marginTop: '3rem', borderTop: '1px solid #eee', paddingTop: '2rem' }}>
                 <h2 style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
                     <span style={{ fontSize: '1.5rem' }}>🎉</span> 作成完了！
                 </h2>
