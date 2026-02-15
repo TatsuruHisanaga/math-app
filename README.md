@@ -1,16 +1,19 @@
-# Math PDF Generator
-生成AIと組版の技術で高校数学の演習プリント（問題編・解答編）を自動生成する Next.js アプリケーションです。
+# 数学プリントGenerator
+https://math-app-yb07.onrender.com/
+
+生成AIと組版の技術で高校数学の演習プリントPDF（問題編・解答編）を自動生成する Next.js アプリケーションです。
 
 ## スクリーンショット
+<img width="645" height="980" alt="スクリーンショット 2026-02-16 4 54 12" src="https://github.com/user-attachments/assets/e97cccfb-864a-4151-9a59-a50a217b5662" />
+<img width="645" height="515" alt="スクリーンショット 2026-02-16 4 54 56" src="https://github.com/user-attachments/assets/08276855-18c5-4bf9-8fdf-54369eedd3c4" />
+<img width="645" height="515" alt="スクリーンショット 2026-02-16 4 55 00" src="https://github.com/user-attachments/assets/943eaeb7-f3b1-4b49-9b16-716dbc1e190f" />
+<img width="813" height="978" alt="スクリーンショット 2026-02-16 4 58 59" src="https://github.com/user-attachments/assets/9f91c456-9993-4609-b9d3-85c79610b04b" />
+<img width="813" height="585" alt="スクリーンショット 2026-02-16 4 59 34" src="https://github.com/user-attachments/assets/ea65aeb3-9a6b-467f-8a62-bfdf2f43c3bd" />
+<img width="813" height="823" alt="スクリーンショット 2026-02-16 5 00 08" src="https://github.com/user-attachments/assets/e0279816-833e-4bdf-a285-e0892e562fda" />
 
-<img width="1920" height="2242" alt="image" src="https://github.com/user-attachments/assets/e1ab8ea8-7130-4d09-981e-6025d39776c0" />
+[出力サンプル: 2次関数_2026-02-16_0346.pdf](https://github.com/user-attachments/files/25328151/2._2026-02-16_0346.pdf)
+[出力サンプル: 微分法・積分法_2026-02-15 (2).pdf](https://github.com/user-attachments/files/25328146/_2026-02-15.2.pdf)
 
-<div style="display: flex; gap: 10px;">
-  <img width="48%" alt="スクリーンショット" src="https://github.com/user-attachments/assets/fe6bcfa4-4516-4757-af39-043d3c43dce1" />
-  <img width="48%" alt="スクリーンショット" src="https://github.com/user-attachments/assets/c8c90b90-ad6b-4681-ac19-82880493267f" />
-</div>
-
-[出力サンプル: 指数・対数関数.pdf](https://github.com/user-attachments/files/24463655/_2025-12-28.pdf)
 
 ## 主な機能
 
