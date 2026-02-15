@@ -116,15 +116,16 @@ export class PDFBuilder {
 % \\usepackage{tcolorbox} % Removed to prevent garbage output text
 \\pagestyle{empty}
 
-% Internal padding for fbox
-\\setlength{\\fboxsep}{10pt}
-\\setlength{\\fboxrule}{1.5pt}
+% Internal padding for fbox - Default is usually 3pt, we set for qbox locally if needed, 
+% or keep a reasonable default but NOT 1.5pt rule.
+\\setlength{\\fboxsep}{5pt} 
+% \\setlength{\\fboxrule}{0.4pt} % Default is 0.4pt, do not override globally to 1.5pt
 
 % Point Review Box Style - Standard LaTeX implementation (No TikZ, No tcolorbox)
-% This ensures maximum stability and zero memory overhead.
+% Uses a negative margin trick to place the title on the border.
 \\newsavebox{\\pointboxcontent}
 \\newenvironment{pointbox}{%
-  \\par\\vspace{1.5em}
+  \\par\\vspace{2em}
   \\noindent
   \\begin{lrbox}{\\pointboxcontent}%
     \\begin{minipage}{0.90\\linewidth}
@@ -133,14 +134,25 @@ export class PDFBuilder {
       % Customize itemize inside this box
       \\let\\olditemize\\itemize
       \\renewcommand\\itemize{\\olditemize\\setlength\\itemsep{0.5em}\\setlength\\parskip{0pt}\\setlength\\parsep{0pt}}
-      \\vspace{0.5em} % Spacing for title
+      \\vspace{0.5em} 
 }{%
     \\end{minipage}
   \\end{lrbox}
   \\begin{center}
-    % Title Box (Simulated with colorbox)
-    \\colorbox{black!80}{\\textcolor{white}{\\textbf{\\ \\ ★ Point Review - 今回の重要ポイント ★\\ \\ }}}\\[-0.5em]
-    \\fbox{\\usebox{\\pointboxcontent}}
+    \\begingroup
+    % Local settings for Point Review Box only
+    \\setlength{\\fboxrule}{1.5pt}% Thick border for this box
+    \\setlength{\\fboxsep}{10pt}% Padding
+    \\leavevmode
+    % Title overlapping the border
+    \\makebox[0pt][l]{%
+       \\raisebox{0.8em}{% Move up to sit on frame
+         \\hspace{1em}% Position from left
+         \\colorbox{black!80}{\\textcolor{white}{\\textbf{\\ \\ ★ Point Review - 今回の重要ポイント ★\\ \\ }}}%
+       }%
+    }%
+    \\fbox{\\usebox{\\pointboxcontent}}%
+    \\endgroup
   \\end{center}
   \\par\\vspace{1em}
 }
