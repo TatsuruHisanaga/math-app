@@ -45,7 +45,14 @@ export default async function handler(
     } else if (typeof rawAiModel === 'string') {
         aiModel = rawAiModel;
     }
-    
+    // DEBUG LOGGING
+    console.log('--- API Request Debug (Prompt) ---');
+    console.log('Prompt:', userMessage);
+    console.log('Count:', countParam);
+    console.log('Raw aiModel:', rawAiModel, 'Type:', typeof rawAiModel, 'IsArray:', Array.isArray(rawAiModel));
+    console.log('Resolved aiModel:', aiModel);
+    console.log('--------------------------------');
+
     let userPromptParts: any[] = [{ type: 'text', text: userMessage }];
 
     // Process Files

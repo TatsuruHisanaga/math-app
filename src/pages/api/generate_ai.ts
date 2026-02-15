@@ -69,6 +69,15 @@ export default async function handler(
         return res.status(400).json({ message: 'Missing required fields' });
     }
 
+    // DEBUG LOGGING
+    console.log('--- API Request Debug ---');
+    console.log('Units:', units);
+    console.log('Count:', count);
+    console.log('Difficulty:', difficulty);
+    console.log('Raw aiModel:', rawAiModel, 'Type:', typeof rawAiModel, 'IsArray:', Array.isArray(rawAiModel));
+    console.log('Resolved aiModel:', aiModel);
+    console.log('-------------------------');
+
     // Process Files
     const images: any[] = [];
     if (files.files) {
