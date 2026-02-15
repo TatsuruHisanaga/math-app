@@ -116,14 +116,16 @@ export class PDFBuilder {
 % \\usepackage{tcolorbox} % Removed to prevent garbage output text
 \\pagestyle{empty}
 
-% Internal padding for fbox - Default is usually 3pt, we set for qbox locally if needed, 
-% or keep a reasonable default but NOT 1.5pt rule.
-\\setlength{\\fboxsep}{5pt} 
-% \\setlength{\\fboxrule}{0.4pt} % Default is 0.4pt, do not override globally to 1.5pt
+% Internal padding for fbox - Default is usually 3pt. 
+% We reset it to a standard value to avoid affecting other boxes.
+\\setlength{\\fboxsep}{3pt} 
+\\setlength{\\fboxrule}{0.4pt}
 
 % Point Review Box Style - Standard LaTeX implementation (No TikZ, No tcolorbox)
-% Uses a negative margin trick to place the title on the border.
+% Uses robust box measurement and overlay to place title on top of border.
 \\newsavebox{\\pointboxcontent}
+\\newsavebox{\\pointboxtitle}
+\\newsavebox{\\pointboxframe}
 \\newenvironment{pointbox}{%
   \\par\\vspace{2em}
   \\noindent
@@ -139,20 +141,30 @@ export class PDFBuilder {
     \\end{minipage}
   \\end{lrbox}
   \\begin{center}
-    \\begingroup
-    % Local settings for Point Review Box only
-    \\setlength{\\fboxrule}{1.5pt}% Thick border for this box
-    \\setlength{\\fboxsep}{10pt}% Padding
+    % Create the frame box
+    \\sbox{\\pointboxframe}{%
+      \\setlength{\\fboxrule}{1.5pt}% Thick border for this box only
+      \\setlength{\\fboxsep}{10pt}% Padding
+      \\fbox{\\usebox{\\pointboxcontent}}%
+    }%
+    % Create the title box
+    \\sbox{\\pointboxtitle}{%
+      \\colorbox{black!80}{\\textcolor{white}{\\textbf{\\ \\ ★ Point Review - 今回の重要ポイント ★\\ \\ }}}%
+    }%
+    % Draw Frame then Title on top
     \\leavevmode
-    % Title overlapping the border
-    \\makebox[0pt][l]{%
-       \\raisebox{0.8em}{% Move up to sit on frame
-         \\hspace{1em}% Position from left
-         \\colorbox{black!80}{\\textcolor{white}{\\textbf{\\ \\ ★ Point Review - 今回の重要ポイント ★\\ \\ }}}%
+    \\usebox{\\pointboxframe}%
+    \\hspace{-\\wd\\pointboxframe}% Move back to start
+    % Raise title to top edge of frame. 
+    % \\ht\\pointboxframe is height above baseline. 
+    % \\ht\\pointboxtitle is height of title.
+    % We want center of title to match top edge.
+    \\raisebox{\\dimexpr\\ht\\pointboxframe - 0.5\\ht\\pointboxtitle\\relax}{%
+       \\makebox[\\wd\\pointboxframe][l]{%
+         \\hspace{1em}% Indent title
+         \\usebox{\\pointboxtitle}%
        }%
     }%
-    \\fbox{\\usebox{\\pointboxcontent}}%
-    \\endgroup
   \\end{center}
   \\par\\vspace{1em}
 }
