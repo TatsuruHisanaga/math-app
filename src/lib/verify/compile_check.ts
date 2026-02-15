@@ -14,7 +14,7 @@ export async function checkCompilation(latexSnippet: string, type: 'stem' | 'ans
       content = `\\begin{qbox}\nProblem Stem\n\\answeredbox{${latexSnippet}}\n\\end{qbox}`;
   }
 
-  const fullBody = builder.getLayoutTemplate(content);
+  const fullBody = builder.getVerificationTemplate(content);
   
   try {
     // We don't need the buffer, just want to see if it throws

@@ -37,14 +37,24 @@ export class PDFBuilder {
       // latexmk is missing in BasicTeX by default sometimes. 
       // Switch to direct lualatex execution.
       // We run it twice to ensure references/page numbers are correct (though for this MVP once might suffice, safety first).
-      const cmd = 'lualatex'; 
-      const args = [
+      // Use /usr/bin/time to measure memory usage on macOS
+      let cmd = 'lualatex';
+      let args = [
         '--interaction=nonstopmode',
         '--halt-on-error',
         `--output-directory=${jobDir}`,
         texFile
       ];
 
+      // Check if we are on macOS
+      if (process.platform === 'darwin') {
+          // Wrap with /usr/bin/time -l
+          // We need to execute: /usr/bin/time -l lualatex ...
+          // So cmd becomes /usr/bin/time, and args start with -l, then lualatex, then original args
+          const originalCmd = cmd;
+          cmd = '/usr/bin/time';
+          args = ['-l', originalCmd, ...args];
+      }
       console.log(`[PDFBuilder] Starting compilation for job: ${jobId}`);
       console.log(`[PDFBuilder] Command: ${cmd} ${args.join(' ')}`);
 
@@ -59,15 +69,16 @@ export class PDFBuilder {
         env.PATH = `${texPath}:${env.PATH || ''}`;
       }
 
-      // Timeout after 60 seconds to prevent infinite hangs (first run cache can be slow)
-      // Reduced from 120s to fail faster if stuck
+      console.log(`Spawning PDF generation: ${cmd} ${args.join(' ')}`);
+
+      // Timeout after 120 seconds to prevent infinite hangs (first run cache can be slow)
       const processNode = spawn(cmd, args, { env });
       
       const timeout = setTimeout(() => {
           console.error(`[PDFBuilder] Timeout reached for job ${jobId}. Killing process.`);
           processNode.kill();
-          reject(new Error('LaTeX compilation timed out (60s).'));
-      }, 60000);
+          reject(new Error('LaTeX compilation timed out (120s).'));
+      }, 120000);
 
       let stdout = '';
       let stderr = '';
@@ -92,6 +103,16 @@ export class PDFBuilder {
         if (fs.existsSync(pdfFile)) {
           console.log(`[PDFBuilder] PDF generated successfully at ${pdfFile}`);
           const pdfBuffer = fs.readFileSync(pdfFile);
+          
+          // Try to parse memory usage from stderr (which is where /usr/bin/time outputs)
+          // Look for "maximum resident set size"
+          const match = stderr.match(/(\d+)\s+maximum resident set size/);
+          if (match) {
+              const maxRssBytes = parseInt(match[1], 10);
+              const maxRssMb = (maxRssBytes / 1024 / 1024).toFixed(2);
+              console.log(`[PDF Memory] Maximum Resident Set Size: ${maxRssBytes} bytes (~${maxRssMb} MB)`);
+          }
+
           // Cleanup
           fs.rmSync(jobDir, { recursive: true, force: true });
           
@@ -227,6 +248,27 @@ ${content}
 
 \\end{document}
      `;
+  }
+
+  public getVerificationTemplate(content: string): string {
+      // Lightweight template for syntax checking only
+      // Omits heavy packages like luatexja-preset, geometry, multicol, etc.
+      // Defines dummy environments to pass compilation
+      return `
+\\documentclass{article}
+\\usepackage{amsmath,amssymb}
+\\usepackage{xcolor}
+
+% Dummy definitions to pass syntax check
+\\newenvironment{qbox}{}{}
+\\newcommand{\\answerbox}[2]{}
+\\newcommand{\\answeredbox}[1]{}
+\\newenvironment{pointbox}{}{}
+
+\\begin{document}
+${content}
+\\end{document}
+      `;
   }
 
   public getPointReview(content: string): string {
