@@ -38,7 +38,13 @@ export default async function handler(
     const userMessage = fields.prompt?.[0] || '';
     const countParam = parseInt(fields.count?.[0] || '5');
     const autoCount = fields.autoCount?.[0] === 'true';
-    const aiModel = fields.aiModel?.[0] || 'gpt-4o';
+    const rawAiModel = fields.aiModel;
+    let aiModel = 'gpt-5.2'; // Default
+    if (Array.isArray(rawAiModel) && rawAiModel.length > 0) {
+        aiModel = rawAiModel[0];
+    } else if (typeof rawAiModel === 'string') {
+        aiModel = rawAiModel;
+    }
     
     let userPromptParts: any[] = [{ type: 'text', text: userMessage }];
 
