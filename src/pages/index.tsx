@@ -1084,18 +1084,6 @@ export default function Home() {
               </div>
           </div>
           
-           <div style={{ marginTop: '1rem' }}>
-             <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.5rem' }}>AIモデル</label>
-             <select 
-               value={aiModel} 
-               onChange={(e) => setAiModel(e.target.value as any)}
-               style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc', width: '100%', maxWidth: '300px' }}
-             >
-               <option value="gpt-5.2">GPT-5.2 (高品質)</option>
-               <option value="gpt-5-mini">GPT-5 mini (高速)</option>
-             </select>
-          </div>
-
           <div style={{ marginTop: '1rem' }}>
              <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.5rem' }}>解説の丁寧さ</label>
              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
@@ -1128,6 +1116,19 @@ export default function Home() {
                  {explanationDetail === 5 && '背景知識や別解、発展的な内容を含めます。'}
              </p>
           </div>
+          
+           <div style={{ marginTop: '1rem' }}>
+             <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.5rem' }}>AIモデル</label>
+             <select 
+               value={aiModel} 
+               onChange={(e) => setAiModel(e.target.value as any)}
+               style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc', width: '100%', maxWidth: '300px' }}
+             >
+               <option value="gpt-5.2">GPT-5.2 (高品質)</option>
+               <option value="gpt-5-mini">GPT-5 mini (高速)</option>
+             </select>
+          </div>
+
 
            <div style={{ marginTop: '1.5rem' }}>
              <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.5rem' }}>
