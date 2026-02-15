@@ -69,6 +69,32 @@ export default async function handler(
         });
     }
 
+    // Sanitize LaTeX strings to prevent double math mode (e.g. $[ ... ]$)
+    const sanitizeLatex = (str: string) => {
+        if (!str) return str;
+        let cleaned = str.trim();
+        
+        // Replace literal "\n" sequence with actual newline character
+        cleaned = cleaned.replace(/\\n/g, '\n');
+
+        // If wrapped in $...$ and contains \[ ... \], strip the outer $
+        if (cleaned.startsWith('$') && cleaned.endsWith('$')) {
+            const inner = cleaned.slice(1, -1).trim();
+            if (inner.includes('\\[') && inner.includes('\\]')) {
+                return inner;
+            }
+        }
+        return cleaned;
+    };
+
+    questions = questions.map(q => ({
+        ...q,
+        stem_latex: sanitizeLatex(q.stem_latex),
+        answer_latex: sanitizeLatex(q.answer_latex),
+        explanation_latex: sanitizeLatex(q.explanation_latex || ''),
+        hints: q.hints ? q.hints.map((h: string) => sanitizeLatex(h)) : undefined
+    }));
+
     // 2. Build LaTeX Content
     // Header for Problem Page - MUST ESCAPE UNDERSCORES IN IDs
     // 2. Build LaTeX Content

@@ -244,6 +244,10 @@ ${currentProblem.answer_latex}
 
     private tryRepairMath(latex: string): string {
         if (!latex) return latex;
+
+        // Replace literal \n with newline
+        latex = latex.replace(/\\n/g, '\n');
+
         // Permissive repair for missing math delimiters
         const mathTokens = ['^', '_', '\\frac', '\\sqrt', '\\times', '\\div', '=', '\\pi'];
         const hasMathToken = mathTokens.some(t => latex.includes(t));
