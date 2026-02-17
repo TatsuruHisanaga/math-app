@@ -57,6 +57,8 @@ Output MUST be a valid JSON object strictly matching the schema.
 - 'explanation_latex': Detailed explanation. Wrap all math in $...$. ${explanationInstruction}
 - 'point_review_latex': A summary of key formulas, theorems, and concepts used in this problem set, formatted as a LaTeX itemize environment (\\begin{itemize} ... \\end{itemize}). Each item should start with a bold topic name, e.g., \\item \\textbf{Topic}: Content. Japanese text with math in $...$.
 - 'difficulty': One of L1, L2, L3, L4, L5.
+- 'common_mistake_latex': A common mistake or misconception students often make for this type of problem. Wrap math in $...$. If none, return null.
+- 'hint_latex': A helpful hint for solving the problem without giving away the answer. Wrap math in $...$. If none, return null.
 - 'intent': A brief description of the generation intent in Japanese. IMPORTANT: Wrap ALL math symbols (e.g. $n$, $P$, $C$, equations) in $...$ to ensure they render correctly. Do not use plain text for math. When mentioning difficulty, use Japanese terms: "基礎1" (L1), "基礎2" (L2), "基礎3" (L3), "標準" (L4), "発展" (L5).
 
 Difficulty Definitions:
@@ -216,8 +218,8 @@ Output MUST be a valid JSON object strictly matching the problem schema.
 - 'stem_latex': Problem text in LaTeX (Japanese). Wrap math in $...$.
 - 'answer_latex': Answer in LaTeX. Wrap math in $...$.
 - 'explanation_latex': Detailed explanation. Wrap math in $...$.
-- 'difficulty': ${difficulty}
-- 'difficulty': ${difficulty}
+- 'common_mistake_latex': Common mistake. Wrap math in $...$.
+- 'hint_latex': Hint. Wrap math in $...$.
 - 'difficulty': ${difficulty}
 - 'intent': Brief description of changes. IMPORTANT: Wrap ALL math symbols (e.g. $n$, $x^2$, $nCr$) in $...$. Use Japanese terms for difficulty: "基礎1" (L1), "基礎2" (L2), "基礎3" (L3), "標準" (L4), "発展" (L5).
 

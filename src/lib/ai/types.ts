@@ -6,6 +6,8 @@ export interface AIProblemItem {
   explanation_latex: string;
   unit_id: string;
   difficulty: Difficulty;
+  common_mistake_latex?: string; // Newly added
+  hint_latex?: string; // Newly added (replacing hints array usage in prompt)
 }
 
 export interface AIProblemSet {

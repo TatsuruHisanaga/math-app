@@ -106,6 +106,8 @@ export default async function handler(
         stem_latex: sanitizeLatex(q.stem_latex),
         answer_latex: sanitizeLatex(q.answer_latex),
         explanation_latex: sanitizeLatex(q.explanation_latex || ''),
+        common_mistake_latex: sanitizeLatex(q.common_mistake_latex || ''),
+        hint_latex: sanitizeLatex(q.hint_latex || ''),
         hints: q.hints ? q.hints.map((h: string) => sanitizeLatex(h)) : undefined
     }));
 
@@ -158,7 +160,13 @@ export default async function handler(
         
         let explanationBlock = '';
         if (q.explanation_latex) {
-             explanationBlock = `\\par\\vspace{0.5em}\\noindent\\small{\\textbf{解説}:\\par ${q.explanation_latex}}`;
+             explanationBlock += `\\par\\vspace{0.5em}\\noindent\\small{\\textbf{解説}:\\par ${q.explanation_latex}}`;
+        }
+        if (q.common_mistake_latex) {
+             explanationBlock += `\\mistakebox{${q.common_mistake_latex}}`;
+        }
+        if (q.hint_latex) {
+             explanationBlock += `\\hintbox{${q.hint_latex}}`;
         }
 
         answerBody += `

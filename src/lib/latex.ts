@@ -269,6 +269,20 @@ export class PDFBuilder {
   \\par
 }
 
+% Common Mistake Box
+\\newcommand{\\mistakebox}[1]{
+  \\par\\vspace{0.5em}
+  \\noindent{\\small \\textbf{★ よくある間違い} \\par #1}
+  \\par
+}
+
+% Hint Box
+\\newcommand{\\hintbox}[1]{
+  \\par\\vspace{0.5em}
+  \\noindent{\\small \\textbf{💡 ヒント} \\par #1}
+  \\par
+}
+
 \\begin{document}
 
 ${content}
@@ -362,6 +376,20 @@ ${content}
   \\par
 }
 
+% Common Mistake Box
+\\newcommand{\\mistakebox}[1]{
+  \\par\\vspace{0.5em}
+  \\noindent{\\small \\textbf{★ よくある間違い} \\par #1}
+  \\par
+}
+
+% Hint Box
+\\newcommand{\\hintbox}[1]{
+  \\par\\vspace{0.5em}
+  \\noindent{\\small \\textbf{💡 ヒント} \\par #1}
+  \\par
+}
+
 \\begin{document}
 ${content}
 \\end{document}
@@ -381,6 +409,8 @@ ${content}
 \\newcommand{\\answerbox}[2]{}
 \\newcommand{\\answeredbox}[1]{}
 \\newenvironment{pointbox}{}{}
+\newcommand{\mistakebox}[1]{}
+\newcommand{\hintbox}[1]{}
 
 \\begin{document}
 ${content}
@@ -398,6 +428,8 @@ ${content}
 \\newcommand{\\answerbox}[2]{}
 \\newcommand{\\answeredbox}[1]{}
 \\newenvironment{pointbox}{}{}
+\newcommand{\mistakebox}[1]{}
+\newcommand{\hintbox}[1]{}
 
 \\begin{document}
 ${content}

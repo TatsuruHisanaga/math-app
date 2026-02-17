@@ -28,11 +28,17 @@
               "L5"
             ]
           },
-          "hints": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
+          "common_mistake_latex": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "hint_latex": {
+            "type": [
+              "string",
+              "null"
+            ]
           }
         },
         "required": [
@@ -41,7 +47,8 @@
           "explanation_latex",
           "unit_id",
           "difficulty",
-          "hints"
+          "common_mistake_latex",
+          "hint_latex"
         ],
         "additionalProperties": false
       }
